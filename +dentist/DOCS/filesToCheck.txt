@@ -1,0 +1,63 @@
+. AbstractDisplayer.m 
+. AbstractModifiableDisplayer.m
+. AxisSetDisplayer.m
+. CellArrayCyclicIterator.m
+. CentroidListBoxController.m
+. Centroids.m
+. CentroidsDisplayer.m
+. CentroidsFilter.m
+. CentroidsNumSpotsTextDisplayer.m
+. ChannelArray.m
+. ChannelSwitchCoordinator.m
+. DeleteableCentroids.m
+. DeleteableSpots.m
+. DisplayerSequence.m
+. FocuserOfViewportOnSelectedCentroid.m
+. FreeHandDrawingInterpreter.m
+. ImageFileDirectoryReader.m
+. ImagePanningMouseInterpreter.m
+. ImageProvider.m
+. ImageViewport.m
+. ImageZoomingMouseInterpreter.m
+. LineDrawingInterpreter.m
+. ModifiedDisplayer.m
+. MouseGestureInterpreter.m
+. MultiMouseGestureInterpreter.m
+. MultiZoomLevelImageDisplayer.m
+. MutuallyExclusiveToggleGroup.m
+. NullDisplayer.m
+. PositionAndChannelArray.m
+. PositionArray.m
+. RectangleDrawingInterpreter.m
+. SpotFrequencyTable.m
+. Spots.m
+SpotsAndCentroidsManager.m
+. SpotsDisplayer.m
+. ThresholdPlotMouseInterpreter.m
+. ThresholdPlotPlugin.m
+. ThumbnailDisplayer.m
+. ThumbnailPanningMouseInterpreter.m
+. TileAwareImageViewport.m
+TileAwareImageViewport_testStitch.m
+. TileIterator.m
+. TilePosition.m
+. TiledImageDisplayer.m
+. ToggleableGestureInterpreter.m
+. WaitBar.m
+asRowAndColumn.m
+assignSpotsToCentroids.m
+blowUpPixels.m
+buildFilePathsGrid.m
+computeTiledImageWidthAndHeight.m
+filterPointsByViewport.m
+findIndicesOfTileInTilingImage.m
+getImageFiles.m
+interpretLayoutTypeNumber.m
+makeCentroidBasedThumbnails.m
+makeColorCycler.m
+makeImageViewportScaledToImageSize.m
+makeRNADensityIntensityThumbnail.m
+makeSpotBasedThumbnails.m
+occurrencesOfIntegersUpToN.m
+rasterizePoints.m
+updateStruct.m

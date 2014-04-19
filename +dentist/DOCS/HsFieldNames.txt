@@ -1,0 +1,138 @@
+Hs.
+Hs.BWs
+Hs.applyFilter
+Hs.buttonGroup
+Hs.bw
+Hs.cancelButton
+Hs.cancelMap
+Hs.centDeleted
+Hs.centList
+Hs.centNumH
+Hs.centRGBMaps
+Hs.centSort
+Hs.centSortIX
+Hs.centroid
+Hs.centroidMap
+Hs.centroids
+Hs.centroidsER
+Hs.chanDeleted	indicesOfDeletedSpotsByChannel
+Hs.chanIndex
+Hs.chanMaps
+Hs.chanPop
+Hs.chanSpotMaps
+Hs.chanSpotVals	frequencyOfSpotIntensities
+	% n cells (for n channels): Each cell contains a frequency table of intensity 
+	% values.  This is needed for creating the threshold plot
+Hs.chanSpots
+Hs.chanThresh
+Hs.chanThreshShifts
+Hs.chanThreshVal
+Hs.col_width	tiledImageWidthInPixels
+Hs.col_zoom     displayedWidthInPixels
+Hs.colMax
+Hs.colorMap
+Hs.cols
+Hs.contrastButton
+Hs.dapiOverlay
+Hs.deletable
+    % [row, col; ...] of images that did not have proper dimensions.  Dummy image was 	% inserted into its place and all spots, centroids in this location are deleted 
+	% after processing
+Hs.deleteButton
+Hs.deleted
+    % Hs.deleted consists of two cells.  The first cell contains the
+    % row-indexes of all deleted centroids and the second one the
+    % row-indexes of all deleted spots
+Hs.dirOrig
+Hs.dirPath
+Hs.displayDapi
+Hs.downState
+Hs.dragButton
+Hs.drawButton
+Hs.drawPanel
+Hs.figCH
+Hs.figCHLabel
+Hs.figH
+Hs.figTitle
+Hs.fileName
+Hs.fileNums
+Hs.filePaths
+Hs.filterButton
+Hs.filterCheckBox
+Hs.filterVals
+Hs.firstTime
+Hs.foundChannels
+Hs.freeHandsH
+Hs.hObject
+Hs.histAx
+Hs.histButton
+Hs.histPlots
+Hs.imageLevel
+Hs.imageMode
+Hs.imagePlots	handlesToDeleteOnRePlot
+Hs.imageSize
+Hs.imagesize
+Hs.img
+Hs.imgAT
+Hs.imgAx
+Hs.imgAxis
+Hs.imgCatH
+Hs.imgExts
+Hs.layoutIndex  layoutTypeNumber
+Hs.leftShiftButton
+Hs.location
+Hs.locationButton
+Hs.locationPaths
+Hs.mapButton
+Hs.mapCentImg
+Hs.mapImg
+Hs.maxDist  maximumDistanceOfSpotToAssignedCentroid
+Hs.midpoint
+Hs.nameExt
+Hs.nuclei
+Hs.numCols
+Hs.numRows
+Hs.overlap  pixelsOfOverlapBetweenTiles
+Hs.overlapR
+Hs.p
+Hs.radioVal
+Hs.rectangle
+Hs.regionalMaxIndices
+Hs.regionalMaxValues
+Hs.repaint
+Hs.repaintC
+Hs.repaintN
+Hs.resetButton
+Hs.resetShiftButton
+Hs.resetThresh
+Hs.rightShiftButton
+Hs.row_width	tiledImageHeightInPixels
+Hs.row_zoom     displayedHeightInPixels
+Hs.rowMax
+Hs.rows
+Hs.saveButton
+Hs.scatterH
+Hs.shiftTilesCalled
+Hs.spotCCheck
+Hs.spotCircsH
+Hs.spotMap
+Hs.spotMax
+Hs.spotNCheck
+Hs.spots
+Hs.threshAx
+Hs.threshPlots
+Hs.threshXLim
+Hs.threshold
+Hs.thresholdAx
+Hs.thresholdL
+Hs.thresholdMax
+Hs.thresholdMin
+Hs.thumbAx
+Hs.tileCol
+Hs.tileRow
+Hs.tileSize
+Hs.tilesShifted
+Hs.ulIndex		displayedULCornerYandXInPixels
+Hs.undoButton
+Hs.viewButton
+Hs.waitbarH
+Hs.zoomButton

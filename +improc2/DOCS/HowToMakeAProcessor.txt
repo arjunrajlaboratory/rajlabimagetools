@@ -1,0 +1,70 @@
+
+A Processor contains summarized data based on an image-object and user-specified data.
+
+The input data to a processor is of two types:
+. user-specified
+. or contained or related to the ImageObject
+
+User-Specified input is of two types:
+1. Input necessary prior to processing. i.e. processing parameters, like the parameters for filtering an image. These parameters should only be settable in the constructor of the Processor. See for example improc2.aTrousRegionalMaxProc.
+2. Input adjustable after processing. The threshold is of course the classic example. Any parameter that the user can set after running the processor and that has a substantive effect on the data of that Processor should have its own special set method as follows (using threshold as an example)
+
+    function p = set.threshold(p, newthresh)
+	p.threshold = newthresh;
+	p.dataHasChanged = true;
+    end
+It is important that you set dataHasChanged = true when the user sets such a property. See improc2.RegionalMaxProc for this example.
+
+
+ImageObject-related input can be broken down into two types:
+1. Data in other processors stored in the image-object.
+	For example gaussfit postprocessing uses data from a previous spot-finding processor.
+2. Data in non-processor aspects of the image-object.
+	For example the ImObj's mask. Also, the ImageObject contains information about where the source images can be found.
+
+An improc2.ImageObject feeds these two types of data to a processor's run method automatically. 
+
+classdef MyProcessor < improc2.Processor
+
+You must define what all processors' data your new processor will depend on by redefining the procsIDependOn property to a cell array of the class names of all necessary processors you will need. This must be done in the constructor and it will look like this:
+
+methods
+    function p = MyProcessor(varargin)
+	p.description = 'My New Type of Processor';
+	p.procsIDependOn = *cell array*;
+    end
+end
+
+For a regular processor that doesn't depend on any other processors, p.procsIDependOn = {}, which is the default value for an improc2.Processor anyway and you can omit that line. See improc2.tests.MinimalPostProcessor and improc2.TwoChannelSpotSumProc for examples of post-processor constructors.
+
+Then you must define a protected runProcessor method that looks like this:
+
+methods (Access = protected)
+    function p = runProcessor(p, proc1, proc2, ..., procN, varargin )
+    	*do stuff*
+    end
+end
+
+Here proc1, proc2, ..., procN are all the necessary processors, of the types specified in procsIDependOn, in the exact order they appear there. 
+*You do not need to check the proc1,...,procN inputs to be of the correct number and class: That is automatically done for you when the processor is run.*
+
+* Even if your processor does not need any data aside from what is in the processors it depends on, the runProcessor method must have the varargin at the end to accept extra arguments, which it can then ignore. This is because ImageObject runAll/updateAll methods may pass extra arguments to your processor (see below) and you will get an error if there is nowhere for them to go.*
+
+For a regular processor (non post-processor), there are no necessary processors and the runProcessor command looks like this:
+    function p = runProcessor(p, varargin)
+
+You are in charge of error checking the rest of the parameters in varargin. Depending on context the varargin given could be either of the following:
+
+When run by the ImageObject's runAll/updateAll command after registering as a single channel processor:
+varargin = {obj, channelName}
+So the last argument to runProcessor will be the channelName and the first is the ImageObject itself. This information can be used to extract the croppedimage for the channel and the object mask using a helper function (see below) 
+
+
+When registered as a single channel processor and run by processimageobjects:
+varargin = {croppedimg, objmask}
+For reasons of efficiency processimageobjects crops the image and gets the mask itself and feeds that to the run method.
+
+You can easily handle the above two possibilities in one go using the improc2.getArgsForClassicProcessor helper function. See improc2.dapiProc, improc2.transProc and improc2.RegionalMaxProc for this in action. 
+
+Lastly, when run as a multi-channel post-processor, currently, your processor is run with varargin = {}; i.e. it only works for processors that don't need any data aside from what is in the processors they explicitly depend on.
+

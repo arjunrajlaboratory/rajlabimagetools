@@ -1,0 +1,72 @@
+* public method/ property defined in this class
+? abstract method to be defined in concrete subclass
+- method defined to make this class concrete
+| overrides a method
+{ "has a" relationship
+
+ProcessorStack < Describeable
+* registerNewProcessor
+* getProcessorByPos
+* setProcessorByPos
+* indexFromClassName
+*| disp (uses disp@Describeable)
+* descriptionOfArray
+* descriptionOfProc
+*| length (overrides MATLAB builtin)
+*| subsref (overrides MATLAB '()' indexing)
+*| subsasgn (overrides MATLAB '()' indexing)
+
+DataChangeTrackedProcStack < ProcessorStack & LoadSafeDataChangeStatus
+*| registerNewProcessor 
+	uses registerNewProcessor@ProcessorStack
+*| setProcessorByPos
+	uses setProcessorByPos@ProcessorStack
+
+ProcessorStackRunner (Abstract) < Describeable
+{ has a ProcessorStack
+* runProcAtIndex
+*| disp (uses disp@Describeable)
+* descriptionOfProcStack
+* descriptionOfProc
+*| length (overrides MATLAB builtin)
+? getProcsNecessaryToRun
+
+ManagedProcessorQueue < DataChangeTrackedProcStack
+* getProcsNecessaryToRun
+
+ManagedProcQueueRunner < ProcessorStackRunner
+{ has a ManagedProcessorQueue subclass of ProcStack
+- getProcsNecessaryToRun
+* registerNewProcessor
+* processors
+
+SingleChannelProcManager < ManagedProcQueueRunner
+* channelName (read-only)
+* runAllUsingImObj
+* updateAllUsingImObj
+* processor
+
+Channel < SingleChannelProcManager
+* filename
+* metadata
+
+ChannelSet
+* channelFields
+* channels
+* filenames
+* runAllSingleChanProcsUsingImObj
+* updateAllSingleChanProcsUsingImObj
+
+MultiChannelProcManager < ProcessorStackRunner & ChannelSet
+- getProcsNecessaryToRun
+* registerMultiChanProcessor
+* runAllMultiChanProcs
+* updateAllMultiChanProcs
+
+ImageObject < MultiChannelProcManager
+TODO: Refactor this to HaveA MultiChannelProcManager
+* runAll
+* updateAll
+* setObjImFileMaskTo
+* registerSingleChanProcessor
+

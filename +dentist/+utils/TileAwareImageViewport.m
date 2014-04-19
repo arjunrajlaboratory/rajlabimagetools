@@ -1,0 +1,102 @@
+classdef TileAwareImageViewport < dentist.utils.ImageViewport
+    %UNTITLED4 Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties (SetAccess = private, GetAccess = private)
+        Nrows
+        Ncols
+        standardImageWidth
+        standardImageHeight
+        numPixelOverlap
+    end
+    
+    methods
+        function p = TileAwareImageViewport(objectWithTilingInfo)
+            [imageWidth, imageHeight] = dentist.utils.computeTiledImageWidthAndHeight(objectWithTilingInfo);
+            p = p@dentist.utils.ImageViewport(imageWidth, imageHeight);
+            p.Nrows = objectWithTilingInfo.Nrows;
+            p.Ncols = objectWithTilingInfo.Ncols;
+            p.standardImageWidth = objectWithTilingInfo.standardImageSize(2);
+            p.standardImageHeight = objectWithTilingInfo.standardImageSize(1);
+            p.numPixelOverlap = objectWithTilingInfo.numPixelOverlap;
+        end
+        
+        function tile = findTileAtCenter(p)
+            tile = p.findTileAtPoint(p.centerXPosition, p.centerYPosition);
+        end
+         
+        function TF = containsTile(p, tile)
+            [xLow, xHigh, yLow, yHigh] = ...
+                dentist.utils.findIndicesOfTileInTilingImage(tile, ...
+                p.standardImageWidth, p.standardImageHeight, p.numPixelOverlap);
+            corners = [xLow yLow; xLow yHigh; xHigh yHigh; xHigh yLow];
+            viewportCorners = [0 0; p.width-1 0; p.width-1 p.height-1; 0 p.height-1];
+            viewportCorners(:,1) = p.ulCornerXPosition + viewportCorners(:,1);
+            viewportCorners(:,2) = p.ulCornerYPosition + viewportCorners(:,2);
+            % if they overlap the viewport contains a corner of the tile or the tile
+            % must contain a corner of the viewport
+            TF = any(p.contains(corners(:,1), corners(:,2))) || ...
+                any((viewportCorners(:,1) >= xLow) & ...
+                (viewportCorners(:,1) <= xHigh) & (viewportCorners(:,2) >= yLow) & ...
+                (viewportCorners(:,2) <= yHigh));
+        end
+        
+        function img = getCroppedImage(p, imageProvider, channelName)
+            if nargin < 3
+                img = p.getCroppedImage@dentist.utils.ImageViewport(imageProvider);
+                return;
+            end 
+            tile = p.findTileAtPoint(p.ulCornerXPosition, p.ulCornerYPosition);
+            tileAtRowStart = tile;
+            onFirstTile = true;
+            while true
+                imageProvider.goToTile(tile);
+                tileImg = imageProvider.getImageFromChannel(channelName);
+                if onFirstTile
+                    img = zeros(p.height, p.width, class(tileImg));
+                    onFirstTile = false;
+                end
+                [tileCoords, viewCoords] = p.coordsOfOverlapWithTile(tile);
+                img(viewCoords(3):viewCoords(4), viewCoords(1):viewCoords(2)) = ...
+                    tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                if tile.hasNeighbor('right') && p.containsTile(tile.getNeighbor('right'))
+                    tile = tile.getNeighbor('right');
+                elseif tileAtRowStart.hasNeighbor('down') && p.containsTile(tileAtRowStart.getNeighbor('down'))
+                    tileAtRowStart = tileAtRowStart.getNeighbor('down');
+                    tile = tileAtRowStart;
+                else
+                    break;
+                end
+            end 
+        end
+                 
+    end
+    
+    methods (Access = private)
+        function [coordsInTile, coordsInView, coordsInImage] = coordsOfOverlapWithTile(p, tile)
+            [xLow, xHigh, yLow, yHigh] = ...
+                dentist.utils.findIndicesOfTileInTilingImage(tile, ...
+                p.standardImageWidth, p.standardImageHeight, p.numPixelOverlap);
+            xLowOverlapping = max(p.ulCornerXPosition, xLow);
+            xHighOverlapping = min(p.ulCornerXPosition + p.width - 1, xHigh);
+            yLowOverlapping = max(p.ulCornerYPosition, yLow);
+            yHighOverlapping = min(p.ulCornerYPosition + p.height - 1, yHigh);
+            coordsInImage = [xLowOverlapping, xHighOverlapping, ...
+                                yLowOverlapping, yHighOverlapping];
+            coordsInTile = [coordsInImage(1:2) - xLow + 1, ...
+                                coordsInImage(3:4) - yLow + 1];
+            coordsInView = [coordsInImage(1:2) - p.ulCornerXPosition + 1, ...
+                                coordsInImage(3:4) - p.ulCornerYPosition + 1];
+        end
+        
+        function tile = findTileAtPoint(p, x, y)
+            scaledX = (x - 1)/(p.standardImageWidth - p.numPixelOverlap);
+            col = min(floor(scaledX) + 1, p.Ncols);
+            scaledY = (y - 1)/(p.standardImageHeight - p.numPixelOverlap);
+            row = min(floor(scaledY) + 1, p.Nrows);
+            tile = dentist.utils.TilePosition(p.Nrows, p.Ncols, row, col);
+        end
+    end
+    
+end
+

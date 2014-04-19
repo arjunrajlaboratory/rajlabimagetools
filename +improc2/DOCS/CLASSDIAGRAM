@@ -1,0 +1,102 @@
+* public method/ property defined in this class
+? abstract method to be defined in concrete subclass
+- method defined to make this class concrete
+| overrides a method
+S Sealed
+H Hidden
+
+LoadSafeDataChangeStatus
+* dataHasChanged
+*H setDataHasChangedToFalse
+*H,S saveobj
+*S loadobj
+
+RemembersRunAndDataChange < LoadSafeDataChangeStatus
+* run
+* isProcessed
+? runRemembersRun
+
+Describeable
+* description
+*| disp	overrides MATLAB default display)
+
+Processor < RemembersRunAndDataChange & Describeable 
+* procsIDependOn
+* reviewed
+* needsUpdate
+- runRemembersRun
+? runProcessor
+* subsref
+*H,S setNeedsUpdateFalse
+*H,S setNeedsUpdateTrue
+
+ImageDisplayer
+* plotImage
+*? getImage
+
+transProc < Processor & ImageDisplayer
+- runProcessor 
+- getImage
+
+MaskFindingProc < Processor & ImageDisplayer
+* mask
+*| plotImage, uses ImageDisplayer@plotImage
+
+dapiProc < MaskFindingProc
+- runProcessor
+- getImage
+
+SpotFindingInterface
+*? getNumSpots
+*? getSpotCoordinages
+
+SpotFindingProc < Processor & ImageDisplayer & SpotFindingInterface
+*| plotImage, uses ImageDisplayer@plotImage
+*? plotData
+
+RegionalMaxProc < SpotFindingProc
+* thresholdParams
+* threshold
+* plotStrategy
+- runProcessor
+- getImage
+- getNumSpots
+- getSpotCoordinates
+- plotData 
+	uses plotStrategy.plotData
+- updateProcByDataPlotXYPOS 
+	uses plotStrategy.updateProc...
+
+ParamList
+* replaceParams
+
+aTrousFilterParams < ParamList
+* sigma
+* numLevels
+
+ImageFilter
+* filterParams
+*? applyFilter
+
+aTrousImageFilter < ImageFilter
+- applyFilter
+
+aTrousRegionalMaxProc < RegionalMaxProc
+* filterParams
+| filterImage overrides filterImage@RegionalMaxProc
+    uses an aTrousImageFilter
+
+plotStrategy
+* plotparams
+* plotData
+*? updateProcByDataPlotXYPOS
+
+RegionalMaxCDFPlotter < plotStrategy
+* plotLogY
+*| plotData, uses plotData@plotStrategy
+- updateProcByDataPlotXYPOS
+
+RegionalMaxDensityPlotter < RegionalMaxCDFPlotter
+*| plotData, uses plotData@plotStrategy
+
+

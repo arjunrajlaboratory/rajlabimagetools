@@ -1,0 +1,16 @@
+# we are using Shell-style glob for our pattern matching
+syntax: glob
+
+# ignore pesky MacOS hidden files
+.DS_Store
+
+# ignore temporary autosave type files from VIM
+*.swp
+*~.nib
+
+# ignore any other specific editing hidden or tmp files
+*.m~   # MATLAB temporary m-file
+*.pyc  # compiled python code
+*.log  # log of running background processes
+nohup.out
+*.asv
