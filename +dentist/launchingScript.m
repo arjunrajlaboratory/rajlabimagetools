@@ -1,6 +1,7 @@
-%myDir = '~/code/dentist_test/3by3';
-myDir = '~/code/dentist_test/2by2';
-imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(myDir);
+dentist.tests.cleanupForTests;
+
+testDataDir = dentist.tests.data.locator();
+imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(testDataDir);
 imageDirectoryReader.implementGridLayout(2,2,'down','right','nosnake');
 numPixelOverlap = 103;
 imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
@@ -15,12 +16,10 @@ maxDistance = 200;
     @dentist.utils.assignSpotsToCentroids, centroids, maxDistance);
 
 %%
-
 thresholdsInAllTiles = thresholdsArray.aggregateAllPositions(@(x,y) [x, y]);
 thresholds = thresholdsInAllTiles.applyForEachChannel(@median);
 
 %%
-
 deletionPolygons = {};
 
 % DataSubsystem
@@ -88,11 +87,11 @@ resources.zoomTransitionMediumToWide = 1600;
 
 displaySubsystem = dentist.buildImageSubsystem(resources);
 
-data.thresholdsHolder.addObjectToDrawOnUpdate(displaySubsystem);
-data.deletionsSubsystem.addObjectToDrawAfterDeletion(displaySubsystem);
+data.thresholdsHolder.addActionOnUpdate(displaySubsystem, @draw);
+data.deletionsSubsystem.addActionAfterDeletion(displaySubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(displaySubsystem, @draw);
-coloringAndThumbnailSettings.addObjectToDrawOnSettingsChange(displaySubsystem);
-thumbnailFactory.addObjectToDrawAfterMakingThumbnails(displaySubsystem);
+coloringAndThumbnailSettings.addActionOnSettingsChange(displaySubsystem, @draw);
+thumbnailFactory.addActionAfterMakingThumbnails(displaySubsystem, @draw);
 
 % centroids list box subsystem
 
@@ -107,8 +106,8 @@ configurations.sizeOfViewportWhenFocusedOnCentroid = 800;
 
 listBoxSubsystem = dentist.buildCentroidsListBoxSubsystem(resources, configurations);
 
-data.thresholdsHolder.addObjectToDrawOnUpdate(listBoxSubsystem);
-data.deletionsSubsystem.addObjectToDrawAfterDeletion(listBoxSubsystem);
+data.thresholdsHolder.addActionOnUpdate(listBoxSubsystem, @draw);
+data.deletionsSubsystem.addActionAfterDeletion(listBoxSubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(listBoxSubsystem, @draw);
 
 % threshold Plot subsystem
@@ -121,8 +120,8 @@ resources.channelHolder = channelSynchronizer;
 
 thresholdPlotSubsystem = dentist.buildThresholdPlotSubsystem(resources);
 
-data.thresholdsHolder.addObjectToDrawOnUpdate(thresholdPlotSubsystem);
-data.deletionsSubsystem.addObjectToDrawAfterDeletion(thresholdPlotSubsystem);
+data.thresholdsHolder.addActionOnUpdate(thresholdPlotSubsystem, @draw);
+data.deletionsSubsystem.addActionAfterDeletion(thresholdPlotSubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(thresholdPlotSubsystem, @draw);
 
 % DeletionsUISubsystem
@@ -133,9 +132,9 @@ resources.deletionsSubsystem = data.deletionsSubsystem;
 
 deletionsUISubsystem = dentist.buildDeletionsUISubsystem(resources);
 
-displaySubsystem.addObjectToDrawOnViewportUpdate(deletionsUISubsystem);
-data.thresholdsHolder.addObjectToDrawOnUpdate(deletionsUISubsystem);
-data.deletionsSubsystem.addObjectToDrawAfterDeletion(deletionsUISubsystem);
+displaySubsystem.addActionAfterViewportUpdate(deletionsUISubsystem, @draw);
+data.thresholdsHolder.addActionOnUpdate(deletionsUISubsystem, @draw);
+data.deletionsSubsystem.addActionAfterDeletion(deletionsUISubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(deletionsUISubsystem, @draw);
 
 % Add interactions
