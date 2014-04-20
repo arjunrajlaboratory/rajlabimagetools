@@ -1,7 +1,7 @@
 dentist.tests.cleanupForTests;
-myDir = '~/code/dentist_test/3by3';
-imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(myDir);
-imageDirectoryReader.implementGridLayout(3,3,'down','right','nosnake');
+testDataDir = dentist.tests.data.locator();
+imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(testDataDir);
+imageDirectoryReader.implementGridLayout(2,2,'down','right','nosnake');
 numPixelOverlap = 103;
 imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
 
