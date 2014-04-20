@@ -161,7 +161,6 @@ improc2.utils.printItemCollectionSignature_test;
 display('improc2.utils.ProcessorDataHolder_test')
 improc2.utils.ProcessorDataHolder_test;
 display('improc2.utils.ProcessorRegistrarForLegacyimage_object_test')
-%%
 improc2.utils.ProcessorRegistrarForLegacyimage_object_test;
 display('improc2.utils.ReadOnlyFileBasedImageObjectArrayCollection_test')
 improc2.utils.ReadOnlyFileBasedImageObjectArrayCollection_test;
