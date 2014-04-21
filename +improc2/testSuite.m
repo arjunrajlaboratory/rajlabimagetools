@@ -38,16 +38,12 @@ display('improc2.thresholdGUI.launchThresholdGUICore_test')
 improc2.thresholdGUI.launchThresholdGUICore_test;
 display('improc2.thresholdGUI.layOutImageInspectionGUI_test')
 improc2.thresholdGUI.layOutImageInspectionGUI_test;
-display('improc2.thresholdGUI.layOutStarSearchGUI_test')
-improc2.thresholdGUI.layOutStarSearchGUI_test;
 display('improc2.thresholdGUI.SliceExclusionMouseInterpreter_test')
 improc2.thresholdGUI.SliceExclusionMouseInterpreter_test;
 display('improc2.thresholdGUI.SpotsPerSliceDisplayer_test')
 improc2.thresholdGUI.SpotsPerSliceDisplayer_test;
 display('improc2.utils.addRowToCellTable_test')
 improc2.utils.addRowToCellTable_test;
-display('improc2.utils.AnnotationsHolderForLegacyimage_object_test')
-improc2.utils.AnnotationsHolderForLegacyimage_object_test;
 display('improc2.utils.applyATrousImageFilter_test')
 improc2.utils.applyATrousImageFilter_test;
 display('improc2.utils.ArrayNumberTextBox_test')
