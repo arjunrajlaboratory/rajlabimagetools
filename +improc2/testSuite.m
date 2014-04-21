@@ -194,8 +194,6 @@ display('improc2.ImageObject_test')
 improc2.ImageObject_test;
 display('improc2.ImageObjectAnnotationsHandle_test')
 improc2.ImageObjectAnnotationsHandle_test;
-display('improc2.ImageObjectAnnotationsHolder_test')
-improc2.ImageObjectAnnotationsHolder_test;
 display('improc2.ImageObjectHandle_test')
 improc2.ImageObjectHandle_test;
 display('improc2.ImageObjectIterator_test')
@@ -230,8 +228,6 @@ display('improc2.ManagedProcessorQueue_test')
 improc2.ManagedProcessorQueue_test;
 display('improc2.ManagedProcQueueRunner_test')
 improc2.ManagedProcQueueRunner_test;
-display('improc2.MaskFindingProc_test')
-improc2.MaskFindingProc_test;
 display('improc2.MultiChannelProcManager_test')
 improc2.MultiChannelProcManager_test;
 display('improc2.NavigatorGUI_test')
