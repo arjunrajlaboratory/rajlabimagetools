@@ -60,8 +60,6 @@ display('dentist.utils.ModifiedDisplayer_test')
 dentist.utils.ModifiedDisplayer_test;
 display('dentist.utils.MouseGestureInterpreter_test')
 dentist.utils.MouseGestureInterpreter_test;
-display('dentist.utils.MultiMouseGestureInterpreter_test')
-dentist.utils.MultiMouseGestureInterpreter_test;
 display('dentist.utils.MultiZoomLevelImageDisplayer_test')
 dentist.utils.MultiZoomLevelImageDisplayer_test;
 display('dentist.utils.MutuallyExclusiveToggleGroup_test')
