@@ -32,14 +32,6 @@ display('dentist.utils.ColoringAndThumbnailSettings_test')
 dentist.utils.ColoringAndThumbnailSettings_test;
 display('dentist.utils.computeTiledImageWidthAndHeight_test')
 dentist.utils.computeTiledImageWidthAndHeight_test;
-display('dentist.utils.DeleteableCentroids_test')
-dentist.utils.DeleteableCentroids_test;
-display('dentist.utils.DeleteableSpots_test')
-dentist.utils.DeleteableSpots_test;
-display('dentist.utils.DeleteableSpotsAndCentroids_test')
-dentist.utils.DeleteableSpotsAndCentroids_test;
-display('dentist.utils.DeletionsTool_test')
-dentist.utils.DeletionsTool_test;
 display('dentist.utils.DeletionsUIControlsEnabler_test')
 dentist.utils.DeletionsUIControlsEnabler_test;
 display('dentist.utils.DisplayerSequence_test')
