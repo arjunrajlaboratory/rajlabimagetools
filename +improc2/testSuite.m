@@ -6,8 +6,6 @@ display('improc2.extraction.ObjectHandleDataExtractor_test')
 improc2.extraction.ObjectHandleDataExtractor_test;
 display('improc2.extraction.ProcessorDataExtractor_test')
 improc2.extraction.ProcessorDataExtractor_test;
-display('improc2.fitting.fit2dGaussiansToImage_test')
-improc2.fitting.fit2dGaussiansToImage_test;
 display('improc2.fitting.fitSpotPositionsThenRefineForAmplitude_test')
 improc2.fitting.fitSpotPositionsThenRefineForAmplitude_test;
 display('improc2.fitting.Gaussian2dSpot_test')
