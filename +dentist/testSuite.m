@@ -32,6 +32,8 @@ display('dentist.utils.ColoringAndThumbnailSettings_test')
 dentist.utils.ColoringAndThumbnailSettings_test;
 display('dentist.utils.computeTiledImageWidthAndHeight_test')
 dentist.utils.computeTiledImageWidthAndHeight_test;
+display('dentist.utils.DeleteableSpotsAndCentroids_test')
+dentist.utils.DeleteableSpotsAndCentroids_test;
 display('dentist.utils.DeletionsUIControlsEnabler_test')
 dentist.utils.DeletionsUIControlsEnabler_test;
 display('dentist.utils.DisplayerSequence_test')
@@ -142,3 +144,5 @@ display('dentist.findSpotsInTile_test')
 dentist.findSpotsInTile_test;
 display('dentist.ImageDisplaySubsystem_test')
 dentist.ImageDisplaySubsystem_test;
+display('dentist.launchingScript_test')
+dentist.launchingScript_test;
