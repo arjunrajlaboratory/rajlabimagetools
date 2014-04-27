@@ -21,14 +21,20 @@ classdef ProcessorDataGraph
             newVertex.number = length(p.vertices) + 1;
             newVertex.vertexNumbersOfDependents = [];
             
-            p.vertices = [p.vertices, {newVertex}];
-            
+            p = registerNewVertexToItsProcessorDependencies(p, newVertex);
+            p = registerNewVertexToItsImageDependencies(p, newVertex);
+            p.vertices(end + 1) = {newVertex};
+        end
+    end
+    methods (Access = private)
+        function p = registerNewVertexToItsProcessorDependencies(p, newVertex)
             for i = 1:length(newVertex.vertexNumbersOfDependencies)
                 dependencyVertexNumber = newVertex.vertexNumbersOfDependencies(i);
                 p.vertices{dependencyVertexNumber}.vertexNumbersOfDependents(end + 1) = ...
                     newVertex.number;
             end
-            
+        end
+        function p = registerNewVertexToItsImageDependencies(p, newVertex)
             for channelName = newVertex.channelNamesOfRawImageDependencies
                 p.vertexNumbersOfRawImageDependents.(channelName{1})(end + 1) = ...
                     newVertex.number;
