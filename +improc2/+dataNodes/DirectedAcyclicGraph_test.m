@@ -41,16 +41,12 @@ x = addNode(x, node4);
 x = addNode(x, node5);
 x = addNode(x, node6);
 
-assert(isequal(length(x), 5))
+assert(isequal(length(x), 6))
 expectedConnectivity = zeros(length(x));
 expectedConnectivity(3,1) = 1;
 expectedConnectivity(4, [2,3]) = 1;
+expectedConnectivity(6,5) = 1;
 
-expectedConnectivity = ...
-    [0, 0, 0, 0; ...
-    0, 0, 0, 0; ...
-    1, 0, 0, 0; ...
-    0, 1, 1, 0];
 assert(isequal(makeDependentsVsDependenciesMatrix(x), expectedConnectivity))
 
 view(x)
