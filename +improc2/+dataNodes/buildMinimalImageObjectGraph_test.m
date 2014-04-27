@@ -21,6 +21,7 @@ assert(isa(x.nodes{1}.data, 'improc2.dataNodes.ImageObjectBaseData'))
 assert(isa(x.nodes{3}.data, 'improc2.dataNodes.ChannelBaseData'))
 
 assert(isequal(x.nodes{1}.data.imageFileMask, mask))
+assert(isequal(x.nodes{1}.data.channelNames, {'cy','tmr','dapi'}))
 assert(isequal(x.nodes{3}.data.channelName, 'tmr'))
 assert(isequal(x.nodes{3}.data.fileName, 'tmr002.tiff'))
 assert(isequal(x.nodes{3}.data.dirPath, '~/tests/'))

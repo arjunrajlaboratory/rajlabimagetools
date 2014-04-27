@@ -1,10 +1,14 @@
 function graph = buildMinimalImageObjectGraph(...
         imageFileMask, dirPath, structOfChannelNamesAndFileNames)
     
+    channelNames = structOfChannelNamesAndFileNames.channelNames;
+    fileNames = structOfChannelNamesAndFileNames.fileNames;
+    
     graph = improc2.dataNodes.DirectedAcyclicGraph();
     
     imObjBaseData = improc2.dataNodes.ImageObjectBaseData();
     imObjBaseData.imageFileMask = imageFileMask;
+    imObjBaseData.channelNames = channelNames;
     
     imObjRootNode = improc2.dataNodes.Node();
     imObjRootNode.data = imObjBaseData;
@@ -12,8 +16,7 @@ function graph = buildMinimalImageObjectGraph(...
     
     graph = addNode(graph, imObjRootNode);
     
-    channelNames = structOfChannelNamesAndFileNames.channelNames;
-    fileNames = structOfChannelNamesAndFileNames.fileNames;
+
     
     for i = 1:length(channelNames)
         channelData = improc2.dataNodes.ChannelBaseData;
