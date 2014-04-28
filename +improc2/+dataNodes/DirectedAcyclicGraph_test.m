@@ -18,7 +18,8 @@ assert(isequal(makeDependentsVsDependenciesMatrix(x), expectedConnectivity))
 
 node2 = improc2.dataNodes.Node(); 
 node2.label = 'b';
-node2.data = 20;
+node2.data = 57;
+
 
 node3 = improc2.dataNodes.Node();
 node3.label = 'f(a)';
@@ -26,6 +27,7 @@ node3.dependencyNodeNumbers = [1];
 
 node4 = improc2.dataNodes.Node();
 node4.label = 'g(b, f(a))';
+node4.data = 57;
 node4.dependencyNodeNumbers = [2,3];
 
 node5 = improc2.dataNodes.Node();
@@ -45,6 +47,8 @@ x = addNode(x, node4);
 x = addNode(x, node5);
 x = addNode(x, node6);
 x = addNode(x, node7);
+
+view(x)
 
 assert(x.nodes{1}.childNodeNumbers == 3)
 assert(x.nodes{2}.childNodeNumbers == 4)
@@ -77,4 +81,26 @@ assert(extractedNode.data == node2.data)
 improc2.tests.shouldThrowError(@() getNodeByLabel(x, 'z'), ...
     'improc2:NodeNotFound')
 
-view(x)
+foundNodes = findNodesByTreeDescent(x, 'a', @(node) strcmp(node.label, 'g(b, f(a))')); 
+assert(length(foundNodes) == 1)
+assert(strcmp(foundNodes{1}.label, 'g(b, f(a))'))
+
+foundNodes = findNodesByTreeDescent(x, 'c', @(node) strcmp(node.label, 'g(b, f(a))')); 
+assert(isempty(foundNodes))
+
+foundNodes = findNodesByTreeDescent(x, 'a', @(node) true); 
+assert(length(foundNodes) == 3)
+foundNodeLabels = cellfun(@(node) node.label, foundNodes, 'UniformOutput', false);
+assert(ismember('a', foundNodeLabels))
+assert(ismember('f(a)', foundNodeLabels))
+assert(ismember('g(b, f(a))', foundNodeLabels))
+
+
+foundNodes = findNodesByTreeDescent(x, 'c', @(node) true); 
+assert(length(foundNodes) == 3)
+foundNodeLabels = cellfun(@(node) node.label, foundNodes, 'UniformOutput', false);
+assert(ismember('c', foundNodeLabels))
+assert(ismember('f(c)', foundNodeLabels))
+assert(ismember('h(c)', foundNodeLabels))
+
+

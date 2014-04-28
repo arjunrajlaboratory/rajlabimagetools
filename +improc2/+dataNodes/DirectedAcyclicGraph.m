@@ -1,6 +1,6 @@
 classdef DirectedAcyclicGraph
     
-    properties (SetAccess = private)
+    properties
         nodes = {};
     end
     
@@ -38,38 +38,29 @@ classdef DirectedAcyclicGraph
             node = p.nodes{matchingNodeNumber};
         end
         
-        function node = findNodeByBreadthFirstSearch(p, startingNodeLabel, ...
-                meetsRequirementsFUNC)
+        function foundNodes = findNodesByTreeDescent(p, ...
+                startingNodeLabel, meetsRequirementsFUNC)
+            
             startingNode = getNodeByLabel(p, startingNodeLabel);
             nodeNumbersAtCurrentLevel = startingNode.number;
+            nodesMeetingRequirements = [];
             while true
-                nodesMeetingRequirements = [];
-                for nodeNumber = nodeNumbersAtCurrentLevel
+                nodeNumbersAtNextLevel = [];
+                for nodeNumber = nodeNumbersAtCurrentLevel'
                     if meetsRequirementsFUNC(p.nodes{nodeNumber})
                         nodesMeetingRequirements(end + 1) = nodeNumber;
                     end
-                end
-                if ~isempty(nodesMeetingRequirements)
-                    break;
-                end
-                nodeNumbersAtNextLevel = [];
-                for nodeNumber = nodeNumbersAtCurrentLevel
                     nodeNumbersAtNextLevel = union(nodeNumbersAtNextLevel, ...
                         p.nodes{nodeNumber}.childNodeNumbers);
                 end
                 if isempty(nodeNumbersAtNextLevel)
-                    error('improc2:NodeNotFound', ...
-                        'no node found meeting criterion starting from node %s.', ...
-                        startingNodeLabel)
+                    break
                 end
                 nodeNumbersAtCurrentLevel = nodeNumbersAtNextLevel;
             end
             
-            if length(nodesMeetingRequirements) > 1
-                error('more than one found meeting requirements')
-            else
-                node = p.nodes{nodesMeetingRequirements1};
-            end
+            nodesMeetingRequirements = unique(nodesMeetingRequirements);
+            foundNodes = p.nodes(nodesMeetingRequirements);
         end
         
         function dependentsVsDependencies = makeDependentsVsDependenciesMatrix(p)
