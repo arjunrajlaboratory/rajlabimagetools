@@ -24,7 +24,6 @@ node3 = improc2.dataNodes.Node();
 node3.label = 'f(a)';
 node3.dependencyNodeNumbers = [1];
 
-
 node4 = improc2.dataNodes.Node();
 node4.label = 'g(b, f(a))';
 node4.dependencyNodeNumbers = [2,3];
@@ -36,22 +35,36 @@ node6 = improc2.dataNodes.Node();
 node6.label = 'f(c)';
 node6.dependencyNodeNumbers = 5;
 
+node7 = improc2.dataNodes.Node();
+node7.label = 'h(c)';
+node7.dependencyNodeNumbers = 5;
+
 x = addNode(x, node2);
 x = addNode(x, node3);
 x = addNode(x, node4);
 x = addNode(x, node5);
 x = addNode(x, node6);
+x = addNode(x, node7);
 
-assert(isequal(numberOfNodes(x), 6))
+assert(x.nodes{1}.childNodeNumbers == 3)
+assert(x.nodes{2}.childNodeNumbers == 4)
+assert(x.nodes{3}.childNodeNumbers == 4)
+assert(isempty(x.nodes{4}.childNodeNumbers))
+assert(isequal(x.nodes{5}.childNodeNumbers, [6,7]))
+assert(isempty(x.nodes{6}.childNodeNumbers))
+assert(isempty(x.nodes{7}.childNodeNumbers))
+
+assert(isequal(numberOfNodes(x), 7))
 expectedConnectivity = zeros(numberOfNodes(x));
 expectedConnectivity(3,1) = 1;
 expectedConnectivity(4, [2,3]) = 1;
 expectedConnectivity(6,5) = 1;
+expectedConnectivity(7,5) = 1;
 
 assert(isequal(makeDependentsVsDependenciesMatrix(x), expectedConnectivity))
 
 assert(isequal(x.labels, {node1.label, node2.label, node3.label, ...
-    node4.label, node5.label, node6.label}))
+    node4.label, node5.label, node6.label, node7.label}))
 
 nodeWithConflictingLabel = improc2.dataNodes.Node();
 nodeWithConflictingLabel.label = node6.label;

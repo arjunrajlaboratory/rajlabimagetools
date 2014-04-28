@@ -5,6 +5,7 @@ classdef Node
         data = {};
         number = NaN;
         dependencyNodeNumbers = [];
+        childNodeNumbers = [];
     end
     
     methods

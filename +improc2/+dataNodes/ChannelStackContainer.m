@@ -8,7 +8,7 @@ classdef ChannelStackContainer
        
     properties (Transient = true)
         croppedImage
-        objMask
+        croppedMask
     end
     
     methods
