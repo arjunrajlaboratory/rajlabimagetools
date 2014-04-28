@@ -19,7 +19,7 @@ function graph = buildMinimalImageObjectGraph(...
 
     
     for i = 1:length(channelNames)
-        channelData = improc2.dataNodes.ChannelBaseData;
+        channelData = improc2.dataNodes.ChannelStackContainer();
         channelData.channelName = channelNames{i};
         channelData.fileName = fileNames{i};
         channelData.dirPath = dirPath;

@@ -1,0 +1,14 @@
+display('improc2.dataNodes.buildMinimalImageObjectGraph_test')
+improc2.dataNodes.buildMinimalImageObjectGraph_test;
+display('improc2.dataNodes.ChannelStackContainer_test')
+improc2.dataNodes.ChannelStackContainer_test;
+display('improc2.dataNodes.DirectedAcyclicGraph_test')
+improc2.dataNodes.DirectedAcyclicGraph_test;
+display('improc2.dataNodes.GraphBasedImageObject_test')
+improc2.dataNodes.GraphBasedImageObject_test;
+display('improc2.dataNodes.HandleToGraphBasedImageObject_test')
+improc2.dataNodes.HandleToGraphBasedImageObject_test;
+display('improc2.dataNodes.ImageObjectBaseData_test')
+improc2.dataNodes.ImageObjectBaseData_test;
+display('improc2.dataNodes.Node_test')
+improc2.dataNodes.Node_test;

@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-x = improc2.dataNodes.ChannelBaseData();
+x = improc2.dataNodes.ChannelStackContainer();
 
 assert(isempty(x.channelName))
 assert(isempty(x.fileName))
