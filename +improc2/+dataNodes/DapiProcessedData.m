@@ -4,10 +4,12 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
         isProcessed = false;
         needsUpdate = false;
     end
+    
     properties (Constant = true)
         dependencyClassNames = {'improc2.dataNodes.ChannelStackContainer'};
         dependencyDescriptions = {'imageSource'};
     end
+    
     properties (Dependent = true)
         mask
     end

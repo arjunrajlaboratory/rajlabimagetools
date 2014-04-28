@@ -4,6 +4,10 @@ classdef DirectedAcyclicGraph
         nodes = {};
     end
     
+    properties
+        childVsParentConnectivity = [];
+    end
+    
     properties (Dependent = true)
         labels
     end
@@ -21,14 +25,22 @@ classdef DirectedAcyclicGraph
         end
         
         function p = addNode(p, newNode)
-            assert(ischar(newNode.label) && ~ismember(newNode.label, p.labels),...
-                'improc2:LabelConflict', 'A node with label %s already exists', ...
-                newNode.label)
-            newNode.number = numberOfNodes(p) + 1;
-            for dependencyNodeNumber = newNode.dependencyNodeNumbers
-                p.nodes{dependencyNodeNumber}.childNodeNumbers(end + 1) = newNode.number;
-            end
+            assert(~ismember(newNode.label, p.labels), 'improc2:LabelConflict', ...
+                'A node with label %s already exists', newNode.label)
+            assert(all(ismember(newNode.dependencyNodeLabels, p.labels)), ...
+                'at least one of the dependencies does not exist in the graph')
+            
+            newNodeNumber = numberOfNodes(p) + 1;
             p.nodes(end + 1) = {newNode};
+            
+            p.childVsParentConnectivity = padarray(p.childVsParentConnectivity, ...
+                [1 1], 0, 'post');
+            
+            for dependencyNodeLabel = newNode.dependencyNodeLabels
+                dependencyNodeNumber = find(strcmp(dependencyNodeLabel, p.labels));
+                p.nodes{dependencyNodeNumber}.childNodeLabels(end + 1) = {newNode.label};
+                p.childVsParentConnectivity(newNodeNumber, dependencyNodeNumber) = 1;
+            end
         end
         
         function node = getNodeByLabel(p, label)
@@ -38,42 +50,20 @@ classdef DirectedAcyclicGraph
             node = p.nodes{matchingNodeNumber};
         end
         
-        function foundNodes = findNodesByTreeDescent(p, ...
-                startingNodeLabel, meetsRequirementsFUNC)
-            
-            startingNode = getNodeByLabel(p, startingNodeLabel);
-            nodeNumbersAtCurrentLevel = startingNode.number;
-            nodesMeetingRequirements = [];
-            while true
-                nodeNumbersAtNextLevel = [];
-                for nodeNumber = nodeNumbersAtCurrentLevel'
-                    if meetsRequirementsFUNC(p.nodes{nodeNumber})
-                        nodesMeetingRequirements(end + 1) = nodeNumber;
-                    end
-                    nodeNumbersAtNextLevel = union(nodeNumbersAtNextLevel, ...
-                        p.nodes{nodeNumber}.childNodeNumbers);
-                end
-                if isempty(nodeNumbersAtNextLevel)
-                    break
-                end
-                nodeNumbersAtCurrentLevel = nodeNumbersAtNextLevel;
-            end
-            
-            nodesMeetingRequirements = unique(nodesMeetingRequirements);
-            foundNodes = p.nodes(nodesMeetingRequirements);
+        function foundNodes = findShallowestNodesMatchingCondition(p, ...
+                startingNodeLabel, searchCriterionFUNC)
+            foundNodes = findNodesByTreeDescent(p, startingNodeLabel, searchCriterionFUNC, ...
+                'stopAtFirstLevelWithMatches');
         end
         
-        function dependentsVsDependencies = makeDependentsVsDependenciesMatrix(p)
-            dependentsVsDependencies = zeros(numberOfNodes(p));
-            for nodeNumber = 1:numberOfNodes(p)
-                dependenciesOfThisNode = p.nodes{nodeNumber}.dependencyNodeNumbers;
-                dependentsVsDependencies(nodeNumber, dependenciesOfThisNode) = 1;
-            end
+        function foundNodes = findAllNodesMatchingCondition(p, ...
+                startingNodeLabel, searchCriterionFUNC)
+            foundNodes = findNodesByTreeDescent(p, startingNodeLabel, searchCriterionFUNC, ...
+                'fullSearch');
         end
         
         function view(p)
-            nodeIDs = cellfun(@(x) x.label, p.nodes, 'UniformOutput', false);
-            bg = biograph(makeDependentsVsDependenciesMatrix(p)', nodeIDs);
+            bg = biograph(p.childVsParentConnectivity', p.labels);
             view(bg)
         end
         
@@ -83,6 +73,45 @@ classdef DirectedAcyclicGraph
     end
     
     methods (Access = private)
+        function foundNodes = findNodesByTreeDescent(p, ...
+                startingNodeLabel, searchCriterionFUNC, searchType)
+            
+            switch searchType
+                case 'fullSearch'
+                    stopAtFirstMatchingLevel = false;
+                case 'stopAtFirstLevelWithMatches'
+                    stopAtFirstMatchingLevel = true;
+            end
+            
+            labelsOfNodesToVisit = {startingNodeLabel};
+            labelsOfVisitedNodes = {};
+            labelsOfNodesAtNextLevel = {};
+            foundNodes = {};
+            
+            while ~isempty(labelsOfNodesToVisit)
+                
+                currentNode = getNodeByLabel(p, labelsOfNodesToVisit{1});
+                
+                labelsOfNodesToVisit(1) = [];
+                labelsOfVisitedNodes(end + 1) = {currentNode.label};
+                labelsOfNodesAtNextLevel = [labelsOfNodesAtNextLevel, ...
+                    currentNode.childNodeLabels];
+                
+                if searchCriterionFUNC(currentNode)
+                    foundNodes = [foundNodes, {currentNode}];
+                end
+                
+                if isempty(labelsOfNodesToVisit)
+                    if ~isempty(foundNodes) && stopAtFirstMatchingLevel
+                        break
+                    else
+                        labelsOfNodesToVisit = setdiff(labelsOfNodesAtNextLevel, ...
+                            labelsOfVisitedNodes);
+                        labelsOfNodesToVisit = unique(labelsOfNodesToVisit);
+                    end
+                end
+            end
+        end
     end
 end
 
