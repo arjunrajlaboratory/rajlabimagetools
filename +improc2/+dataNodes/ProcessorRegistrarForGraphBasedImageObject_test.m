@@ -12,17 +12,17 @@ obj.graph = graph;
 objHolder = improc2.utils.ObjectHolder();
 objHolder.obj = obj;
 
-x = improc2.dataNodes.ProcessorRegistrarForGraphBasedImageObject(objHolder);
+tester = improc2.tests.DataNodeGraphTester(objHolder);
 
-view(objHolder.obj.graph)
+x = improc2.dataNodes.ProcessorRegistrarForGraphBasedImageObject(objHolder);
 
 unprocessedSpotsData = improc2.tests.MockSpotsData();
 
 x.registerNewProcessor(unprocessedSpotsData, 'cy', 'cy:SpotsData')
 x.registerNewProcessor(unprocessedSpotsData, {'tmr'}, 'tmr:SpotsData')
 
-cySpotsNode = objHolder.obj.graph.getNodeByLabel('cy:SpotsData');
-assert(isa(cySpotsNode.data, 'improc2.tests.MockSpotsData'))
+tester.assertIsImmediateChild('cy', 'cy:SpotsData')
+tester.assertIsImmediateChild('tmr', 'tmr:SpotsData')
+assert(isa(tester.getNodeData('cy:SpotsData'), 'improc2.tests.MockSpotsData'))
 
 
-view(objHolder.obj.graph)

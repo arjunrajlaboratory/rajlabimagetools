@@ -12,7 +12,7 @@ function graph = buildMinimalImageObjectGraph(...
     
     imObjRootNode = improc2.dataNodes.Node();
     imObjRootNode.data = imObjBaseData;
-    imObjRootNode.label = 'image object';
+    imObjRootNode.label = 'imageObject';
     
     graph = addNode(graph, imObjRootNode);
     
@@ -27,7 +27,7 @@ function graph = buildMinimalImageObjectGraph(...
         channelNode = improc2.dataNodes.Node();
         channelNode.data = channelData;
         channelNode.label = channelData.channelName;
-        channelNode.dependencyNodeNumbers = 1;
+        channelNode.dependencyNodeLabels = {'imageObject'};
         
         graph = addNode(graph, channelNode);
     end

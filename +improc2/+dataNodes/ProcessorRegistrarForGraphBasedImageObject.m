@@ -19,9 +19,11 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
             p.objHolder.obj = obj;
         end
         function registerNewProcessor(p, data, parentNodeLabels, newNodeLabel)
+            
             if ischar(parentNodeLabels); 
                 parentNodeLabels = {parentNodeLabels}; 
             end
+            
             if isa(data, 'improc2.interfaces.ProcessedData')
                 dependencyNodeLabels = p.locateDependencies(data, parentNodeLabels);
             else
@@ -30,13 +32,10 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
             assert(all(ismember(dependencyNodeLabels, p.obj.graph.labels)), ...
                 ['at least one of the labels does not correspond',...
                 'to an existing node in the data']);
-            dependencyNodeNumbers = [];
-            for i = 1:length(dependencyNodeLabels)
-                dependencyNodeNumbers(i) = find(strcmp(dependencyNodeLabels{i}, p.obj.graph.labels));
-            end
+
             newNode = improc2.dataNodes.Node();
             newNode.data = data;
-            newNode.dependencyNodeNumbers = dependencyNodeNumbers;
+            newNode.dependencyNodeLabels = dependencyNodeLabels;
             newNode.label = newNodeLabel;
             p.obj.graph = addNode(p.obj.graph, newNode);
         end
@@ -58,9 +57,9 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
             for i = 1:length(dependencyClassNames)
                 dependencyClassName = dependencyClassNames{i};
                 searchStartNodeLabel = parentNodeLabels{i};
-                foundNodes = findNodesByTreeDescent(graph, searchStartNodeLabel, ...
-                    @(node) isa(node.data, dependencyClassName),...
-                    'stopAtFirstLevelWithMatchingNodes');
+                foundNodes = findShallowestNodesMatchingCondition(graph, ...
+                    searchStartNodeLabel, ...
+                    @(node) isa(node.data, dependencyClassName));
                 errorIfNoNodeFoundToMeetDependency(foundNodes, ...
                     dependencyClassName, searchStartNodeLabel)
                 errorIfMoreThanOneNodeFoundToMeetDependency(foundNodes, ...
