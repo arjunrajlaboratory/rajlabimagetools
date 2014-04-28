@@ -1,12 +1,13 @@
-classdef MockSpotsData < improc2.interfaces.ProcessedData & improc2.interfaces.SpotsProvider
+classdef MockFittedData < improc2.interfaces.ProcessedData & improc2.interfaces.SpotsProvider
     
     properties
         isProcessed = false;
         needsUpdate = false;
     end
     properties (Constant = true)
-        dependencyClassNames = {'improc2.dataNodes.ChannelStackContainer'};
-        dependencyDescriptions = {'image source'};
+        dependencyClassNames = {'improc2.interfaces.SpotsProvider', ...
+            'improc2.dataNodes.ChannelStackContainer'};
+        dependencyDescriptions = {'initial Spot Guesses', 'image source'};
     end
     
     properties (Access = private)
@@ -14,14 +15,10 @@ classdef MockSpotsData < improc2.interfaces.ProcessedData & improc2.interfaces.S
     end
     
     methods
-        function pData = MockSpotsData(numSpots)
-            if nargin < 1
-                numSpots = 0;
-            end
-            pData.numSpots = numSpots;
+        function pData = MockFittedData()
         end
-        function pData = run(pData, stackContainer)
-            % test that these attributes exist;
+        function pData = run(pData, spotsProvider, stackContainer)
+            pData.numSpots = spotsProvider.getNumSpots();
             stackContainer.croppedImage;
             stackContainer.croppedMask;
         end
@@ -33,9 +30,5 @@ classdef MockSpotsData < improc2.interfaces.ProcessedData & improc2.interfaces.S
             J = ones(1, p.numSpots);
             K = ones(1, p.numSpots);
         end
-    end
-    
-    
-    
+    end    
 end
-
