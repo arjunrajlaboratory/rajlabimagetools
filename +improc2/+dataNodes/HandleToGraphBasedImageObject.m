@@ -79,7 +79,14 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 nodeToUpdate.label, nodeToUpdate.data);
         end
         
-        function boolean = hasProcessorData(p, channelName, className)
+        function boolean = hasProcessorData(p, nodeLabel, dataClassName)
+            if nargin < 3
+                dataClassName = 'improc2.interfaces.NodeData';
+            end
+            graph = p.obj.graph;
+            foundNodes = findShallowestNodesMatchingCondition(graph, ...
+                nodeLabel, @(node) isa(node.data, dataClassName));
+            boolean = ~isempty(foundNodes);
         end
         
         

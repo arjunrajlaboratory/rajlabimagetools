@@ -206,3 +206,22 @@ graphTester.assertNeedUpdate('cy:Fitted', 'coloc')
 x.setProcessorData(tmrProcessedSpotsData, 'tmr:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots')
 graphTester.assertNeedUpdate('cy:Fitted', 'coloc', 'tmr:Fitted')
+
+%% HasData:
+
+objHolder.obj = baseObj;
+
+objHolder.obj = objWithSpotsData;
+assert(x.hasProcessorData('cy'))
+assert(x.hasProcessorData('cy:Spots'))
+assert(x.hasProcessorData('cy', 'improc2.tests.MockSpotsData'))
+assert(x.hasProcessorData('cy', 'improc2.interfaces.SpotsProvider'))
+assert(~ x.hasProcessorData('cy', 'improc2.tests.MockFittedData'))
+
+registrar.registerNewProcessor(improc2.tests.MockFittedData(), 'cy', 'cy:Fitted')
+
+assert(x.hasProcessorData('cy', 'improc2.tests.MockFittedData'))
+assert(~ x.hasProcessorData('tmr', 'improc2.tests.MockFittedData'))
+
+% getting would fail due to ambiguity, but 'has' query succeeds.
+assert(x.hasProcessorData('cy'))
