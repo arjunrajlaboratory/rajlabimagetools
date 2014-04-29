@@ -23,6 +23,9 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         function obj = get.obj(p)
             obj = p.objHolder.obj;
         end
+        function set.obj(p, obj)
+            p.objHolder.obj = obj;
+        end
         
         function metadata = getMetaData(p)
             metadata = p.obj.graph.nodes{1}.data.metadata;
@@ -53,6 +56,41 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         
         function pData = getProcessorData(p, nodeLabel, dataClassName)
             if nargin < 3
+                node = p.findDataNode(nodeLabel);
+            else
+                node = p.findDataNode(nodeLabel, dataClassName);
+            end
+            pData = node.data;
+        end
+        
+        function setProcessorData(p, pData, nodeLabel, dataClassName)
+            if nargin < 4
+                nodeToUpdate = p.findDataNode(nodeLabel);
+            else
+                nodeToUpdate = p.findDataNode(nodeLabel, dataClassName);
+            end
+            assert(strcmp(class(pData), class(nodeToUpdate.data)), ...
+                'improc2:BadArguments', ...
+                'Replacement Data must be of class %s, not %s', ...
+                class(nodeToUpdate.data), class(pData))
+            nodeToUpdate.data = pData;
+            p.notifyAllDependentNodes(nodeToUpdate.label)
+            p.obj.graph = setNodeDataByLabel(p.obj.graph, ...
+                nodeToUpdate.label, nodeToUpdate.data);
+        end
+        
+        function boolean = hasProcessorData(p, channelName, className)
+        end
+        
+        
+        function disp(p)
+            improc2.utils.displayDescriptionOfHandleObject(p);
+        end
+    end
+    
+    methods (Access  = private)
+        function node = findDataNode(p, nodeLabel, dataClassName)
+            if nargin < 3
                 dataClassName = 'improc2.interfaces.NodeData';
             end
             graph = p.obj.graph;
@@ -70,16 +108,20 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                     nodeLabel, strjoin(matchingNodeLabels, ', '),...
                     dataClassName);
             end
-            pData = foundNodes{1}.data;
+            node = foundNodes{1};
         end
         
-        function boolean = hasProcessorData(p, channelName, className)
-        end
-        
-        function setProcessorData(p, procData, channelName, varargin)
-        end
-        function disp(p)
-            improc2.utils.displayDescriptionOfHandleObject(p);
+        function notifyAllDependentNodes(p, parentNodeLabel)
+            dependentNodes = findAllNodesMatchingCondition(...
+                p.obj.graph, parentNodeLabel, ...
+                @(node) isa(node.data, 'improc2.interfaces.NodeData'));
+            for i = 1:length(dependentNodes)
+                dependentNodes{i}.data.needsUpdate = true;
+                if ~strcmp(dependentNodes{i}.label, parentNodeLabel)
+                    p.obj.graph = setNodeDataByLabel(p.obj.graph, ...
+                        dependentNodes{i}.label, dependentNodes{i}.data);
+                end
+            end
         end
     end
     

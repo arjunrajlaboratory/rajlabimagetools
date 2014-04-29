@@ -108,3 +108,101 @@ assert(getNumSpots(x.getProcessorData('cy:Manual')) == manualSpotsData.numSpots)
 
 assert(getNumSpots(x.getProcessorData('cy', 'improc2.interfaces.ProcessedData')) == cyNumSpots)
 assert(getNumSpots(x.getProcessorData('cy', 'improc2.tests.MockManualSpotsData')) == manualSpotsData.numSpots)
+
+%% Setting data:
+
+modifiedCyNumSpots = 2*cyNumSpots + 1;
+modifiedCySpotsData = improc2.tests.MockSpotsData(modifiedCyNumSpots);
+
+
+objHolder.obj = objWithSpotsData;
+assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy')
+assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+
+objHolder.obj = objWithSpotsData;
+assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy:Spots')
+assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+
+objHolder.obj = objWithSpotsData;
+assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
+assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+
+objHolder.obj = objWithSpotsData;
+assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.interfaces.SpotsProvider')
+assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+
+%% Setting data: Replacement must be of the same class
+
+objHolder.obj = objWithSpotsData;
+
+improc2.tests.shouldThrowError(...
+    @() x.setProcessorData(manualSpotsData, 'cy'), 'improc2:BadArguments')
+
+%% Setting data: error if ambiguous
+
+objHolder.obj = baseObj;
+
+registrar.registerNewProcessor(cySpotsData, 'cy', 'cy:Spots')
+registrar.registerNewProcessor(manualSpotsData, 'cy', 'cy:Manual')
+
+objWithCySpotsAndManual = objHolder.obj;
+
+graphTester.assertIsImmediateChild('cy', 'cy:Spots')
+graphTester.assertIsImmediateChild('cy', 'cy:Manual')
+
+improc2.tests.shouldThrowError(@() x.setProcessorData(modifiedCySpotsData, 'cy'), ...
+    'improc2:AmbiguousDataSpecification')
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+
+%% Setting data: specifying by node label and data type
+
+objHolder.obj = objWithCySpotsAndManual;
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy:Spots')
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == modifiedCyNumSpots)
+
+objHolder.obj = objWithCySpotsAndManual;
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == modifiedCyNumSpots)
+
+%% Setting data: needsUpdate propagation
+
+objHolder.obj = baseObj;
+
+% artificially set all needsUpdate to false first:
+cyProcessedSpotsData = cySpotsData;
+tmrProcessedSpotsData = tmrSpotsData;
+cyProcessedSpotsData.needsUpdate = false;
+tmrProcessedSpotsData.needsUpdate = false;
+
+cyProcessedFitted = improc2.tests.MockFittedData();
+cyProcessedFitted.needsUpdate = false;
+tmrProcessedFitted = improc2.tests.MockFittedData();
+tmrProcessedFitted.needsUpdate = false;
+
+processedColocolizer = improc2.tests.MockColocolizerData();
+processedColocolizer.needsUpdate = false;
+
+registrar.registerNewProcessor(cyProcessedSpotsData, 'cy', 'cy:Spots')
+registrar.registerNewProcessor(tmrProcessedSpotsData, 'tmr', 'tmr:Spots')
+registrar.registerNewProcessor(cyProcessedFitted, 'cy', 'cy:Fitted')
+registrar.registerNewProcessor(tmrProcessedFitted, 'tmr', 'tmr:Fitted')
+registrar.registerNewProcessor(processedColocolizer, ...
+    {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
+    'tmr:Fitted', 'coloc')
+
+% even setting data back to itself, triggers updates.
+x.setProcessorData(cyProcessedSpotsData, 'cy:Spots')
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots','tmr:Fitted')
+graphTester.assertNeedUpdate('cy:Fitted', 'coloc')
+
+x.setProcessorData(tmrProcessedSpotsData, 'tmr:Spots')
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots')
+graphTester.assertNeedUpdate('cy:Fitted', 'coloc', 'tmr:Fitted')

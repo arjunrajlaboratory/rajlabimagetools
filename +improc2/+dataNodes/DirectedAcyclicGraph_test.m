@@ -101,4 +101,8 @@ foundNodes = findShallowestNodesMatchingCondition(x, 'a', ...
 assert(length(foundNodes) == 1)
 assert(strcmp(foundNodes{1}.label, 'g(b, f(a))'))
 
+x2 = setNodeDataByLabel(x, 'f(c)', 17);
+assert(x2.nodes{6}.data == 17)
+assert(isempty(x.nodes{6}.data))
+
 view(x)

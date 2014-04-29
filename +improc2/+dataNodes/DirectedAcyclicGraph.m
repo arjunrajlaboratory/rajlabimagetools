@@ -50,6 +50,13 @@ classdef DirectedAcyclicGraph
             node = p.nodes{matchingNodeNumber};
         end
         
+        function p = setNodeDataByLabel(p, label, data)
+            matchingNodeNumber = find(strcmp(label, p.labels));
+            assert(~isempty(matchingNodeNumber), 'improc2:NodeNotFound',...
+                'Node with label %s not found', label)
+            p.nodes{matchingNodeNumber}.data = data;
+        end
+        
         function foundNodes = findShallowestNodesMatchingCondition(p, ...
                 startingNodeLabel, searchCriterionFUNC)
             foundNodes = findNodesByTreeDescent(p, startingNodeLabel, searchCriterionFUNC, ...
