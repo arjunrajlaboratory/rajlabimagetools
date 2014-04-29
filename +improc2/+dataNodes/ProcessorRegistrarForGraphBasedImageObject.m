@@ -24,11 +24,11 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
                 parentNodeLabels = {parentNodeLabels}; 
             end
             
-            if isa(data, 'improc2.interfaces.ProcessedData')
-                dependencyNodeLabels = p.locateDependencies(data, parentNodeLabels);
-            else
-                dependencyNodeLabels = parentNodeLabels;
-            end
+            assert(isa(data, 'improc2.interfaces.NodeData'), ...
+                'improc2:BadArguments', 'data must implement improc2.interfaces.NodeData')
+            
+            dependencyNodeLabels = p.locateDependencies(data, parentNodeLabels);
+            
             assert(all(ismember(dependencyNodeLabels, p.obj.graph.labels)), ...
                 ['at least one of the labels does not correspond',...
                 'to an existing node in the data']);

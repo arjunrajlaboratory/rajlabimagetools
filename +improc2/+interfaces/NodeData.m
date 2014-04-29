@@ -1,7 +1,6 @@
-classdef ProcessedData < improc2.interfaces.NodeData
-    
+classdef NodeData
+
     properties (Abstract = true)
-        isProcessed
         needsUpdate
     end
     properties (Abstract = true, Constant = true)
@@ -9,9 +8,4 @@ classdef ProcessedData < improc2.interfaces.NodeData
         dependencyDescriptions
     end
     
-    methods (Abstract = true)
-        pDataAfterProcessing = run(pData, varargin)
-    end
-    
 end
-

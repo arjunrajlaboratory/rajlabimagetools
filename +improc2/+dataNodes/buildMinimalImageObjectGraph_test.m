@@ -25,3 +25,5 @@ assert(isequal(x.nodes{1}.data.channelNames, {'cy','tmr','dapi'}))
 assert(isequal(x.nodes{3}.data.channelName, 'tmr'))
 assert(isequal(x.nodes{3}.data.fileName, 'tmr002.tiff'))
 assert(isequal(x.nodes{3}.data.dirPath, '~/tests/'))
+
+view(x)

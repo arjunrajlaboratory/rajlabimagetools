@@ -36,7 +36,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             bbox = s.BoundingBox;
             bbox(1:2) = bbox(1:2) + 0.5; % Move corner of box to center of pixel
             bbox(3:4) = bbox(3:4) - 1; % Shrink box size by 1 pixel (i.e., 0.5 on each side)
-        end        
+        end
         function objMask = getCroppedMask(p)
             objMask = imcrop(p.getMask(), p.getBoundingBox());
         end
@@ -44,17 +44,38 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         function fileName = getImageFileName(p, channelName)
             channelNode = getNodeByLabel(p.obj.graph, channelName);
             fileName = channelNode.data.fileName;
-        end        
+        end
         function dirPath = getImageDirPath(p)
             firstChannel = p.channelNames{1};
             channelNode = getNodeByLabel(p.obj.graph, firstChannel);
             dirPath = channelNode.data.dirPath;
         end
-
+        
+        function pData = getProcessorData(p, nodeLabel, dataClassName)
+            if nargin < 3
+                dataClassName = 'improc2.interfaces.NodeData';
+            end
+            graph = p.obj.graph;
+            foundNodes = findShallowestNodesMatchingCondition(graph, ...
+                nodeLabel, @(node) isa(node.data, dataClassName));
+            assert(~isempty(foundNodes), 'improc2:NodeNotFound', ...
+                ['Could not locate data of type %s starting from', ...
+                ' node %s.'], dataClassName, nodeLabel)
+            if length(foundNodes) > 1
+                matchingNodeLabels = cellfun(@(node) node.label, foundNodes, 'UniformOutput', false);
+                error('improc2:AmbiguousDataSpecification', ...
+                    ['Starting from node %s, nodes %s\n', ...
+                    'are all of the required data type (%s).\n', ...
+                    'Specify one of these as the node Label instead.'], ...
+                    nodeLabel, strjoin(matchingNodeLabels, ', '),...
+                    dataClassName);
+            end
+            pData = foundNodes{1}.data;
+        end
+        
         function boolean = hasProcessorData(p, channelName, className)
         end
-        function procData = getProcessorData(p, channelName, varargin)
-        end
+        
         function setProcessorData(p, procData, channelName, varargin)
         end
         function disp(p)

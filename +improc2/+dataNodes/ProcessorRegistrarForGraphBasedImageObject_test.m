@@ -127,3 +127,21 @@ x.registerNewProcessor(unprocessedSpotsData, {'cy'}, 'cy:SpotsData2')
 
 tester.assertIsImmediateChild('cy', 'cy:SpotsData')
 tester.assertIsImmediateChild('cy', 'cy:SpotsData2')
+
+
+improc2.tests.shouldThrowError( ...
+    @() x.registerNewProcessor(unprocessedFittedData, ...
+    {'cy'}, 'FittedSpots'), ...
+    'improc2:AmbiguousDependencySpecification')
+
+
+%% Can also register NodeData that is not ProcessedData
+
+objHolder.obj = baseObj;
+
+manualSpotsData = improc2.tests.MockManualSpotsData();
+assert(~isa(manualSpotsData, 'improc2.interfaces.ProcessedData'))
+assert(isa(manualSpotsData, 'improc2.interfaces.NodeData'))
+
+x.registerNewProcessor(manualSpotsData, {'cy'}, 'cy:ManualSpots')
+tester.assertIsImmediateChild('cy', 'cy:ManualSpots')
