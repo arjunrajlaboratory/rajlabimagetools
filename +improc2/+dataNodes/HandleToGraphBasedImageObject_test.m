@@ -225,3 +225,71 @@ assert(~ x.hasProcessorData('tmr', 'improc2.tests.MockFittedData'))
 
 % getting would fail due to ambiguity, but 'has' query succeeds.
 assert(x.hasProcessorData('cy'))
+
+%% runProcessor: clears needsUpdate flag to false
+
+objHolder.obj = objWithSpotsData;
+mockCroppedImageProvider = improc2.tests.MockCroppedImageProvider();
+
+graphTester.assertNeedUpdate('cy:Spots')
+x.runProcessor({mockCroppedImageProvider}, 'cy')
+graphTester.assertDoNotNeedUpdate('cy:Spots')
+
+%% runProcessor: automatically grabbing dependencies.
+
+objHolder.obj = objWithFittedData;
+
+graphTester.assertNeedUpdate('cy:Spots','cy:Fitted')
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
+
+x.runProcessor({mockCroppedImageProvider}, 'cy:Spots')
+
+graphTester.assertNeedUpdate('cy:Fitted')
+graphTester.assertDoNotNeedUpdate('cy:Spots')
+assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
+
+x.runProcessor({mockCroppedImageProvider}, 'cy:Fitted')
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted')
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getProcessorData('cy:Fitted')) == cyNumSpots)
+
+
+x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
+x.runProcessor({mockCroppedImageProvider}, 'tmr:Fitted')
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted', 'tmr:Spots', 'tmr:Fitted')
+
+registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+    {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
+
+graphTester.assertNeedUpdate('coloc')
+colocData = x.getProcessorData('coloc');
+assert(isempty(colocData.numSpotsA))
+assert(isempty(colocData.numSpotsB))
+
+x.runProcessor({mockCroppedImageProvider}, 'coloc')
+
+graphTester.assertDoNotNeedUpdate('coloc')
+colocData = x.getProcessorData('coloc');
+assert(colocData.numSpotsA == cyNumSpots)
+assert(colocData.numSpotsB == tmrNumSpots)
+
+objProcessedUpToColoc = objHolder.obj;
+
+%% Running: triggering needsUpdate in dependents
+
+objHolder.obj = objProcessedUpToColoc;
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
+    'tmr:Fitted', 'coloc')
+
+% rerunning triggers need for update:
+x.runProcessor({mockCroppedImageProvider}, 'cy:Fitted')
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots','tmr:Fitted','cy:Fitted')
+graphTester.assertNeedUpdate('coloc')
+
+x.setProcessorData(tmrProcessedSpotsData, 'tmr:Spots')
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted')
+graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
