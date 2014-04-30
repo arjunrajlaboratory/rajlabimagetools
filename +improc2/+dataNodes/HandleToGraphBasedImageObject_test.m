@@ -229,10 +229,12 @@ assert(x.hasProcessorData('cy'))
 %% runProcessor: clears needsUpdate flag to false
 
 objHolder.obj = objWithSpotsData;
-mockCroppedImageProvider = improc2.tests.MockCroppedImageProvider();
+
+imageProviders = dentist.utils.makeFilledChannelArray({'cy','tmr'}, ...
+    @(channelName) improc2.tests.MockCroppedImageProvider());
 
 graphTester.assertNeedUpdate('cy:Spots')
-x.runProcessor({mockCroppedImageProvider}, 'cy')
+x.runProcessor(imageProviders, 'cy')
 graphTester.assertDoNotNeedUpdate('cy:Spots')
 
 %% runProcessor: automatically grabbing dependencies.
@@ -243,21 +245,21 @@ graphTester.assertNeedUpdate('cy:Spots','cy:Fitted')
 assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
 assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
 
-x.runProcessor({mockCroppedImageProvider}, 'cy:Spots')
+x.runProcessor(imageProviders, 'cy:Spots')
 
 graphTester.assertNeedUpdate('cy:Fitted')
 graphTester.assertDoNotNeedUpdate('cy:Spots')
 assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
 
-x.runProcessor({mockCroppedImageProvider}, 'cy:Fitted')
+x.runProcessor(imageProviders, 'cy:Fitted')
 
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted')
 assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
 assert(getNumSpots(x.getProcessorData('cy:Fitted')) == cyNumSpots)
 
 
-x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
-x.runProcessor({mockCroppedImageProvider}, 'tmr:Fitted')
+x.runProcessor(imageProviders, 'tmr:Spots')
+x.runProcessor(imageProviders, 'tmr:Fitted')
 
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted', 'tmr:Spots', 'tmr:Fitted')
 
@@ -269,7 +271,7 @@ colocData = x.getProcessorData('coloc');
 assert(isempty(colocData.numSpotsA))
 assert(isempty(colocData.numSpotsB))
 
-x.runProcessor({}, 'coloc')
+x.runProcessor(imageProviders, 'coloc')
 
 graphTester.assertDoNotNeedUpdate('coloc')
 colocData = x.getProcessorData('coloc');
@@ -277,6 +279,26 @@ assert(colocData.numSpotsA == cyNumSpots)
 assert(colocData.numSpotsB == tmrNumSpots)
 
 objProcessedUpToColoc = objHolder.obj;
+
+%% Running: supplying image providers
+
+objHolder.obj = objProcessedUpToColoc;
+
+% the first argument is ignored if running the processor does not require
+% raw images.
+x.runProcessor({}, 'coloc') 
+% but will treat the first input as a dentist.utils.ChannelArray if
+% images are required for processing.
+improc2.tests.shouldThrowError(@() x.runProcessor({}, 'cy:Spots'))
+
+% need only supply a provider array for the channels used:
+
+cyOnlyProvider = dentist.utils.makeFilledChannelArray({'cy'}, ...
+    @(channelName) improc2.tests.MockCroppedImageProvider());
+
+x.runProcessor(cyOnlyProvider, 'cy:Spots')
+improc2.tests.shouldThrowError(@() x.runProcessor(cyOnlyProvider, 'tmr:Spots'), ...
+    'dentist:NoSuchChannel')
 
 %% Running: triggering needsUpdate in dependents
 
@@ -286,11 +308,11 @@ graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
 
 % rerunning triggers need for update:
-x.runProcessor({mockCroppedImageProvider}, 'cy:Fitted')
+x.runProcessor(imageProviders, 'cy:Fitted')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots','tmr:Fitted','cy:Fitted')
 graphTester.assertNeedUpdate('coloc')
 
-x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
+x.runProcessor(imageProviders, 'tmr:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted')
 graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
 
@@ -301,7 +323,7 @@ objHolder.obj = objProcessedUpToColoc;
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
 
-x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
+x.runProcessor(imageProviders, 'tmr:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted')
 graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
 

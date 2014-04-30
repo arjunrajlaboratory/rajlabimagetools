@@ -20,6 +20,8 @@ classdef ChannelArray
             p.cellArray1d{index} = value;
         end
         function value = getByChannelName(p, name)
+            assert(ismember(name, p.channelNames), 'dentist:NoSuchChannel', ...
+                'Unrecognized channel: %s.', name)
             index = find(strcmp(p.channelNames, name));
             value = p.cellArray1d{index};
         end

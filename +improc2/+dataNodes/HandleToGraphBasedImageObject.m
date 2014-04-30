@@ -92,7 +92,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             boolean = ~isempty(foundNodes);
         end
         
-        function runProcessor(p, imageProviders, nodeLabel, dataClassName)
+        function runProcessor(p, imageProviderChannelArray, nodeLabel, dataClassName)
             extraGetArgs = {};
             if nargin == 4
                 extraGetArgs{1} = dataClassName;
@@ -102,7 +102,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 'improc2:DataNotRunnable', ...
                 'Data at node %s is not an improc2.interfaces.ProcessedData.', nodeLabel)
             dependencyData = p.getDataFromDependencies(labelOfDataToProcess);
-            dependencyData = p.fillAnyStackContainers(dependencyData, imageProviders);
+            dependencyData = p.fillAnyStackContainers(dependencyData, imageProviderChannelArray);
             pData = run(pDataToProcess, dependencyData{:});
             pData.needsUpdate = false;
             p.notifyAllDependentNodes(labelOfDataToProcess);
@@ -131,20 +131,20 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 error('improc2:AmbiguousDataSpecification', ...
                     ['Starting from node %s, nodes %s\n', ...
                     'are all of the required data type (%s).\n', ...
-                    'Specify one of these as the node Label instead.'], ...
+                    'Specify one of these as the node Label or require a more specific data type.'], ...
                     nodeLabel, strjoin(matchingNodeLabels, ', '),...
                     dataClassName);
             end
             node = foundNodes{1};
         end
         
-        function dependencyData = fillAnyStackContainers(p, dependencyData, imageProviders)
-            imageProviderNumber = 0;
+        function dependencyData = fillAnyStackContainers(p, dependencyData, ...
+                imageProviderChannelArray)
             for i = 1:length(dependencyData)
                 data = dependencyData{i};
                 if isa(data, 'improc2.dataNodes.ChannelStackContainer')
-                    imageProviderNumber = imageProviderNumber + 1;
-                    imageProvider = imageProviders{imageProviderNumber};
+                    imageProvider = ...
+                        imageProviderChannelArray.getByChannelName(data.channelName);
                     data.croppedImage = imageProvider.getImage(p, data.channelName);
                     data.croppedMask = p.getCroppedMask();
                     dependencyData{i} = data;
@@ -160,7 +160,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 if isa(dependencyNode.data, 'improc2.interfaces.NodeData') && ...
                         dependencyNode.data.needsUpdate
                     error('improc2:DependencyNeedsUpdate', ...
-                        'Dependency %s to run processor %s needs update or review', ...
+                        'Dependency \"%s\" to run processor \"%s\" needs update or review', ...
                         dependencyNode.label, childNodeLabel)
                 end
                 dependencyData(end + 1) = {dependencyNode.data};
@@ -180,6 +180,5 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             end
         end
     end
-    
 end
 
