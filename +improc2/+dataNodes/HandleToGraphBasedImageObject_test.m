@@ -336,8 +336,6 @@ objHolder.obj = objWithFittedData;
 registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
     {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
 
-imageProviders = dentist.utils.makeFilledChannelArray({'cy','tmr'}, ...
-    @(channelName) improc2.tests.MockCroppedImageProvider());
 
 graphTester.assertNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
@@ -359,3 +357,32 @@ assert(colocData.numSpotsA == cyNumSpots)
 assert(colocData.numSpotsB == tmrNumSpots)
 
 %% Updating: will not update (but won't throw error) if there is a dependent
+
+objHolder.obj = baseObj;
+
+registrar.registerNewProcessor(improc2.tests.MockManualSpotsData(), 'cy', 'cy:Manual')
+registrar.registerNewProcessor(tmrSpotsData, 'tmr', 'tmr:Spots')
+registrar.registerNewProcessor(improc2.tests.MockFittedData(), {'cy:Manual', 'cy'}, 'cy:FittedToManual')
+registrar.registerNewProcessor(improc2.tests.MockFittedData(), {'tmr:Spots', 'tmr'}, 'tmr:Fitted')
+registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+    {'cy:FittedToManual', 'tmr:Fitted'}, 'coloc')
+
+graphTester.assertNeedUpdate('cy:Manual', 'cy:FittedToManual', ...
+    'tmr:Spots', 'tmr:Fitted', 'coloc')
+
+assert(~isa(x.getProcessorData('cy:Manual'), 'improc2.interfaces.ProcessedData'))
+
+x.updateAllProcessedData(imageProviders)
+
+graphTester.assertDoNotNeedUpdate('tmr:Spots', 'tmr:Fitted')
+graphTester.assertNeedUpdate('cy:Manual', 'cy:FittedToManual', 'coloc')
+
+cyManual = x.getProcessorData('cy:Manual');
+cyManual.numSpots = 35;
+cyManual.needsUpdate = false;
+x.setProcessorData(cyManual, 'cy:Manual')
+
+x.updateAllProcessedData(imageProviders)
+
+graphTester.assertDoNotNeedUpdate('cy:Manual', 'cy:FittedToManual', ...
+    'tmr:Spots', 'tmr:Fitted', 'coloc')

@@ -1,7 +1,7 @@
 classdef MockManualSpotsData < improc2.interfaces.NodeData & improc2.interfaces.SpotsProvider
     
     properties
-        needsUpdate = false;
+        needsUpdate = true;
     end
     properties (Constant = true)
         dependencyClassNames = {'improc2.dataNodes.ChannelStackContainer'};
