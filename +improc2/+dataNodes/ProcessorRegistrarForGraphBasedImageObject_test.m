@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-mask = 0;
+mask = [0 1 1 1 1; 0 1 1 1 0; 0 0 0 0 0];
 dirPath = '';
 channelInfo.channelNames = {'cy', 'tmr', 'dapi'};
 channelInfo.fileNames = {'', '', ''};

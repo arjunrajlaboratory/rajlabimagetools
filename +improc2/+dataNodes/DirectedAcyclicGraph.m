@@ -69,9 +69,12 @@ classdef DirectedAcyclicGraph
                 'fullSearch');
         end
         
-        function view(p)
+        function h = view(p)
             bg = biograph(p.childVsParentConnectivity', p.labels);
-            view(bg)
+            for i = 1:length(bg.Nodes)
+                formatBiographNode(bg.Nodes(i), p.nodes{i});
+            end
+            h = view(bg);
         end
         
         function n = numberOfNodes(p)
@@ -122,3 +125,13 @@ classdef DirectedAcyclicGraph
     end
 end
 
+function formatBiographNode(bgNode, dataNode)
+    if isa(dataNode.data, 'improc2.dataNodes.ChannelStackContainer')
+       bgNode.Color = [1 1 1]; 
+    end
+    if isa(dataNode.data, 'improc2.interfaces.NodeData') && dataNode.data.needsUpdate
+        bgNode.LineColor = [0.76 0.17 0.22];
+        bgNode.TextColor = [0.76 0.17 0.22];
+        bgNode.LineWidth = 2;
+    end
+end
