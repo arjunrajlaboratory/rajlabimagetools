@@ -8,7 +8,6 @@ function graph = buildMinimalImageObjectGraph(...
     
     imObjBaseData = improc2.dataNodes.ImageObjectBaseData();
     imObjBaseData.imageFileMask = imageFileMask;
-    imObjBaseData.channelNames = channelNames;
     
     imObjRootNode = improc2.dataNodes.Node();
     imObjRootNode.data = imObjBaseData;

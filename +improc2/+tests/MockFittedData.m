@@ -1,8 +1,7 @@
 classdef MockFittedData < improc2.interfaces.ProcessedData & improc2.interfaces.SpotsProvider
     
     properties
-        isProcessed = false;
-        needsUpdate = false;
+        needsUpdate = true;
     end
     properties (Constant = true)
         dependencyClassNames = {'improc2.interfaces.SpotsProvider', ...

@@ -35,8 +35,8 @@ graphTester = improc2.tests.DataNodeGraphTester(objHolder);
 x = improc2.dataNodes.HandleToGraphBasedImageObject(objHolder);
 
 %% channelNames
-channelNames = x.channelNames;
-assert(isequal(channelNames, {'cy','tmr','dapi'}))
+
+assert(isequal(sort(x.channelNames), sort({'cy','tmr','dapi'})))
 
 %% metaData
 

@@ -18,7 +18,9 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         end
         
         function channelNames = get.channelNames(p)
-            channelNames = p.obj.graph.nodes{1}.data.channelNames;
+            channelNodes = findShallowestNodesMatchingCondition(p.obj.graph, 'imageObject', ...
+                @(node) isa(node.data, 'improc2.dataNodes.ChannelStackContainer'));
+            channelNames = cellfun(@(node) node.label, channelNodes, 'UniformOutput', false);
         end
         function obj = get.obj(p)
             obj = p.objHolder.obj;

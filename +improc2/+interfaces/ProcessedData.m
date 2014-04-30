@@ -1,7 +1,6 @@
 classdef ProcessedData < improc2.interfaces.NodeData
     
     properties (Abstract = true)
-        isProcessed
         needsUpdate
     end
     properties (Abstract = true, Constant = true)
@@ -14,4 +13,3 @@ classdef ProcessedData < improc2.interfaces.NodeData
     end
     
 end
-

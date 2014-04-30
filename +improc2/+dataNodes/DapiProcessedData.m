@@ -1,8 +1,7 @@
 classdef DapiProcessedData < improc2.interfaces.ProcessedData
     
     properties
-        isProcessed = false;
-        needsUpdate = false;
+        needsUpdate = true;
     end
     
     properties (Constant = true)
