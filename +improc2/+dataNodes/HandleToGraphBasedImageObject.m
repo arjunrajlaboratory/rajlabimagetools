@@ -109,6 +109,37 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             p.obj.graph = setNodeDataByLabel(p.obj.graph, labelOfDataToProcess, pData);
         end
         
+        function updateAllProcessedData(p, imageProviderChannelArray)
+            
+            labelsOfDataToProcess = {};
+            for i = 1:length(p.obj.graph.nodes) 
+                node = p.obj.graph.nodes{i};
+                if isa(node.data, 'improc2.interfaces.ProcessedData') && ...
+                        node.data.needsUpdate
+                    labelsOfDataToProcess(end + 1) = {node.label};
+                end
+            end
+            
+            while ~isempty(labelsOfDataToProcess)
+                labelsOfDataToProcessInNextRound = {};
+                for nodeLabel = labelsOfDataToProcess
+                    if p.dependenciesAreUpToDate(nodeLabel)
+                        p.runProcessor(imageProviderChannelArray, nodeLabel)
+                    else
+                        labelsOfDataToProcessInNextRound(end+1) = nodeLabel;
+                    end
+                end
+                if length(labelsOfDataToProcessInNextRound) < length(labelsOfDataToProcess)
+                    labelsOfDataToProcess = labelsOfDataToProcessInNextRound;
+                else
+                    fprintf(['Could not update processors %s because',...
+                        'they have non-processedData dependencies that', ...
+                        'need an update or review.'], strjoin(labelsOfDataToProcess, ', '))
+                    break
+                end
+            end
+        end
+        
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p);
         end
@@ -116,6 +147,20 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
     end
     
     methods (Access  = private)
+        
+        function boolean = dependenciesAreUpToDate(p, childNodeLabel)
+            childNode = getNodeByLabel(p.obj.graph, childNodeLabel);
+            boolean = true;
+            for dependencyLabel = childNode.dependencyNodeLabels
+                dependencyNode = getNodeByLabel(p.obj.graph, dependencyLabel{1});
+                if isa(dependencyNode.data, 'improc2.interfaces.NodeData') && ...
+                        dependencyNode.data.needsUpdate
+                    boolean = false;
+                    break
+                end
+            end
+        end
+        
         function node = findDataNode(p, nodeLabel, dataClassName)
             if nargin < 3
                 dataClassName = 'improc2.interfaces.NodeData';
@@ -155,7 +200,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         function dependencyData = getDataFromDependencies(p, childNodeLabel)
             childNode = getNodeByLabel(p.obj.graph, childNodeLabel);            
             dependencyData = {};
-            for dependencyLabel = childNode.dependencyNodeLabels;
+            for dependencyLabel = childNode.dependencyNodeLabels
                 dependencyNode = getNodeByLabel(p.obj.graph, dependencyLabel{1});
                 if isa(dependencyNode.data, 'improc2.interfaces.NodeData') && ...
                         dependencyNode.data.needsUpdate

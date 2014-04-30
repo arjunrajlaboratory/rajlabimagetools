@@ -329,3 +329,33 @@ graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
 
 improc2.tests.shouldThrowError( @() x.runProcessor({}, 'coloc'), ...
     'improc2:DependencyNeedsUpdate')
+
+%% Updating: will run everything runnable in the tree.
+
+objHolder.obj = objWithFittedData;
+registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+    {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
+
+imageProviders = dentist.utils.makeFilledChannelArray({'cy','tmr'}, ...
+    @(channelName) improc2.tests.MockCroppedImageProvider());
+
+graphTester.assertNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
+    'tmr:Fitted', 'coloc')
+assert(isempty(getNumSpots(x.getProcessorData('tmr:Fitted'))))
+assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
+colocData = x.getProcessorData('coloc');
+assert(isempty(colocData.numSpotsA))
+assert(isempty(colocData.numSpotsB))
+
+x.updateAllProcessedData(imageProviders)
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
+    'tmr:Fitted', 'coloc')
+
+assert(getNumSpots(x.getProcessorData('tmr:Fitted')) == tmrNumSpots)
+assert(getNumSpots(x.getProcessorData('cy:Fitted')) == cyNumSpots)
+colocData = x.getProcessorData('coloc');
+assert(colocData.numSpotsA == cyNumSpots)
+assert(colocData.numSpotsB == tmrNumSpots)
+
+%% Updating: will not update (but won't throw error) if there is a dependent
