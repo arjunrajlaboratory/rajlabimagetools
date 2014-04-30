@@ -269,7 +269,7 @@ colocData = x.getProcessorData('coloc');
 assert(isempty(colocData.numSpotsA))
 assert(isempty(colocData.numSpotsB))
 
-x.runProcessor({mockCroppedImageProvider}, 'coloc')
+x.runProcessor({}, 'coloc')
 
 graphTester.assertDoNotNeedUpdate('coloc')
 colocData = x.getProcessorData('coloc');
@@ -290,6 +290,20 @@ x.runProcessor({mockCroppedImageProvider}, 'cy:Fitted')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots','tmr:Fitted','cy:Fitted')
 graphTester.assertNeedUpdate('coloc')
 
-x.setProcessorData(tmrProcessedSpotsData, 'tmr:Spots')
+x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted')
 graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
+
+%% Running: Fails if dependency needs update
+
+objHolder.obj = objProcessedUpToColoc;
+
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
+    'tmr:Fitted', 'coloc')
+
+x.runProcessor({mockCroppedImageProvider}, 'tmr:Spots')
+graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted')
+graphTester.assertNeedUpdate('coloc', 'tmr:Fitted')
+
+improc2.tests.shouldThrowError( @() x.runProcessor({}, 'coloc'), ...
+    'improc2:DependencyNeedsUpdate')

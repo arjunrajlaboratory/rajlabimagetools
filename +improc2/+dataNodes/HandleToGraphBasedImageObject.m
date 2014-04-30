@@ -152,14 +152,19 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             end
         end
         
-        function dependencyData = getDataFromDependencies(p, nodeLabel)
-            node = getNodeByLabel(p.obj.graph, nodeLabel);
-            dependencyNodes = cellfun(...
-                @(label) getNodeByLabel(p.obj.graph, label), ...
-                node.dependencyNodeLabels, 'UniformOutput', false);
-            dependencyData = cellfun(...
-                @(node) node.data, ...
-                dependencyNodes, 'UniformOutput', false);
+        function dependencyData = getDataFromDependencies(p, childNodeLabel)
+            childNode = getNodeByLabel(p.obj.graph, childNodeLabel);            
+            dependencyData = {};
+            for dependencyLabel = childNode.dependencyNodeLabels;
+                dependencyNode = getNodeByLabel(p.obj.graph, dependencyLabel{1});
+                if isa(dependencyNode.data, 'improc2.interfaces.NodeData') && ...
+                        dependencyNode.data.needsUpdate
+                    error('improc2:DependencyNeedsUpdate', ...
+                        'Dependency %s to run processor %s needs update or review', ...
+                        dependencyNode.label, childNodeLabel)
+                end
+                dependencyData(end + 1) = {dependencyNode.data};
+            end
         end
         
         function notifyAllDependentNodes(p, parentNodeLabel)
