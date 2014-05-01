@@ -13,3 +13,10 @@ function convertCollectionFromStackBasedToDAGBased(...
     end
 end
 
+function newArray = convertStackBasedObjArrayToDAGBasedObjArray(objArray)
+    newArray = improc2.dataNodes.GraphBasedImageObject.empty;
+    for i = 1:length(objArray)
+        newArray(end+1) = ...
+            improc2.dataNodes.converters.stackBasedObjectToDAGBasedObject(objArray(i));
+    end
+end
