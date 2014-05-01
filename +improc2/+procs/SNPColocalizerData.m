@@ -58,13 +58,91 @@ classdef SNPColocalizerData < improc2.procs.ProcessorData
         
         guide_data %dataSetObjects that contain the above information in coherent form
         snpA_data
-        snpB_data
+        snpB_data 
     end
     
     methods (Access = protected)
+        
+        
         function p = runProcessor(p, guideFittedSpotsHolder, ...
                 snpAFittedSpotsHolder, snpBFittedSpotsHolder)
+            
+            guideSpots = getFittedSpots(guideFittedSpotsHolder);
+            snpASpots = getFittedSpots(snpAFittedSpotsHolder);
+            snpBSpots = getFittedSpots(snpBFittedSpotsHolder);
+            
+            guide_zCoordinates = arrayfun(@(x) x* p.zDeform, [guideSpots.zPlane]);
+            snpA_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpASpots.zPlane]);
+            snpB_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpBSpots.zPlane]);
+            
+            guidePositions = [[guideSpots.xCenter]', [guideSpots.yCenter]', guide_zCoordinates'];
+            snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
+            snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', snpB_zCoordinates'];
+                 
+            [pairsA, shiftsA] = colocalizePositions(p, guidePositions,snpAPositions);
+            [pairsB, shiftsB] = colocalizePositions(p, guidePositions,snpBPositions);
+
+            idx_guide = zeros(numSpots(1), 1);
+            
+            idx_guide(pairsA(:,1)) = idx_guide(pairsA(:,1)) + 1;
+            idx_guide(pairsB(:,1)) = idx_guide(pairsB(:,1)) + 1;
+            
+            Labels = cell(length(guidePositions),1);     %Vector that idenitifies the label of each guide probe
+            Labels(idx_guide == 0) = cellstr('undetec');
+            Labels(pairsA(:,1)) = p.snpMap.names(2);
+            Labels(pairsB(:,1)) = p.snpMap.names(3);
+            Labels(idx_guide == 2) = cellstr('3-color'); %order matters here
+            
+            levels = {p.snpMap.names{2}, p.snpMap.names{3}, 'undetec', '3-color'};
+            labels = nominal();
+            labels = addlevels(labels, levels);
+            
+            p.guideData = dataset();
+            p.data.(p.snpMap.channels{i}).ID = [1:numSpots(i)]';
+            p.data.(p.snpMap.channels{i}).position = [x, y, z];
+            p.data.(p.snpMap.channels{i}).amplitude = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.amp';
+            p.data.(p.snpMap.channels{i}).sigma = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.sig';
+            p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
+            
+            
             fprintf('Currently run does nothing\n');
+        end
+        
+        function [pairs,  shifts] = colocalizePositions(p, guidePositions, snpPositions)
+            
+            pairwiseDist = pdist2(guidePositions, snpPositions);
+            
+            [minGuideDistances, minSnpIndex] = min(pairwiseDist');
+            
+            % find guides and SNPs that have snp within < initialDistance
+            guide_colocalized_Index = find(minGuideDistances < p.initialDistance)';
+            snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
+            
+            % chromatic shift for each one of these
+            % try to make dimensions involved more explicit
+            totalShift = guidePositions(guide_colocalized_Index,:) ...
+                - snpPositions(snp_colocalized_Index,:);
+            medianShift = median(totalShift);
+            
+            
+            snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
+            pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+            
+            [minGuideDistances, minSnpIndex] = min(pairwiseDist');
+            
+            % find guides and SNPs that have snp within < initialDistance
+            guide_colocalized_Index = find(minGuideDistances < p.finalDistance)';
+            snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
+            
+            % move out of loop if want to keep shiftflag= false option.
+            pairs = [guide_colocalized_Index, snp_colocalized_Index];
+            
+            shifts = zeros(length(guidePositions), 3);
+            shifts(guide_colocalized_Index,:) = guidePositions(guide_colocalized_Index,:) ...
+                - snpPositions(snp_colocalized_Index,:);
+            
+            
+            
         end
     end
     
@@ -403,3 +481,9 @@ classdef SNPColocalizerData < improc2.procs.ProcessorData
     end
     
 end
+
+
+
+
+
+
