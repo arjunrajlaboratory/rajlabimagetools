@@ -226,6 +226,8 @@ assert(~ x.hasProcessorData('tmr', 'improc2.tests.MockFittedData'))
 % getting would fail due to ambiguity, but 'has' query succeeds.
 assert(x.hasProcessorData('cy'))
 
+assert(~x.hasProcessorData('somethingThatDoesNotExist'))
+
 %% runProcessor: clears needsUpdate flag to false
 
 objHolder.obj = objWithSpotsData;

@@ -15,7 +15,7 @@ classdef DataNodeAdder < handle
                 'improc2:NoLegacySupport', 'this function only works on graph-based image objects')
             p.objectHandle = tools.objectHandle;
             p.iterator = tools.iterator;
-            p.registrar = tools.registrar;
+            p.registrar = tools.processorRegistrar;
         end
         
         function addDataNode(p, data, parentNodeLabels, newNodeLabel)

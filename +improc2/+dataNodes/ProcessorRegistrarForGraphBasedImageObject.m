@@ -29,10 +29,6 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
             
             dependencyNodeLabels = p.locateDependencies(data, parentNodeLabels);
             
-            assert(all(ismember(dependencyNodeLabels, p.obj.graph.labels)), ...
-                ['at least one of the labels does not correspond',...
-                'to an existing node in the data']);
-            
             assert(length(dependencyNodeLabels) == length(unique(dependencyNodeLabels)),...
                 'improc2:NonUniqueDependencies', ...
                 ['The requested dependencies of this node: \n\t%s\n',...
@@ -47,6 +43,7 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
         
         function boolean = hasProcessorData(p, channelNameOrNodeName, dataClassName)
         end
+        
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p)
         end
