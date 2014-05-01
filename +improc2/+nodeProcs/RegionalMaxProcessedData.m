@@ -20,15 +20,16 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
     end
     
     properties (Dependent = true)
-        threshold % settable
-        excludedSlices % settable
+        threshold
+        excludedSlices
         regionalMaxValues
         regionalMaxIndices
         imageSize
+        zMerge
     end
     
     properties (Access = private)
-        zMerge
+        storedZMerge
         storedImageSize
         storedThreshold
         storedRegionalMaxValues
@@ -37,8 +38,17 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
     end
     
     methods
+        function zMerge = get.zMerge(pData)
+            zMerge = pData.storedZMerge;
+        end
+        function pData = set.zMerge(pData, zMerge)
+            pData.storedZMerge = zMerge;
+        end
         function sz = get.imageSize(pData)
             sz = pData.storedImageSize;
+        end
+        function pData = set.imageSize(pData, sz)
+            pData.storedImageSize = sz;
         end
         function slices = get.excludedSlices(pData)
             slices = pData.storedExcludedSlices;
@@ -55,9 +65,17 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
             values = pData.storedRegionalMaxValues;
             values = values(findMaximaInIncludedSlices(pData));
         end
+        function pData = set.regionalMaxValues(pData, values)
+            assert(isempty(pData.storedExcludedSlices), 'have excluded slices. cannot set')
+            pData.storedRegionalMaxValues = values;
+        end
         function indices = get.regionalMaxIndices(pData)
             indices = pData.storedRegionalMaxIndices;
             indices = indices(findMaximaInIncludedSlices(pData));
+        end
+        function pData = set.regionalMaxIndices(pData, indices)
+            assert(isempty(pData.storedExcludedSlices), 'have excluded slices. cannot set')
+            pData.storedRegionalMaxIndices = indices;
         end
         function threshold = get.threshold(pData)
             threshold = pData.storedThreshold;
@@ -106,7 +124,7 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
                 threshold = max(regionalMaxValues)+1; % beyond max, no spots
             end
             
-            pData.zMerge = max(filteredImg,[],3);
+            pData.storedZMerge = max(filteredImg,[],3);
             pData.storedRegionalMaxValues = regionalMaxValues;
             pData.storedRegionalMaxIndices = regionalMaxIndices;
             pData.storedThreshold = threshold;
@@ -138,7 +156,7 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
         function [img, minAndMaxInUnscaledImg] = getImage(p,maxIntensity)
             % auto contrast or adjust maximum intensity for increasing contrast
             % for the hot pixel case, or decreasing contrast for no spots case
-            img = p.zMerge;
+            img = p.storedZMerge;
             minVal = double(min(img(:)));
             maxVal = double(max(img(:)));
             minAndMaxInUnscaledImg = [minVal, maxVal];

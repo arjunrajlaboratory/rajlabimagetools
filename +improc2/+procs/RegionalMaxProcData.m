@@ -21,8 +21,11 @@ classdef RegionalMaxProcData < improc2.procs.ProcessorData & ...
         imageSize
     end
     
-    properties (Access = private)
+    properties (SetAccess = private)
         zMerge
+    end
+    
+    properties (Access = private)
         storedImageSize
         storedThreshold
         storedRegionalMaxValues

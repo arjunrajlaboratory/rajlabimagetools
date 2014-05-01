@@ -25,3 +25,23 @@ assert(isa(newTrans, 'improc2.nodeProcs.TransProcessedData'))
 assert(~newTrans.needsUpdate);
 
 assert(isequal(oldTrans.middlePlane, newTrans.middlePlane))
+
+oldCy = obj.processors.channels.cy.processor;
+oldCy.excludedSlices = [1,3];
+newCy = improc2.dataNodes.converters.procDataToNodeCompatibleData(oldCy);
+
+assert(isa(oldCy, 'improc2.procs.aTrousRegionalMaxProcData'))
+assert(isa(newCy, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData'))
+
+assert(isequal(oldCy.zMerge, newCy.zMerge))
+assert(isequal(oldCy.imageSize, newCy.imageSize))
+assert(isequal(oldCy.threshold, newCy.threshold))
+assert(isequal(oldCy.excludedSlices, newCy.excludedSlices))
+assert(isequal(oldCy.regionalMaxValues, newCy.regionalMaxValues))
+assert(isequal(oldCy.regionalMaxIndices, newCy.regionalMaxIndices))
+
+oldCy.excludedSlices = [];
+newCy.excludedSlices = [];
+
+assert(isequal(oldCy.regionalMaxValues, newCy.regionalMaxValues))
+assert(isequal(oldCy.regionalMaxIndices, newCy.regionalMaxIndices))
