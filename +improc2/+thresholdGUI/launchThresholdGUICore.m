@@ -26,7 +26,7 @@ function outStruct = launchThresholdGUICore(varargin)
     
     thresholdPlugin = improc2.ThresholdPlotPlugin(gui.thresholdAx, ...
         rnaProcessorDataHolder, saturationValuesHolder);
-    thresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup)
+    %thresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup)
     thresholdPlugin.attachPlotLogYUIControl(gui.plotLogYCheck)
     thresholdPlugin.attachAutomaticXAxisControl(gui.autoXAxisCheck)
     thresholdPlugin.draw()
