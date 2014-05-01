@@ -9,6 +9,7 @@ graph = improc2.dataNodes.buildMinimalImageObjectGraph(mask, dirPath, channelInf
 
 baseObj = improc2.dataNodes.GraphBasedImageObject();
 baseObj.graph = graph;
+baseObj.metadata.testField = 'testValue';
 
 objHolder = improc2.utils.ObjectHolder();
 objHolder.obj = baseObj;
@@ -41,8 +42,7 @@ assert(isequal(sort(x.channelNames), sort({'cy','tmr','dapi'})))
 %% metaData
 
 metaData = x.getMetaData();
-expectedMetaData = baseObj.graph.nodes{1}.data.metadata;
-assert(isequal( metaData, expectedMetaData))
+assert(isequal( metaData.testField, baseObj.metadata.testField))
 
 %% Mask
 imFileMask = x.getMask();

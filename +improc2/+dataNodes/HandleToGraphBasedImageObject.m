@@ -30,7 +30,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         end
         
         function metadata = getMetaData(p)
-            metadata = p.obj.graph.nodes{1}.data.metadata;
+            metadata = p.obj.metadata;
         end
         
         function imFileMask = getMask(p)

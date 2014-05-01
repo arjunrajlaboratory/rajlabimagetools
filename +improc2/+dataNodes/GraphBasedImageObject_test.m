@@ -11,3 +11,8 @@ assert(isequal(x.annotations.newField, 'anything'));
 assert(isempty(x.graph))
 x.graph = 'anythingWhatsoever';
 assert(isequal(x.graph, 'anythingWhatsoever'));
+
+assert(isstruct(x.metadata))
+
+x.metadata.newField = 'alsoAnything';
+assert(isequal(x.metadata.newField, 'alsoAnything'));

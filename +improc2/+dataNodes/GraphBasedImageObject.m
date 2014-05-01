@@ -1,8 +1,9 @@
 classdef GraphBasedImageObject
     
     properties
-        graph;
-        annotations;
+        graph
+        annotations
+        metadata = struct();
     end
     
     methods
