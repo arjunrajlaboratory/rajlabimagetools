@@ -1,4 +1,4 @@
-classdef ThresholdQCData < NodeData
+classdef ThresholdQCData < improc2.interfaces.NodeData
 
     properties
         needsUpdate = true;
@@ -8,24 +8,27 @@ classdef ThresholdQCData < NodeData
         dependencyDescriptions = {'any data that has a threshold'};
     end
     properties (Access = private)
-        storedHasClearThresholdStatus = improc2.TypeCheckedYesNoOrNA('NA');
+        storedHasClearThresholdStatus
     end    
     properties (Dependent = true)
         hasClearThreshold
         reviewed
     end
     methods
-        function yesNoOrNA = get.hasClearThreshold(pData)
-            yesNoOrNA = pData.storedHasClearThresholdStatus.value;
+        function nData = ThresholdQCData()
+            nData.storedHasClearThresholdStatus = improc2.TypeCheckedYesNoOrNA('NA');
         end
-        function pData = set.hasClearThreshold(pData, yesNoOrNA)
-            pData.storedHasClearThresholdStatus.value = yesNoOrNA;
+        function yesNoOrNA = get.hasClearThreshold(nData)
+            yesNoOrNA = nData.storedHasClearThresholdStatus.value;
         end
-        function reviewed = get.reviewed(pData)
-            reviewed = pData.needsUpdate;
+        function nData = set.hasClearThreshold(nData, yesNoOrNA)
+            nData.storedHasClearThresholdStatus.value = yesNoOrNA;
         end
-        function pData = set.reviewed(pData, reviewed)
-            pData.needsUpdate = reviewed;
+        function reviewed = get.reviewed(nData)
+            reviewed = ~ nData.needsUpdate;
+        end
+        function nData = set.reviewed(nData, reviewed)
+            nData.needsUpdate = ~ reviewed;
         end
     end
 end
