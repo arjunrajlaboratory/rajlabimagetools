@@ -25,6 +25,5 @@ function augmentedControls = addSliceExcluderPlugin(thresholdGUIControls)
     
     augmentedControls = thresholdGUIControls;
     augmentedControls.sliceExcluderPlugin = sliceExcluderPlugin;
-    
 end
 
