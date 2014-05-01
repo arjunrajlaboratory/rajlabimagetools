@@ -1,7 +1,7 @@
 classdef TransProcData < improc2.procs.ProcessorData & improc2.ImageDisplayer
     % An object that processes images like we usually process trans. Stores the middlePlane for display.
     
-    properties (Access = private)
+    properties (SetAccess = private)
         middlePlane = [];
     end
     

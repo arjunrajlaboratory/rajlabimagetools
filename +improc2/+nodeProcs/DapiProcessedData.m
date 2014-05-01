@@ -11,11 +11,14 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
     
     properties (Dependent = true)
         mask
-    end
-    properties (Access = private)
-        storedMask
         zMerge
     end
+    
+    properties (Access = private)
+        storedMask
+        storedZMerge
+    end
+    
     
     methods
         function pData = DapiProcessedData()
@@ -26,7 +29,7 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
             imgStackCropped = channelStackContainer.croppedImage;
             imgObjMask = channelStackContainer.croppedMask;
             % max merge z-projection
-            pData.zMerge= max(imgStackCropped,[],3);
+            pData.storedZMerge= max(imgStackCropped,[],3);
             
             % Previous DAPI masking failed in cases where there were bright
             % chromatin spots and created a mask around though spots instead of
@@ -36,7 +39,7 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
             % Author: Andrew Biaesch <biaescha@gmail.com> June 2013
             
             % Get an initial feel for the area that the dapi is in
-            imgscaled = scale(pData.zMerge);
+            imgscaled = scale(pData.storedZMerge);
             mask = imgscaled>graythresh(imgscaled);
             subtr_area = sum(mask(:));
             
@@ -83,8 +86,8 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
         end        
         
         function img = getImage(pData, varargin)
-            if ~isempty(pData.zMerge)
-                img = scale(pData.zMerge);
+            if ~isempty(pData.storedZMerge)
+                img = scale(pData.storedZMerge);
             else
                 img = [];
             end
@@ -92,6 +95,15 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData
         
         function mask = get.mask(pData)
             mask = pData.storedMask;
+        end
+        function pData = set.mask(pData, mask)
+            pData.storedMask = mask;
+        end
+        function zMerge = get.zMerge(pData)
+            zMerge = pData.storedZMerge;
+        end
+        function pData = set.zMerge(pData, zMerge)
+            pData.storedZMerge = zMerge;
         end
         
     end

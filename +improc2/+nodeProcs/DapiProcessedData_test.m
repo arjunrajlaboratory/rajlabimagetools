@@ -9,7 +9,7 @@ channelStackContainer = improc2.dataNodes.ChannelStackContainer();
 channelStackContainer.croppedImage = imageProvider.getImage(objH, channelName);
 channelStackContainer.croppedMask = objH.getCroppedMask();
 
-x = improc2.dataNodes.DapiProcessedData();
+x = improc2.nodeProcs.DapiProcessedData();
 
 assert(isa(x,'improc2.interfaces.ProcessedData'))
 

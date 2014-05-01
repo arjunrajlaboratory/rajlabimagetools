@@ -22,6 +22,10 @@ classdef InMemoryObjectArrayCollection < improc2.interfaces.ObjectArrayCollectio
         function len = length(p)
             len = length(p.cellArray);
         end
+        
+        function disp(p)
+            improc2.utils.displayDescriptionOfHandleObject(p)
+        end
     end
     
 end

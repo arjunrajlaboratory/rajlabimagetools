@@ -1,3 +1,9 @@
+display('improc2.dataNodes.converters.convertCollectionFromStackBasedToDAGBased_test')
+improc2.dataNodes.converters.convertCollectionFromStackBasedToDAGBased_test;
+display('improc2.dataNodes.converters.procDataToNodeCompatibleData_test')
+improc2.dataNodes.converters.procDataToNodeCompatibleData_test;
+display('improc2.dataNodes.converters.stackBasedObjectToDAGBasedObject_test')
+improc2.dataNodes.converters.stackBasedObjectToDAGBasedObject_test;
 display('improc2.dataNodes.buildMinimalImageObjectGraph_test')
 improc2.dataNodes.buildMinimalImageObjectGraph_test;
 display('improc2.dataNodes.ChannelStackContainer_test')

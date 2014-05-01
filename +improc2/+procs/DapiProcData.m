@@ -5,9 +5,12 @@ classdef DapiProcData < improc2.procs.ProcessorData & improc2.ImageDisplayer
         mask
     end
     
+    properties (SetAccess = private)
+        zMerge
+    end
+    
     properties (Access = private)
         storedMask
-        zMerge
     end
     
     methods
