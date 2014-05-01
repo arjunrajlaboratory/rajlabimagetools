@@ -7,7 +7,7 @@ classdef aTrousRegionalMaxProcessedData < improc2.nodeProcs.RegionalMaxProcessed
             p.imageFilterFunc = @improc2.utils.applyATrousImageFilter;
             
             ip = inputParser;
-            ip.addOptional('filterParams', struct(), @isstruct);
+            ip.addOptional('filterParams', struct());
             ip.parse(varargin{:});
 
             p.filterParams = p.filterParams.replaceParams( ip.Results.filterParams );

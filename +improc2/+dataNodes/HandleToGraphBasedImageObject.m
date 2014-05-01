@@ -87,9 +87,13 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 dataClassName = 'improc2.interfaces.NodeData';
             end
             graph = p.obj.graph;
-            foundNodes = findShallowestNodesMatchingCondition(graph, ...
-                nodeLabel, @(node) isa(node.data, dataClassName));
-            boolean = ~isempty(foundNodes);
+            if ~ismember(nodeLabel, p.obj.graph.labels)
+                boolean = false;
+            else
+                foundNodes = findShallowestNodesMatchingCondition(graph, ...
+                    nodeLabel, @(node) isa(node.data, dataClassName));
+                boolean = ~isempty(foundNodes);
+            end
         end
         
         function runProcessor(p, imageProviderChannelArray, nodeLabel, dataClassName)
@@ -112,7 +116,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         function updateAllProcessedData(p, imageProviderChannelArray)
             
             labelsOfDataToProcess = {};
-            for i = 1:length(p.obj.graph.nodes) 
+            for i = 1:length(p.obj.graph.nodes)
                 node = p.obj.graph.nodes{i};
                 if isa(node.data, 'improc2.interfaces.ProcessedData') && ...
                         node.data.needsUpdate
@@ -138,6 +142,10 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                     break
                 end
             end
+        end
+        
+        function h = view(p)
+            h = view(p.objHolder.obj.graph);
         end
         
         function disp(p)
@@ -198,7 +206,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         end
         
         function dependencyData = getDataFromDependencies(p, childNodeLabel)
-            childNode = getNodeByLabel(p.obj.graph, childNodeLabel);            
+            childNode = getNodeByLabel(p.obj.graph, childNodeLabel);
             dependencyData = {};
             for dependencyLabel = childNode.dependencyNodeLabels
                 dependencyNode = getNodeByLabel(p.obj.graph, dependencyLabel{1});

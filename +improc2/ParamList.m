@@ -6,9 +6,8 @@ classdef ParamList
     
     methods (Sealed = true)
         function p = replaceParams(p, param_struct)
-            if ~isa(param_struct, 'struct')
-                error('Parameter replacement must be a struct');
-            end
+            assert(isa(param_struct, 'struct') || isa(param_struct, 'improc2.ParamList'),...
+                'Parameter replacement must be a struct')
             
             paramNames = fields(param_struct);
             for paramNum = 1:length(paramNames)

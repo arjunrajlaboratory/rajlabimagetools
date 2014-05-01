@@ -1,7 +1,6 @@
 function augmentedControls = addSliceExcluderPlugin(thresholdGUIControls)
 
-    if ~isa(thresholdGUIControls.rnaProcessorDataHolder.processorData, ...
-            'improc2.procs.ProcessorData')
+    if isa(thresholdGUIControls.rnaProcessorDataHolder.processorData, 'imageProcessors.Processor')
         fprintf('Slice Excluder plugin is not available for legacy image objects\n')
         augmentedControls = thresholdGUIControls;
         return
@@ -26,6 +25,5 @@ function augmentedControls = addSliceExcluderPlugin(thresholdGUIControls)
     
     augmentedControls = thresholdGUIControls;
     augmentedControls.sliceExcluderPlugin = sliceExcluderPlugin;
-    
 end
 
