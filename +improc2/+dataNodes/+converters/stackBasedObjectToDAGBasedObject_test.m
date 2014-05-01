@@ -20,4 +20,9 @@ for channelName = obj.processors.channelFields
     assert(isequal(channelNode.data.fileName, ...
         obj.processors.channels.(channelName).filename))
     assert(isequal(channelNode.data.channelName, channelName))
+    
+    channelProcLabel = [channelName, ':proc'];
+    procNode = getNodeByLabel(newObj.graph, channelProcLabel);
+    assert(isa(procNode.data, 'improc2.interfaces.ProcessedData'))
+    assert(~ procNode.data.needsUpdate)
 end

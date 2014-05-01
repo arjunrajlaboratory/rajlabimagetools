@@ -18,8 +18,13 @@ function newObj = stackBasedObjectToDAGBasedObject(obj)
     
     for i = 1:length(channelInfo.channelNames)
         channelName = channelInfo.channelNames{i};
-%         newNodeProcessedData = ...
-%             improc2.dataNodes.converters.procDataToNodeCompatibleData(...
-%             obj.processors.channels.(channelName).processor);
+        newNodeProcessedData = ...
+            improc2.dataNodes.converters.procDataToNodeCompatibleData(...
+            obj.processors.channels.(channelName).processor);
+        procNode = improc2.dataNodes.Node();
+        procNode.label = [channelName, ':proc'];
+        procNode.data = newNodeProcessedData;
+        procNode.dependencyNodeLabels = {channelName};
+        newObj.graph = addNode(newObj.graph, procNode);
     end
 end
