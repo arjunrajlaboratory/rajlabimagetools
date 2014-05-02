@@ -13,10 +13,12 @@ classdef VolumeFromSpotsCloud < improc2.interfaces.ProcessedData
     end
     
     properties (Constant = true)
-        dependencyClassNames = {'improc2.dataNodes.ImageObjectBaseData', ...
+        dependencyClassNames = {...
+            'improc2.interfaces.MaskContainer', ...
             'improc2.interfaces.MaskContainer', ...
             'improc2.interfaces.SpotsProvider'};
-        dependencyDescriptions = {'has object mask', ...
+        dependencyDescriptions = {...
+            'has the object''s mask', ...
             'has nuclear mask', ...
             'spots'};
     end
@@ -55,10 +57,10 @@ classdef VolumeFromSpotsCloud < improc2.interfaces.ProcessedData
             expFactor = vOrig/vFake;
             
             while true
-                [xf yf zf] = fillVol2(croppedMask, z, cellTopOrig, cellBottomOrig, numel(x), expFactor);
+                [xf yf zf] = improc2.volume.fillVol2(croppedMask, z, cellTopOrig, cellBottomOrig, numel(x), expFactor);
                 
-                [vFake cellTopFake cellBottomFake] = findVol_Expand2(croppedMask, ...
-                    nuclearMask, xf, yf, zf, expFactor, p.radius);
+                [vFake cellTopFake cellBottomFake] = improc2.volume.findVol_Expand2(croppedMask, ...
+                    nuclearMask, xf, yf, zf, expFactor, pData.radius);
                 
                 if vFake > vOrig
                     endInt = expFactor;
@@ -71,9 +73,12 @@ classdef VolumeFromSpotsCloud < improc2.interfaces.ProcessedData
             
             expFactor = (begInt + endInt)/2;
             while true
-                [xf, yf, zf] = fillVol2(croppedMask, z, cellTopOrig, cellBottomOrig, numel(x), expFactor);
+                [xf, yf, zf] = improc2.volume.fillVol2(croppedMask, z, ...
+                    cellTopOrig, cellBottomOrig, numel(x), expFactor);
                 
-                [vFake, cellTopFake, cellBottomFake] = findVol_Expand2(obj, color, xf, yf, zf, expFactor,radius);
+                [vFake, cellTopFake, cellBottomFake] = ...
+                    improc2.volume.findVol_Expand2(croppedMask, nuclearMask, ...
+                    xf, yf, zf, expFactor, pData.radius);
                 
                 if abs(1-vOrig/vFake)<0.01
                     break;
