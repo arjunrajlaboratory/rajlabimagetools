@@ -104,8 +104,6 @@ classdef SNPColocalizerData < improc2.procs.ProcessorData
             p.data.(p.snpMap.channels{i}).sigma = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.sig';
             p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
             
-            
-            fprintf('Currently run does nothing\n');
         end
         
         function [pairs,  shifts] = colocalizePositions(p, guidePositions, snpPositions)

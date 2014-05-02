@@ -7,7 +7,7 @@ function graph = buildMinimalImageObjectGraph(...
     graph = improc2.dataNodes.DirectedAcyclicGraph();
     
     imObjBaseData = improc2.dataNodes.ImageObjectBaseData();
-    imObjBaseData.imageFileMask = imageFileMask;
+    imObjBaseData.imfilemask = imageFileMask;
     
     imObjRootNode = improc2.dataNodes.Node();
     imObjRootNode.data = imObjBaseData;

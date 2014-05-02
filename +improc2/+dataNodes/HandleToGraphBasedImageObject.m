@@ -34,16 +34,13 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
         end
         
         function imFileMask = getMask(p)
-            imFileMask = p.obj.graph.nodes{1}.data.imageFileMask;
+            imFileMask = p.obj.graph.nodes{1}.data.imfilemask;
         end
         function bbox = getBoundingBox(p)
-            s = regionprops(p.getMask(), 'BoundingBox');
-            bbox = s.BoundingBox;
-            bbox(1:2) = bbox(1:2) + 0.5; % Move corner of box to center of pixel
-            bbox(3:4) = bbox(3:4) - 1; % Shrink box size by 1 pixel (i.e., 0.5 on each side)
+            bbox = p.obj.graph.nodes{1}.data.boundingbox;
         end
         function objMask = getCroppedMask(p)
-            objMask = imcrop(p.getMask(), p.getBoundingBox());
+            objMask = p.obj.graph.nodes{1}.data.mask;
         end
         
         function fileName = getImageFileName(p, channelName)
