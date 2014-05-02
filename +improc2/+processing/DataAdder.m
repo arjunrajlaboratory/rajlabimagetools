@@ -7,6 +7,7 @@ classdef DataAdder < handle
         dataArray = {};
         parentNodeLabelsArray = {};
         newNodeLabelsArray = {};
+        displayedGraphH
     end
     
     methods
@@ -27,7 +28,15 @@ classdef DataAdder < handle
             p.newNodeLabelsArray(end+1) = {newNodeLabel};
         end
         
-        function repeatForAllObjects(p)
+        function view(p)
+            if ishandle(p.displayedGraphH)
+                delete(p.displayedGraphH)
+            end
+            
+            p.displayedGraphH = p.objectHandle.view();
+        end
+        
+        function repeatForAllObjectsAndQuit(p)
             p.iterator.goToFirstObject();
             p.iterator.goToNextObject(); % we already added to the first object.
             
@@ -38,6 +47,7 @@ classdef DataAdder < handle
                 end
                 p.iterator.goToNextObject();
             end
+            p.delete();
         end
     end
     

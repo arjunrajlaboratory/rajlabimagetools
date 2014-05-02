@@ -1,4 +1,4 @@
-classdef ImageObjectBaseData
+classdef ImageObjectBaseData < improc2.interfaces.MaskContainer
     
     properties (Dependent = true)
         imfilemask

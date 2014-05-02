@@ -8,8 +8,6 @@ mockMaskContainer = struct();
 mockMaskContainer.mask = tools.objectHandle.getCroppedMask();
 
 dapiProcData = tools.objectHandle.getProcessorData('dapi');
-%fakeNoNuclearMaskContainer = struct();
-%fakeNoNuclearMaskContainer.mask = false(size(mockMaskContainer.mask));
 
 cySpotsData = tools.objectHandle.getProcessorData('cy');
 

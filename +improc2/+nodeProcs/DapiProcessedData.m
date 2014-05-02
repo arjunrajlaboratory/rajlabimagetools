@@ -1,4 +1,5 @@
-classdef DapiProcessedData < improc2.interfaces.ProcessedData
+classdef DapiProcessedData < improc2.interfaces.ProcessedData & ...
+        improc2.interfaces.MaskContainer
     
     properties
         needsUpdate = true;
