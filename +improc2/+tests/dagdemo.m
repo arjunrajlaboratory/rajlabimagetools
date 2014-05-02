@@ -10,7 +10,8 @@ collection = improc2.tests.data.collectionOfUnProcessedDAGObjects();
 dataAdder = improc2.processing.DataAdder(collection);
 dataAdder.view();
 %%
-dataAdder.addDataToObject(improc2.nodeProcs.aTrousRegionalMaxProcessedData(), 'cy', 'cy:Spots')
+dataAdder.addDataToObject(improc2.nodeProcs.aTrousRegionalMaxProcessedData(),...
+    'cy', 'cy:Spots')
 dataAdder.view();
 %%
 dataAdder.addDataToObject(improc2.nodeProcs.aTrousRegionalMaxProcessedData(), 'alexa', 'alexa:Spots')
@@ -21,7 +22,8 @@ dataAdder.view();
 %%
 dataAdder.repeatForAllObjectsAndQuit();
 
-
+%%
+improc2.processing.updateAll(collection);
 
 
 
