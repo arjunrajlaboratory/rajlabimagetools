@@ -67,7 +67,7 @@ classdef ThresholdPlotPlugin < handle
             p.thresholdLineH = line([threshold threshold], [0 yaxismax], ...
                 'Parent', p.axH, 'Color', 'b', 'HitTest', 'off');
             
-            p.syncWithHasClearThresholdUI()
+
         end
         
         function setAutomaticXAxis(p, trueOrFalse)
@@ -86,10 +86,6 @@ classdef ThresholdPlotPlugin < handle
             p.syncWithPlotLogYUI;
         end
         
-        function setHasClearThreshold(p, yesNoOrNA)
-            p.processorDataHolder.processorData.hasClearThreshold = yesNoOrNA;
-        end
-        
         function attachAutomaticXAxisControl(p, uihandle)
             p.autoXAxisUI = uihandle;
             set(p.autoXAxisUI, 'Max', true, 'Min', false);
@@ -102,14 +98,6 @@ classdef ThresholdPlotPlugin < handle
             set(p.plotLogYUI, 'Max', true, 'Min', false);
             set(p.plotLogYUI, 'Value', p.plotLogY);
             set(p.plotLogYUI, 'Callback', @(varargin) p.plotLogYUICallback())
-        end
-        
-        function attachHasClearThresholdUIControl(p, uihandle)
-            p.hasClearThresholdUI = uihandle;
-            set(p.hasClearThresholdUI, 'String', {'NA', 'yes', 'no'});
-            p.syncWithHasClearThresholdUI();
-            set(p.hasClearThresholdUI, 'Callback', ...
-                @(varargin) p.hasClearThresholdUICallback())
         end
     end
     
@@ -132,20 +120,6 @@ classdef ThresholdPlotPlugin < handle
         
         function autoXAxisUICallback(p)
             p.setAutomaticXAxis(logical(get(p.autoXAxisUI, 'Value')));
-        end
-        
-        function hasClearThresholdUICallback(p)
-            choices = {'NA', 'yes', 'no'};
-            value = choices{get(p.hasClearThresholdUI, 'Value')};
-            p.processorDataHolder.processorData.hasClearThreshold = value;
-        end
-        
-        function syncWithHasClearThresholdUI(p)
-            if ishandle(p.hasClearThresholdUI)
-                yesNoOrNA = p.processorDataHolder.processorData.hasClearThreshold;
-                set(p.hasClearThresholdUI, 'Value', ...
-                    find(strcmp(yesNoOrNA, {'NA', 'yes', 'no'})));
-            end
         end
         
         function syncWithPlotLogYUI(p)

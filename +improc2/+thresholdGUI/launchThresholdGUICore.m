@@ -26,7 +26,6 @@ function outStruct = launchThresholdGUICore(varargin)
     
     thresholdPlugin = improc2.ThresholdPlotPlugin(gui.thresholdAx, ...
         rnaProcessorDataHolder, saturationValuesHolder);
-    %thresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup)
     thresholdPlugin.attachPlotLogYUIControl(gui.plotLogYCheck)
     thresholdPlugin.attachAutomaticXAxisControl(gui.autoXAxisCheck)
     thresholdPlugin.draw()
@@ -39,6 +38,23 @@ function outStruct = launchThresholdGUICore(varargin)
     rnaChannelSwitch.addActionAfterChannelSwitch(thresholdPlugin, @draw)
     browsingTools.navigator.addActionAfterMoveAttempt(thresholdPlugin, @draw)
     
+    %% Has Clear Threshold plugin
+    
+    hasClearThresholdPlugin = improc2.thresholdGUI.HasClearThresholdPlugin(rnaProcessorDataHolder);
+    hasClearThresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup);
+    
+    rnaChannelSwitch.addActionAfterChannelSwitch(hasClearThresholdPlugin, @draw)
+    browsingTools.navigator.addActionAfterMoveAttempt(hasClearThresholdPlugin, @draw)
+    
+    %% threshold quality control module.
+%     
+%     qualityControlModule = [];
+%     
+%     rnaChannelSwitch.addActionAfterChannelSwitch(...
+%         qualityControlModule, @flagThresholdAsReviewed)
+%     browsingTools.navigator.addActionAfterMoveAttempt(...
+%         qualityControlModule, @flagThresholdAsReviewed)
+%     
     
     %% numSpotsTextBox
     
