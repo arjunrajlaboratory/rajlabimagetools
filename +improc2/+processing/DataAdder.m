@@ -10,6 +10,10 @@ classdef DataAdder < handle
         displayedGraphH
     end
     
+    properties (Dependent = true)
+        channelNames
+    end
+    
     methods
         function p = DataAdder(dirPathOrAnArrayCollection)
             if nargin < 1
@@ -19,6 +23,10 @@ classdef DataAdder < handle
             p.registrar = tools.processorRegistrar;
             p.objectHandle = tools.objectHandle;
             p.iterator = tools.iterator;
+        end
+        
+        function channelNames = get.channelNames(p)
+            channelNames = p.objectHandle.channelNames;
         end
         
         function addDataToObject(p, data, parentNodeLabels, newNodeLabel)
@@ -48,6 +56,10 @@ classdef DataAdder < handle
                 p.iterator.goToNextObject();
             end
             p.delete();
+        end
+        
+        function disp(p)
+            improc2.utils.displayDescriptionOfHandleObject(p)
         end
     end
     
