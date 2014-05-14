@@ -157,8 +157,8 @@ function Hs = loadFileSet(Hs)
         Hs.currObjs = load([Hs.dirPath filesep Hs.dataFiles(dataInd).name]);
         Hs.currObjs = Hs.currObjs.objects;
         for obj = Hs.currObjs
-            assert(isa(obj, 'improc2.ImageObject'), ...
-                'There are already segmented objects in this directory and they are not improc2.ImageObjects');
+            assert(isa(obj, 'improc2.dataNodes.GraphBasedImageObject'), ...
+                'Convert the already-segmented objects in this directory to Graph Based Image Objects first.');
             if isempty(Hs.allMasks)  % first object
                 Hs.allMasks = obj.object_mask.imfilemask;
             else
