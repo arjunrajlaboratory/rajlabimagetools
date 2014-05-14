@@ -11,16 +11,3 @@ x.addDataToObject(improc2.nodeProcs.aTrousRegionalMaxProcessedData(), 'tmr', 'tm
 x.addDataToObject(improc2.nodeProcs.TransProcessedData(), 'trans', 'transProc')
 x.addDataToObject(improc2.nodeProcs.DapiProcessedData(), 'dapi', 'dapiProc')
 x.repeatForAllObjectsAndQuit();
-
-%%
-x = improc2.processing.DataAdder(collection);
-
-x.addDataToObject(improc2.nodeProcs.TwoStageSpotFitProcessedData, 'cy', 'cy:Fitted')
-x.addDataToObject(improc2.nodeProcs.TwoStageSpotFitProcessedData, 'tmr', 'tmr:Fitted')
-
-x.repeatForAllObjectsAndQuit();
-
-improc2.processing.updateAll(collection);
-
-tools = improc2.launchImageObjectBrowsingTools(collection);
-tools.objectHandle.view()

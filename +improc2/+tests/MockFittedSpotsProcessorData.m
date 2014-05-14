@@ -1,5 +1,4 @@
-classdef MockFittedSpotsProcessorData < improc2.procs.ProcessorData & ...
-        improc2.interfaces.FittedSpotsContainer
+classdef MockFittedSpotsProcessorData < improc2.interfaces.FittedSpotsContainer
     properties (Access = private)
         spots
     end
@@ -7,7 +6,6 @@ classdef MockFittedSpotsProcessorData < improc2.procs.ProcessorData & ...
     methods
         function pData = MockFittedSpotsProcessorData(spots)
             pData.spots = spots;
-            pData = run(pData);
         end
         
         function spots = getFittedSpots(pData)

@@ -1,11 +1,3 @@
-display('improc2.dataNodes.converters.convertCollectionFromStackBasedToDAGBased_test')
-improc2.dataNodes.converters.convertCollectionFromStackBasedToDAGBased_test;
-display('improc2.dataNodes.converters.dataFilesToDAGBasedDataFiles_test')
-improc2.dataNodes.converters.dataFilesToDAGBasedDataFiles_test;
-display('improc2.dataNodes.converters.procDataToNodeCompatibleData_test')
-improc2.dataNodes.converters.procDataToNodeCompatibleData_test;
-display('improc2.dataNodes.converters.stackBasedObjectToDAGBasedObject_test')
-improc2.dataNodes.converters.stackBasedObjectToDAGBasedObject_test;
 display('improc2.dataNodes.buildMinimalImageObjectGraph_test')
 improc2.dataNodes.buildMinimalImageObjectGraph_test;
 display('improc2.dataNodes.ChannelStackContainer_test')
@@ -98,8 +90,6 @@ display('improc2.utils.FieldsBasedItemCollectionHandle_test')
 improc2.utils.FieldsBasedItemCollectionHandle_test;
 display('improc2.utils.FileBasedImageObjectArrayCollection_test')
 improc2.utils.FileBasedImageObjectArrayCollection_test;
-display('improc2.utils.findChannelsWithProcessorsOfRequiredType_test')
-improc2.utils.findChannelsWithProcessorsOfRequiredType_test;
 display('improc2.utils.FixedColumnsVariableRowsRectangleArrayPositionCalculator_test')
 improc2.utils.FixedColumnsVariableRowsRectangleArrayPositionCalculator_test;
 display('improc2.utils.FixedContrastSettings_test')
@@ -230,8 +220,6 @@ display('improc2.launchImageObjectTools_test')
 improc2.launchImageObjectTools_test;
 display('improc2.launchObjectGroupingGUI_test')
 improc2.launchObjectGroupingGUI_test;
-display('improc2.launchQuickGUI_test')
-improc2.launchQuickGUI_test;
 display('improc2.launchThresholdGUI_test')
 improc2.launchThresholdGUI_test;
 display('improc2.Legacyimage_objectAnnotationsHandle_test')

@@ -1,7 +1,8 @@
 function collection = collectionOfProcessedDAGObjects()
 
-    collection = improc2.tests.data.collectionOfProcessedObjects();
+    dirPath = improc2.tests.data.locator();
+    imObjDataFiles = improc2.utils.ImageObjectDataFiles(dirPath);
+    onDiskCollection = improc2.utils.FileBasedImageObjectArrayCollection(imObjDataFiles);
+    collection = improc2.utils.loadCollectionIntoMemory(onDiskCollection);
     
-    improc2.dataNodes.converters.convertCollectionFromStackBasedToDAGBased(...
-        collection, collection)
 end

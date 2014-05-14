@@ -1,6 +1,6 @@
 function smallCollection = smallCollectionOfProcessedObjects()
     
-    collection = improc2.tests.data.collectionOfProcessedObjects();
+    collection = improc2.tests.data.collectionOfProcessedDAGObjects();
     
     imObCellArray = {};
     for i = 1:min(2,length(collection))

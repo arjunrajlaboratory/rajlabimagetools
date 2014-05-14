@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-collection = improc2.tests.data.collectionOfProcessedObjects();
+collection = improc2.tests.data.collectionOfProcessedDAGObjects();
 browsingTools = improc2.launchImageObjectBrowsingTools(collection);
 
 figH = figure(1); clf; axH = axes('Parent', figH); axis('xy');

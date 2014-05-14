@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-collection = improc2.tests.data.collectionOfProcessedObjects();
+collection = improc2.tests.data.collectionOfProcessedDAGObjects();
 
 annotsToAdd = struct();
 annotsToAdd.morphology = {'smooth', 'rough'};
