@@ -19,14 +19,24 @@ function newObj = stackBasedObjectToDAGBasedObject(obj)
     for i = 1:length(channelInfo.channelNames)
         channelName = channelInfo.channelNames{i};
         if ~isempty(obj.processors.channels.(channelName).processor)
+            oldProcessedData = obj.processors.channels.(channelName).processor;
             newNodeProcessedData = ...
                 improc2.dataNodes.converters.procDataToNodeCompatibleData(...
-                obj.processors.channels.(channelName).processor);
+                oldProcessedData);
             procNode = improc2.dataNodes.Node();
             procNode.label = [channelName, ':proc'];
             procNode.data = newNodeProcessedData;
             procNode.dependencyNodeLabels = {channelName};
             newObj.graph = addNode(newObj.graph, procNode);
+            
+            if isa(newNodeProcessedData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData')
+                qcNode = improc2.dataNodes.Node();
+                qcNode.data = improc2.nodeProcs.ThresholdQCData();
+                qcNode.data.hasClearThreshold = oldProcessedData.hasClearThreshold;
+                qcNode.label = [channelName, ':threshQC'];
+                qcNode.dependencyNodeLabels = {procNode.label};
+                newObj.graph = addNode(newObj.graph, qcNode);
+            end
         end
     end
 end
