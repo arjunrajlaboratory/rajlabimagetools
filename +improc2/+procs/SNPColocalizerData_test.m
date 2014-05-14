@@ -26,5 +26,5 @@ BProcData = improc2.tests.MockFittedSpotsProcessorData(BSpots);
 
 snpMap = [];
 x = improc2.procs.SNPColocalizerData(snpMap);
-xProcessed = run(x, guideProcData, AProcData, BProcData);
+% xProcessed = run(x, guideProcData, AProcData, BProcData);
 

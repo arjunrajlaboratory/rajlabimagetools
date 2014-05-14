@@ -22,11 +22,6 @@ checkLogY = uicontrol('Style', 'checkbox', 'String', 'log');
 
 x.attachPlotLogYUIControl(checkLogY)
 
-popupClearThresh = uicontrol('Style', 'popupmenu', 'String', 'empty', ...
-    'Units', 'normalized', 'Position', [0.2 0.5 0.3 0.2]);
-
-x.attachHasClearThresholdUIControl(popupClearThresh)
-
 checkAutoX = uicontrol('Style', 'checkbox', 'String', 'auto X', ...
     'Units', 'normalized', 'Position', [0.2 0.7 0.3 0.2]);
 
