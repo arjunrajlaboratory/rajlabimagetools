@@ -2,8 +2,8 @@ classdef ImageObjectArrayCollectionNavigator < handle
     
     properties (SetAccess = private, GetAccess = private)
         actionsAfterPuttingObjOnObjHolder
-        actionsBeforeStoringObjFromObjHolder
-        actionsAfterMoveAttemptToNewArray %untested
+        actionsBeforeStoringObjFromObjHolder % untested
+        actionsAfterMoveAttemptToNewArray % untested
         imageObjectArrayCollection
         objects
         needsSave = false;
@@ -43,6 +43,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
             num = length(p.objects);
         end
         
+        % untested
         function addActionAfterMovingToNewArray(p, handleToObject, funcToRunOnIt)
             p.actionsAfterMoveAttemptToNewArray.registerDependency(...
                 handleToObject, funcToRunOnIt);
@@ -53,6 +54,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
                 handleToObject, funcToRunOnIt);
         end
         
+        % untested
         function addActionBeforeMoveAttempt(p, handleToObject, funcToRunOnIt)
             p.actionsBeforeStoringObjFromObjHolder.registerDependency(...
                 handleToObject, funcToRunOnIt);

@@ -7,6 +7,7 @@ function convertCollectionFromStackBasedToDAGBased(...
 
     for i = 1:length(stackBasedCollection)
         objArray = stackBasedCollection.getObjectsArray(i);
+        assert(isa(objArray, 'improc2.ImageObject'), 'Can only convert improc2.ImageObject')
         backupCollection.setObjectsArray(objArray, i);
         convertedArray = convertStackBasedObjArrayToDAGBasedObjArray(objArray);
         destinationDAGBasedCollection.setObjectsArray(convertedArray, i);
