@@ -62,11 +62,10 @@ function outStruct = launchThresholdGUICore(varargin)
     browsingTools.navigator.addActionAfterMoveAttempt(hasClearThresholdPlugin, @draw)
     
     %% flag observed thresholds as reviewed.
-
     
-    rnaChannelSwitch.addActionAfterChannelSwitch(...
+    rnaChannelSwitch.addActionBeforeChannelSwitch(...
         thresholdReviewFlagger, @flagThresholdAsReviewed)
-    browsingTools.navigator.addActionAfterMoveAttempt(...
+    browsingTools.navigator.addActionBeforeMoveAttempt(...
         thresholdReviewFlagger, @flagThresholdAsReviewed)
     
     %% numSpotsTextBox

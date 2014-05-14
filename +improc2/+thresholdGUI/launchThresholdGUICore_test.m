@@ -1,7 +1,7 @@
 improc2.tests.cleanupForTests;
 collection = improc2.tests.data.collectionOfProcessedObjects();
 
-%x = improc2.thresholdGUI.launchThresholdGUICore(collection);
+x = improc2.thresholdGUI.launchThresholdGUICore(collection);
 
 
 graphCollection = improc2.utils.InMemoryObjectArrayCollection(...

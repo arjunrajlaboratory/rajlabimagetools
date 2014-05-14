@@ -2,6 +2,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
     
     properties (SetAccess = private, GetAccess = private)
         actionsAfterPuttingObjOnObjHolder
+        actionsBeforeStoringObjFromObjHolder
         actionsAfterMoveAttemptToNewArray %untested
         imageObjectArrayCollection
         objects
@@ -25,6 +26,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
             p.imageObjectArrayCollection = imageObjectArrayCollection;
             p.objHolder = objHolder;
             p.actionsAfterPuttingObjOnObjHolder = improc2.utils.DependencyRunner();
+            p.actionsBeforeStoringObjFromObjHolder = improc2.utils.DependencyRunner();
             p.actionsAfterMoveAttemptToNewArray = improc2.utils.DependencyRunner();
             p.currentArrayNum = 0;
             foundOneObject = p.tryToGoToNextNonEmptyArray();
@@ -50,6 +52,12 @@ classdef ImageObjectArrayCollectionNavigator < handle
             p.actionsAfterPuttingObjOnObjHolder.registerDependency(...
                 handleToObject, funcToRunOnIt);
         end
+        
+        function addActionBeforeMoveAttempt(p, handleToObject, funcToRunOnIt)
+            p.actionsBeforeStoringObjFromObjHolder.registerDependency(...
+                handleToObject, funcToRunOnIt);
+        end
+        
         
         function tryToGoToNextObj(p)
             p.storeObjFromObjHolder();
@@ -146,6 +154,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
         end
         
         function storeObjFromObjHolder(p)
+            p.actionsBeforeStoringObjFromObjHolder.runDependencies();
             p.objects(p.currentObjNum) = p.objHolder.obj;
         end
         
