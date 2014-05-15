@@ -1,0 +1,63 @@
+
+The design I have come up with so far:
+
+Data is stored as a DAG. Each node contains
+a representation of some kind of data.
+
+Some possible types of data:
+
+raw images
+processed data
+manually created data (clicking)
+
+The DAG has as few methods as possible. The
+DAG itself does not know how to run itself. 
+
+Registration:
+when adding a node, you must explicitly
+state which nodes you depend on and in exactly
+what order.
+
+Update-awareness:
+any settable data, such as processed Data
+or manually data, will trigger needsUpdate in all
+processor data dependents.
+Remove the option of setting data without
+triggering updates, which existed solely
+to have hasClearThreshold. 
+Instead move hasClearThreshold to a new
+manual data node that contains, and
+possibly includes the "reviewed" flag.
+Manual data probably should not need to be
+triggered for update. 
+
+Running:
+
+The processor will grab a processed
+data node from the DAG.
+
+It looks in the DAG for all dependencies
+and passes them in to the object's
+run method in the same order that
+the dependencies are listed in the node.
+
+What the processor passes in for each
+dependency depends on the type of data
+contained in the dependency node:
+- processor Data: 	passes in the processor data
+- manual Data:	passed in as is
+- channel raw image data: passes in an object
+	that can provide both a rectangular
+	cropped stack and the object mask without
+	additional parameters.
+- root node: passes in an object that provides
+	a mask and metadata
+
+
+There will be a graphical display of the DAG,
+ways to find nodes in the DAG by the command line,
+and perhaps in future a GUI to add to the DAG.
+
+It will be possible to remove nodes from the DAG
+as long as they have no dependents.
+

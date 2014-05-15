@@ -1,1 +1,1 @@
-close('all', 'hidden'); clear; clear classes;
+clear; close('all', 'hidden'); clear classes;

@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-inMemoryCollection = improc2.tests.data.collectionOfProcessedObjects();
+inMemoryCollection = improc2.tests.data.collectionOfProcessedDAGObjects();
 
 tools = improc2.launchImageObjectTools(inMemoryCollection);
 

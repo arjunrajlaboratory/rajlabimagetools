@@ -16,7 +16,12 @@ function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
     navigator = improc2.utils.ImageObjectArrayCollectionNavigator(...
         arrayCollection, objHolder);
     
-    if isa(objHolder.obj, 'improc2.ImageObject')
+    if isa(objHolder.obj, 'improc2.dataNodes.GraphBasedImageObject')
+        imgObjH = improc2.dataNodes.HandleToGraphBasedImageObject(objHolder);
+        processorRegistrar = improc2.dataNodes.ProcessorRegistrarForGraphBasedImageObject(objHolder);
+        annotationsHandle = improc2.ImageObjectAnnotationsHandle(objHolder);
+        
+    elseif isa(objHolder.obj, 'improc2.ImageObject')
         
         imgObjH = improc2.ImageObjectHandle(objHolder);
         processorRegistrar = improc2.ProcessorRegistrar(objHolder);

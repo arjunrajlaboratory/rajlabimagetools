@@ -63,7 +63,7 @@ classdef ImageObjectFullStkProvider < improc2.ImgProvider
             p.numLoadAttempts = p.numLoadAttempts + 1;
             p.attemptedStkPaths{p.numLoadAttempts} = stkPath;
             imgStk = readmm(stkPath);
-            fprintf(1,['\tLoaded: ' stkPath '\n']);
+            fprintf(1,'\tLoaded: %s\n', stkPath);
         end
             
         function imgStk = loadWithDirPath(p, objH, channelName)

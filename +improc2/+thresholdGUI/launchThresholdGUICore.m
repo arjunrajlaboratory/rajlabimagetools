@@ -5,7 +5,7 @@ function outStruct = launchThresholdGUICore(varargin)
     set(gui.figH, 'HandleVisibility', 'callback')
     
     objectHandle = browsingTools.objectHandle;
-   
+    
     
     %%
     [rnaChannels, rnaProcessorClassName] = improc2.thresholdGUI.findRNAChannels(objectHandle);
@@ -16,17 +16,30 @@ function outStruct = launchThresholdGUICore(varargin)
     rnaProcessorDataHolder = improc2.utils.ProcessorDataHolder(...
         objectHandle, rnaChannelSwitch, rnaProcessorClassName);
     
+    if isa(rnaProcessorDataHolder.processorData, 'improc2.interfaces.NodeData')
+        channelHasQCDataFunc = @(channelName) objectHandle.hasProcessorData(...
+            channelName, 'improc2.nodeProcs.ThresholdQCData');
+        assert(all(cellfun(channelHasQCDataFunc, rnaChannels)), ...
+            'All rna channels must have a thresholdQCData data node')
+        thresholdQCDataHolder = improc2.utils.ProcessorDataHolder(...
+            objectHandle, rnaChannelSwitch, 'improc2.nodeProcs.ThresholdQCData');
+        
+        thresholdReviewFlagger = improc2.thresholdGUI.ThresholdReviewFlagger(...
+            thresholdQCDataHolder);
+        clearThresholdProcessorDataHolder = thresholdQCDataHolder;
+    else
+        thresholdReviewFlagger = improc2.thresholdGUI.NullThresholdReviewFlagger();
+        clearThresholdProcessorDataHolder = rnaProcessorDataHolder;
+    end
+    
     rnaScaledImageHolder = improc2.utils.ImageFromProcessorDataHolder(rnaProcessorDataHolder);
     saturationValuesHolder = improc2.utils.FixedContrastSettings(rnaChannelSwitch, rnaScaledImageHolder);
-    
-    
     
     %% thresholdPlotter
     
     
     thresholdPlugin = improc2.ThresholdPlotPlugin(gui.thresholdAx, ...
         rnaProcessorDataHolder, saturationValuesHolder);
-    thresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup)
     thresholdPlugin.attachPlotLogYUIControl(gui.plotLogYCheck)
     thresholdPlugin.attachAutomaticXAxisControl(gui.autoXAxisCheck)
     thresholdPlugin.draw()
@@ -39,6 +52,21 @@ function outStruct = launchThresholdGUICore(varargin)
     rnaChannelSwitch.addActionAfterChannelSwitch(thresholdPlugin, @draw)
     browsingTools.navigator.addActionAfterMoveAttempt(thresholdPlugin, @draw)
     
+    %% Has Clear Threshold plugin
+    
+    hasClearThresholdPlugin = improc2.thresholdGUI.HasClearThresholdPlugin(...
+        clearThresholdProcessorDataHolder);
+    hasClearThresholdPlugin.attachHasClearThresholdUIControl(gui.hasClearThresholdPopup);
+    
+    rnaChannelSwitch.addActionAfterChannelSwitch(hasClearThresholdPlugin, @draw)
+    browsingTools.navigator.addActionAfterMoveAttempt(hasClearThresholdPlugin, @draw)
+    
+    %% flag observed thresholds as reviewed.
+    
+    rnaChannelSwitch.addActionBeforeChannelSwitch(...
+        thresholdReviewFlagger, @flagThresholdAsReviewed)
+    browsingTools.navigator.addActionBeforeMoveAttempt(...
+        thresholdReviewFlagger, @flagThresholdAsReviewed)
     
     %% numSpotsTextBox
     
@@ -91,7 +119,7 @@ function outStruct = launchThresholdGUICore(varargin)
         numColumns, minNumberOfRows);
     upperExtensibleButtonGroup = improc2.utils.ExtensiblePushButtonGroup(...
         gui.upperFreeArea, upperAreaLayoutCalculator);
-
+    
     numColumns = 2;
     minNumberOfRows = 2;
     lowerAreaLayoutCalculator = ...
@@ -107,7 +135,7 @@ function outStruct = launchThresholdGUICore(varargin)
         'FontSize', 12, ...
         'Tooltip', 'Use this object''s max intensity for fixed contrast mode in this channel', ...
         'CallBack', @(varargin) saturationValuesHolder.setSaturationValue(...
-            rnaProcessorDataHolder.processorData.regionalMaxValues(end))...
+        rnaProcessorDataHolder.processorData.regionalMaxValues(end))...
         );
     
     %% Build output

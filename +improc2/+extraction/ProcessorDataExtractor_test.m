@@ -1,6 +1,6 @@
 improc2.tests.cleanupForTests;
 
-inMemoryCollection = improc2.tests.data.collectionOfProcessedObjects();
+inMemoryCollection = improc2.tests.data.collectionOfProcessedDAGObjects();
 
 browsingTools = improc2.launchImageObjectBrowsingTools(inMemoryCollection);
 
@@ -8,7 +8,7 @@ objectHandle = browsingTools.objectHandle;
 
 x = improc2.extraction.ProcessorDataExtractor(objectHandle);
 
-x.setExtractField('tmr.isClear', 'hasClearThreshold', 'tmr')
+x.setExtractField('tmr.isClear', 'hasClearThreshold', 'tmr:threshQC')
 x.setExtractFuncOrMethod('cy.RNA', @getNumSpots, 'cy')
 
 if ~isfield(objectHandle.getProcessorData('trans'), 'hasClearThreshold')
@@ -22,7 +22,7 @@ if length(getSpotCoordinates(objectHandle.getProcessorData('cy'))) > 0
 end
 
 
-expectedTMRisClear = getfield(objectHandle.getProcessorData('tmr'), 'hasClearThreshold');
+expectedTMRisClear = getfield(objectHandle.getProcessorData('tmr:threshQC'), 'hasClearThreshold');
 expectedCySpots = getNumSpots(objectHandle.getProcessorData('cy'));
 
 extracted = x.extractData();

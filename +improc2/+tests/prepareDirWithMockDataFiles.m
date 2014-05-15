@@ -6,12 +6,7 @@ function dirPath = prepareDirWithMockDataFiles(cellArrayOfObjectsArrays, fileNum
     assert(length(fileNumbers) == length(cellArrayOfObjectsArrays), ...
         'fileNums length should match');
     
-    baseTempDirPath = tempdir();
-    dirPath = [baseTempDirPath filesep 'improc2'];
-    if ~isdir(dirPath)
-        mkdir(dirPath)
-    end
-    delete([dirPath, filesep, '*'])
+    dirPath = improc2.tests.prepareTempDir();
     
     for i = 1:length(cellArrayOfObjectsArrays)
         objects = cellArrayOfObjectsArrays{i};

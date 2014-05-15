@@ -1,49 +1,46 @@
-function varargout = processImageObjects(dirPathOrAnArrayCollection, overwriteFlag)
+function processImageObjects(dirPathOrAnArrayCollection, channelsToProcess)
     
     if nargin < 1
         dirPathOrAnArrayCollection = pwd;
     end
     
-    optionalFlags = struct();
-    if nargin > 1
-        if strcmp(overwriteFlag, 'overwrite')
-            optionalFlags.failIfProcessorExists = false;
+    dataAdder = improc2.processing.DataAdder(dirPathOrAnArrayCollection);
+    
+    if nargin < 2
+        channelsToProcess = dataAdder.channelNames;
+    end
+    
+    assert(all(ismember(channelsToProcess, dataAdder.channelNames)), ...
+        'At least one of the channels requested to process does not exist')
+    
+    fprintf('** Adding unprocessed data templates ...')
+    for i = 1:length(channelsToProcess)
+        channelName = channelsToProcess{i};
+        [processorData, nodeLabel] = chooseProcessorDataForChannel(channelName);
+        dataAdder.addDataToObject(processorData, channelName, nodeLabel)
+        if isa(processorData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData')
+            qcData = improc2.nodeProcs.ThresholdQCData();
+            qcLabel = [channelName, ':threshQC'];
+            dataAdder.addDataToObject(qcData, channelName, qcLabel)
         end
     end
     
-    imageObjectsProcessor = improc2.processing.ImageObjectsProcessor(...
-        dirPathOrAnArrayCollection, optionalFlags);
+    dataAdder.repeatForAllObjectsAndQuit();
     
-    varargout = cell(1, nargout);
-    
-    if nargout == 0
-        imageObjectsProcessor.displayDescriptionOfWorkToDo()
-        runAsIs = queryIfUserWantsToRunProcessorAsIs();
-        if runAsIs
-            imageObjectsProcessor.run()
-        else
-            displayCustomizationUsage()
-        end
-    elseif nargout == 1
-        varargout{1} = imageObjectsProcessor;
-    end
+    fprintf('** Processing ...')
+    improc2.processing.updateAll(dirPathOrAnArrayCollection);
 end
 
-function runAsIs = queryIfUserWantsToRunProcessorAsIs()
-    msg = sprintf(['*!* Run as described above? (y/n) ']);
-    yn = input(msg,'s');
-    fprintf('\n');
-    userPressedReturn = isempty(yn);
-    if userPressedReturn
-        yn = 'n'; 
+function [processorData, label] = chooseProcessorDataForChannel(channelName)
+    switch channelName
+        case 'trans'
+            processorData = improc2.nodeProcs.TransProcessedData();
+            label = 'transProc';
+        case 'dapi'
+            processorData = improc2.nodeProcs.DapiProcessedData();
+            label = 'dapiProc';
+        otherwise
+            processorData = improc2.nodeProcs.aTrousRegionalMaxProcessedData();
+            label = [channelName, ':Spots'];
     end
-    runAsIs = any(strcmp(yn,{'y','Y','yes','Yes','YES','1'}));
-end
-
-function displayCustomizationUsage()
-    fprintf(['To customize what all is run, execute\n', ...
-        '\tprocessor = improc2.processImageObjects(...);\n', ...
-        'then use the methods of ''processor'' to customize it,\n',...
-        'and then execute\n', ...
-        '\tprocessor.run()\n'])
 end

@@ -2,7 +2,8 @@ classdef ImageObjectArrayCollectionNavigator < handle
     
     properties (SetAccess = private, GetAccess = private)
         actionsAfterPuttingObjOnObjHolder
-        actionsAfterMoveAttemptToNewArray %untested
+        actionsBeforeStoringObjFromObjHolder % untested
+        actionsAfterMoveAttemptToNewArray % untested
         imageObjectArrayCollection
         objects
         needsSave = false;
@@ -25,6 +26,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
             p.imageObjectArrayCollection = imageObjectArrayCollection;
             p.objHolder = objHolder;
             p.actionsAfterPuttingObjOnObjHolder = improc2.utils.DependencyRunner();
+            p.actionsBeforeStoringObjFromObjHolder = improc2.utils.DependencyRunner();
             p.actionsAfterMoveAttemptToNewArray = improc2.utils.DependencyRunner();
             p.currentArrayNum = 0;
             foundOneObject = p.tryToGoToNextNonEmptyArray();
@@ -41,6 +43,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
             num = length(p.objects);
         end
         
+        % untested
         function addActionAfterMovingToNewArray(p, handleToObject, funcToRunOnIt)
             p.actionsAfterMoveAttemptToNewArray.registerDependency(...
                 handleToObject, funcToRunOnIt);
@@ -50,6 +53,13 @@ classdef ImageObjectArrayCollectionNavigator < handle
             p.actionsAfterPuttingObjOnObjHolder.registerDependency(...
                 handleToObject, funcToRunOnIt);
         end
+        
+        % untested
+        function addActionBeforeMoveAttempt(p, handleToObject, funcToRunOnIt)
+            p.actionsBeforeStoringObjFromObjHolder.registerDependency(...
+                handleToObject, funcToRunOnIt);
+        end
+        
         
         function tryToGoToNextObj(p)
             p.storeObjFromObjHolder();
@@ -146,6 +156,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
         end
         
         function storeObjFromObjHolder(p)
+            p.actionsBeforeStoringObjFromObjHolder.runDependencies();
             p.objects(p.currentObjNum) = p.objHolder.obj;
         end
         

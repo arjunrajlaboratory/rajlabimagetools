@@ -3,6 +3,7 @@ classdef ChannelSwitchCoordinator < handle
     properties (Access = private)
         channelNameFactor
         actionsAfterChannelSwitch
+        actionsBeforeChannelSwitch % untested
         channelUIhandle
     end
     
@@ -14,6 +15,7 @@ classdef ChannelSwitchCoordinator < handle
         function p = ChannelSwitchCoordinator(channelNames)
             p.channelNameFactor = improc2.TypeCheckedFactor(channelNames);
             p.actionsAfterChannelSwitch = improc2.utils.DependencyRunner();
+            p.actionsBeforeChannelSwitch = improc2.utils.DependencyRunner();
         end
         
         function addActionAfterChannelSwitch(p, handleToObject, funcToRunOnIt)
@@ -21,7 +23,14 @@ classdef ChannelSwitchCoordinator < handle
                 handleToObject, funcToRunOnIt);
         end
         
+        % untested
+        function addActionBeforeChannelSwitch(p, handleToObject, funcToRunOnIt)
+            p.actionsBeforeChannelSwitch.registerDependency(...
+                handleToObject, funcToRunOnIt);
+        end
+        
         function setChannelName(p, channelName)
+            p.actionsBeforeChannelSwitch.runDependencies();
             p.channelNameFactor.value = channelName;
             p.actionsAfterChannelSwitch.runDependencies();
             p.syncWithUI();

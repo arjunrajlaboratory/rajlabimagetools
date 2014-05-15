@@ -4,10 +4,10 @@ function [objH, dirPath, sliceWithSpots, imagenumber] = dataForTests()
 % and that the associated image files are in this dirPath.
 
 dirPath = improc2.tests.data.locator();
-collection = improc2.tests.data.collectionOfProcessedObjects();
+collection = improc2.tests.data.collectionOfProcessedDAGObjects();
 objArray = collection.getObjectsArray(1);
 objectHolder = improc2.utils.ObjectHolder();
 objectHolder.obj = objArray(1);
-objH = improc2.ImageObjectHandle(objectHolder);
+objH = improc2.dataNodes.HandleToGraphBasedImageObject(objectHolder);
 sliceWithSpots = 3;
 imagenumber = '001';
