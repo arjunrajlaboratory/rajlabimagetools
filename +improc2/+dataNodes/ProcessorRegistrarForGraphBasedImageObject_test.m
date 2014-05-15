@@ -145,3 +145,25 @@ assert(isa(manualSpotsData, 'improc2.interfaces.NodeData'))
 
 x.registerNewProcessor(manualSpotsData, {'cy'}, 'cy:ManualSpots')
 tester.assertIsImmediateChild('cy', 'cy:ManualSpots')
+
+%% Adding a node that does not depend on anything else. and a node that depends on it.
+
+objHolder.obj = objWithSpotsData;
+
+mockValue = 56;
+independentData = improc2.tests.MockNoDependentsData();
+independentData.value = mockValue;
+assert(isa(independentData, 'improc2.interfaces.NodeData'))
+
+x.registerNewProcessor(independentData, {}, 'standalone')
+
+data = tester.getNodeData('standalone');
+assert(data.value == mockValue)
+
+dependsOnBothRoots = improc2.tests.MockNeedsSpotsAndIndependentData();
+assert(isa(dependsOnBothRoots, 'improc2.interfaces.ProcessedData'))
+
+x.registerNewProcessor(dependsOnBothRoots, {'cy:SpotsData', 'standalone'}, 'multipliedSpots')
+
+tester.assertIsImmediateChild('cy:SpotsData', 'multipliedSpots')
+tester.assertIsImmediateChild('standalone', 'multipliedSpots')

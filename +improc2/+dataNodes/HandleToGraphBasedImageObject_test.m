@@ -388,3 +388,48 @@ x.updateAllProcessedData(imageProviders)
 
 graphTester.assertDoNotNeedUpdate('cy:Manual', 'cy:FittedToManual', ...
     'tmr:Spots', 'tmr:Fitted', 'coloc')
+
+
+%% testing needs update when you have an unrooted node.
+
+objHolder.obj = objWithSpotsData;
+
+mockFactor = 3;
+independentData = improc2.tests.MockNoDependentsData();
+independentData.value = mockFactor;
+assert(isa(independentData, 'improc2.interfaces.NodeData'))
+
+registrar.registerNewProcessor(independentData, {}, 'factorSource')
+
+dependsOnBothRoots = improc2.tests.MockNeedsSpotsAndIndependentData();
+assert(isa(dependsOnBothRoots, 'improc2.interfaces.ProcessedData'))
+
+registrar.registerNewProcessor(dependsOnBothRoots, {'cy:Spots', 'factorSource'}, 'multipliedSpots')
+
+x.updateAllProcessedData(imageProviders)
+
+
+assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+assert(cyNumSpots ~= 0)
+
+expectedSpots = cyNumSpots * mockFactor;
+assert(getNumSpots(x.getProcessorData('multipliedSpots')) == expectedSpots)
+
+graphTester.assertDoNotNeedUpdate('multipliedSpots', 'factorSource')
+
+
+factorSource = x.getProcessorData('factorSource');
+newFactor = 56;
+factorSource.value = newFactor;
+x.setProcessorData(factorSource, 'factorSource');
+
+graphTester.assertDoNotNeedUpdate('factorSource')
+graphTester.assertNeedUpdate('multipliedSpots')
+
+
+x.updateAllProcessedData(imageProviders)
+
+graphTester.assertDoNotNeedUpdate('multipliedSpots', 'factorSource')
+
+expectedSpots = cyNumSpots * newFactor;
+assert(getNumSpots(x.getProcessorData('multipliedSpots')) == expectedSpots)
