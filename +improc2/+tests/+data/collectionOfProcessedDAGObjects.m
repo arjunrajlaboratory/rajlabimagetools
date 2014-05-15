@@ -4,5 +4,6 @@ function collection = collectionOfProcessedDAGObjects()
     imObjDataFiles = improc2.utils.ImageObjectDataFiles(dirPath);
     onDiskCollection = improc2.utils.FileBasedImageObjectArrayCollection(imObjDataFiles);
     collection = improc2.utils.loadCollectionIntoMemory(onDiskCollection);
+    improc2.tests.changeImageObjectDirPath(collection, dirPath);
     
 end
