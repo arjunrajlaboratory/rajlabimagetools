@@ -70,11 +70,26 @@ classdef DirectedAcyclicGraph
         end
         
         function h = view(p)
-            bg = biograph(p.childVsParentConnectivity', p.labels);
-            for i = 1:length(bg.Nodes)
-                formatBiographNode(bg.Nodes(i), p.nodes{i});
+            if exist('biograph', 'file')
+                h = p.drawBioGraph();
+            else
+                h = [];
             end
-            h = view(bg);
+            fprintf('  The graph:\n')
+            p.printGraphDescription();
+        end
+        
+        function printGraphDescription(p)
+            for nodeNumber = 1:length(p.nodes)
+                node = p.nodes{nodeNumber};
+                if ~isempty(node.dependencyNodeLabels)
+                    dependencyDescription = strjoin(node.dependencyNodeLabels, ', ');
+                    dependencyDescription = [' depends on ', dependencyDescription, ''];
+                else
+                    dependencyDescription = ' is a root';
+                end
+                fprintf('%s\t%s\n', node.label, dependencyDescription)
+            end
         end
         
         function n = numberOfNodes(p)
@@ -83,6 +98,14 @@ classdef DirectedAcyclicGraph
     end
     
     methods (Access = private)
+        function h = drawBioGraph(p)
+            bg = biograph(p.childVsParentConnectivity', p.labels);
+            for i = 1:length(bg.Nodes)
+                formatBiographNode(bg.Nodes(i), p.nodes{i});
+            end
+            h = view(bg);
+        end
+        
         function foundNodes = findNodesByTreeDescent(p, ...
                 startingNodeLabel, searchCriterionFUNC, searchType)
             
@@ -127,7 +150,7 @@ end
 
 function formatBiographNode(bgNode, dataNode)
     if isa(dataNode.data, 'improc2.dataNodes.ChannelStackContainer')
-       bgNode.Color = [1 1 1]; 
+        bgNode.Color = [1 1 1];
     end
     if isa(dataNode.data, 'improc2.interfaces.NodeData') && dataNode.data.needsUpdate
         bgNode.LineColor = [0.76 0.17 0.22];
