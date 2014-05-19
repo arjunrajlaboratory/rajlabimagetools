@@ -27,12 +27,12 @@ classdef ProcessorDataHolder < handle
         end
         
         function procData = get.processorData(p)
-            procData = p.objectHandle.getProcessorData(...
+            procData = p.objectHandle.getData(...
                 p.channelHolder.getChannelName(), p.processorFetchingParams{:});
         end
         
         function set.processorData(p, procData)
-            p.objectHandle.setProcessorData(...
+            p.objectHandle.setData(...
                 procData, p.channelHolder.getChannelName(), p.processorFetchingParams{:});
             p.actionsAfterSetProcessor.runDependencies();
         end

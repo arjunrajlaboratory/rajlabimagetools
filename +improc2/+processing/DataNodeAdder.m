@@ -22,8 +22,8 @@ classdef DataNodeAdder < handle
             p.iterator.goToFirstObject();
             while p.iterator.continueIteration
                 fprintf('Working on %s\n', p.iterator.getLocationDescription())
-                if ~ p.objectHandle.hasProcessorData(newNodeLabel)
-                    p.registrar.registerNewProcessor(data, parentNodeLabels, newNodeLabel)
+                if ~ p.objectHandle.hasData(newNodeLabel)
+                    p.registrar.registerNewData(data, parentNodeLabels, newNodeLabel)
                 end
                 p.iterator.goToNextObject();
             end

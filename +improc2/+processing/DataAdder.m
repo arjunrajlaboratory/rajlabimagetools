@@ -65,10 +65,10 @@ classdef DataAdder < handle
     
     methods (Access = private)
         function tryToAddDataToCurrentObject(p, data, parentNodeLabels, newNodeLabel)
-            if p.objectHandle.hasProcessorData(newNodeLabel, class(data))
+            if p.objectHandle.hasData(newNodeLabel, class(data))
                 fprintf('This object already has data %s\n.', newNodeLabel)
             else
-                p.registrar.registerNewProcessor(data, parentNodeLabels, newNodeLabel)
+                p.registrar.registerNewData(data, parentNodeLabels, newNodeLabel)
             end
         end
     end

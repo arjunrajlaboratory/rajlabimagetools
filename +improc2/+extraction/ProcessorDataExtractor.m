@@ -47,7 +47,7 @@ classdef ProcessorDataExtractor < handle
                 channelName = p.channelsToExtractFrom{i};
                 extraArgsToGet = p.extraArgsToGetProc{i};
                 
-                procData = p.objectHandle.getProcessorData(channelName, extraArgsToGet{:});
+                procData = p.objectHandle.getData(channelName, extraArgsToGet{:});
                 extractedDatum = functionOfProcData(procData);
                 extractedData = [extractedData ; {nameInOutput, extractedDatum}];
             end
@@ -89,7 +89,7 @@ classdef ProcessorDataExtractor < handle
             
         end
         function trialExtractionFromCurrentObj(p, functionOfProcData, channelName, varargin)
-            procData = p.objectHandle.getProcessorData(channelName, varargin{:});
+            procData = p.objectHandle.getData(channelName, varargin{:});
             extractedData = functionOfProcData(procData);
             isAString = ischar(extractedData);
             isNumericScalar = isnumeric(extractedData) && isscalar(extractedData);

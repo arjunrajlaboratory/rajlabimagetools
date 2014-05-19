@@ -24,5 +24,5 @@ assert(strcmp(x.processorData.name, 'dapi'))
 
 x.processorData.somethingElse = 1;
 
-dapiproc = imageObjectHandle.getProcessorData('dapi');
+dapiproc = imageObjectHandle.getData('dapi');
 assert(dapiproc.somethingElse == 1)

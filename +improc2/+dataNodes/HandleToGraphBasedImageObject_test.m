@@ -19,14 +19,14 @@ cyNumSpots = 5;
 cySpotsData = improc2.tests.MockSpotsData(cyNumSpots);
 tmrNumSpots = 7;
 tmrSpotsData = improc2.tests.MockSpotsData(tmrNumSpots);
-registrar.registerNewProcessor(cySpotsData, 'cy', 'cy:Spots')
-registrar.registerNewProcessor(tmrSpotsData, 'tmr', 'tmr:Spots')
+registrar.registerNewData(cySpotsData, 'cy', 'cy:Spots')
+registrar.registerNewData(tmrSpotsData, 'tmr', 'tmr:Spots')
 
 objWithSpotsData = objHolder.obj;
 
 unprocessedFittedData = improc2.tests.MockFittedData();
-registrar.registerNewProcessor(unprocessedFittedData, 'cy', 'cy:Fitted')
-registrar.registerNewProcessor(unprocessedFittedData, 'tmr', 'tmr:Fitted')
+registrar.registerNewData(unprocessedFittedData, 'cy', 'cy:Fitted')
+registrar.registerNewData(unprocessedFittedData, 'tmr', 'tmr:Fitted')
 
 objWithFittedData = objHolder.obj;
 
@@ -65,28 +65,28 @@ assert(isequal(x.getImageDirPath(), '~/tests/'))
 
 objHolder.obj = objWithSpotsData;
 
-assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('tmr')) == tmrNumSpots)
+assert(getNumSpots(x.getData('cy')) == cyNumSpots)
+assert(getNumSpots(x.getData('tmr')) == tmrNumSpots)
 
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('cy', 'improc2.tests.MockSpotsData')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('cy', 'improc2.interfaces.SpotsProvider')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy', 'improc2.tests.MockSpotsData')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy', 'improc2.interfaces.SpotsProvider')) == cyNumSpots)
 
 %% Getting: Ambiguous requests fail.
 
 objHolder.obj = baseObj;
 
-registrar.registerNewProcessor(improc2.tests.MockSpotsData(12), 'cy', 'cy:Spots1')
-registrar.registerNewProcessor(improc2.tests.MockSpotsData(17), 'cy', 'cy:Spots2')
+registrar.registerNewData(improc2.tests.MockSpotsData(12), 'cy', 'cy:Spots1')
+registrar.registerNewData(improc2.tests.MockSpotsData(17), 'cy', 'cy:Spots2')
 
 graphTester.assertIsImmediateChild('cy', 'cy:Spots1')
 graphTester.assertIsImmediateChild('cy', 'cy:Spots2')
 
-improc2.tests.shouldThrowError(@() x.getProcessorData('cy'), ...
+improc2.tests.shouldThrowError(@() x.getData('cy'), ...
     'improc2:AmbiguousDataSpecification')
 
-assert(getNumSpots(x.getProcessorData('cy:Spots1')) == 12)
-assert(getNumSpots(x.getProcessorData('cy:Spots2')) == 17)
+assert(getNumSpots(x.getData('cy:Spots1')) == 12)
+assert(getNumSpots(x.getData('cy:Spots2')) == 17)
 
 %% Getting by data type
 
@@ -94,20 +94,20 @@ objHolder.obj = baseObj;
 
 manualSpotsData = improc2.tests.MockManualSpotsData();
 manualSpotsData.numSpots = 3;
-registrar.registerNewProcessor(cySpotsData, 'cy', 'cy:Spots')
-registrar.registerNewProcessor(manualSpotsData, 'cy', 'cy:Manual')
+registrar.registerNewData(cySpotsData, 'cy', 'cy:Spots')
+registrar.registerNewData(manualSpotsData, 'cy', 'cy:Manual')
 
 graphTester.assertIsImmediateChild('cy', 'cy:Spots')
 graphTester.assertIsImmediateChild('cy', 'cy:Manual')
 
-improc2.tests.shouldThrowError(@() x.getProcessorData('cy'), ...
+improc2.tests.shouldThrowError(@() x.getData('cy'), ...
     'improc2:AmbiguousDataSpecification')
 
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('cy:Manual')) == manualSpotsData.numSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Manual')) == manualSpotsData.numSpots)
 
-assert(getNumSpots(x.getProcessorData('cy', 'improc2.interfaces.ProcessedData')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('cy', 'improc2.tests.MockManualSpotsData')) == manualSpotsData.numSpots)
+assert(getNumSpots(x.getData('cy', 'improc2.interfaces.ProcessedData')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy', 'improc2.tests.MockManualSpotsData')) == manualSpotsData.numSpots)
 
 %% Setting data:
 
@@ -116,59 +116,59 @@ modifiedCySpotsData = improc2.tests.MockSpotsData(modifiedCyNumSpots);
 
 
 objHolder.obj = objWithSpotsData;
-assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy')
-assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy')
+assert(getNumSpots(x.getData('cy')) == modifiedCyNumSpots)
 
 objHolder.obj = objWithSpotsData;
-assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy:Spots')
-assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy:Spots')
+assert(getNumSpots(x.getData('cy')) == modifiedCyNumSpots)
 
 objHolder.obj = objWithSpotsData;
-assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
-assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
+assert(getNumSpots(x.getData('cy')) == modifiedCyNumSpots)
 
 objHolder.obj = objWithSpotsData;
-assert(getNumSpots(x.getProcessorData('cy')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.interfaces.SpotsProvider')
-assert(getNumSpots(x.getProcessorData('cy')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy', 'improc2.interfaces.SpotsProvider')
+assert(getNumSpots(x.getData('cy')) == modifiedCyNumSpots)
 
 %% Setting data: Replacement must be of the same class
 
 objHolder.obj = objWithSpotsData;
 
 improc2.tests.shouldThrowError(...
-    @() x.setProcessorData(manualSpotsData, 'cy'), 'improc2:BadArguments')
+    @() x.setData(manualSpotsData, 'cy'), 'improc2:BadArguments')
 
 %% Setting data: error if ambiguous
 
 objHolder.obj = baseObj;
 
-registrar.registerNewProcessor(cySpotsData, 'cy', 'cy:Spots')
-registrar.registerNewProcessor(manualSpotsData, 'cy', 'cy:Manual')
+registrar.registerNewData(cySpotsData, 'cy', 'cy:Spots')
+registrar.registerNewData(manualSpotsData, 'cy', 'cy:Manual')
 
 objWithCySpotsAndManual = objHolder.obj;
 
 graphTester.assertIsImmediateChild('cy', 'cy:Spots')
 graphTester.assertIsImmediateChild('cy', 'cy:Manual')
 
-improc2.tests.shouldThrowError(@() x.setProcessorData(modifiedCySpotsData, 'cy'), ...
+improc2.tests.shouldThrowError(@() x.setData(modifiedCySpotsData, 'cy'), ...
     'improc2:AmbiguousDataSpecification')
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
 
 %% Setting data: specifying by node label and data type
 
 objHolder.obj = objWithCySpotsAndManual;
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy:Spots')
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy:Spots')
+assert(getNumSpots(x.getData('cy:Spots')) == modifiedCyNumSpots)
 
 objHolder.obj = objWithCySpotsAndManual;
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-x.setProcessorData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == modifiedCyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+x.setData(modifiedCySpotsData, 'cy', 'improc2.tests.MockSpotsData')
+assert(getNumSpots(x.getData('cy:Spots')) == modifiedCyNumSpots)
 
 %% Setting data: needsUpdate propagation
 
@@ -188,22 +188,22 @@ tmrProcessedFitted.needsUpdate = false;
 processedColocolizer = improc2.tests.MockColocolizerData();
 processedColocolizer.needsUpdate = false;
 
-registrar.registerNewProcessor(cyProcessedSpotsData, 'cy', 'cy:Spots')
-registrar.registerNewProcessor(tmrProcessedSpotsData, 'tmr', 'tmr:Spots')
-registrar.registerNewProcessor(cyProcessedFitted, 'cy', 'cy:Fitted')
-registrar.registerNewProcessor(tmrProcessedFitted, 'tmr', 'tmr:Fitted')
-registrar.registerNewProcessor(processedColocolizer, ...
+registrar.registerNewData(cyProcessedSpotsData, 'cy', 'cy:Spots')
+registrar.registerNewData(tmrProcessedSpotsData, 'tmr', 'tmr:Spots')
+registrar.registerNewData(cyProcessedFitted, 'cy', 'cy:Fitted')
+registrar.registerNewData(tmrProcessedFitted, 'tmr', 'tmr:Fitted')
+registrar.registerNewData(processedColocolizer, ...
     {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
 
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
 
 % even setting data back to itself, triggers updates.
-x.setProcessorData(cyProcessedSpotsData, 'cy:Spots')
+x.setData(cyProcessedSpotsData, 'cy:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots','tmr:Fitted')
 graphTester.assertNeedUpdate('cy:Fitted', 'coloc')
 
-x.setProcessorData(tmrProcessedSpotsData, 'tmr:Spots')
+x.setData(tmrProcessedSpotsData, 'tmr:Spots')
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots')
 graphTester.assertNeedUpdate('cy:Fitted', 'coloc', 'tmr:Fitted')
 
@@ -212,21 +212,21 @@ graphTester.assertNeedUpdate('cy:Fitted', 'coloc', 'tmr:Fitted')
 objHolder.obj = baseObj;
 
 objHolder.obj = objWithSpotsData;
-assert(x.hasProcessorData('cy'))
-assert(x.hasProcessorData('cy:Spots'))
-assert(x.hasProcessorData('cy', 'improc2.tests.MockSpotsData'))
-assert(x.hasProcessorData('cy', 'improc2.interfaces.SpotsProvider'))
-assert(~ x.hasProcessorData('cy', 'improc2.tests.MockFittedData'))
+assert(x.hasData('cy'))
+assert(x.hasData('cy:Spots'))
+assert(x.hasData('cy', 'improc2.tests.MockSpotsData'))
+assert(x.hasData('cy', 'improc2.interfaces.SpotsProvider'))
+assert(~ x.hasData('cy', 'improc2.tests.MockFittedData'))
 
-registrar.registerNewProcessor(improc2.tests.MockFittedData(), 'cy', 'cy:Fitted')
+registrar.registerNewData(improc2.tests.MockFittedData(), 'cy', 'cy:Fitted')
 
-assert(x.hasProcessorData('cy', 'improc2.tests.MockFittedData'))
-assert(~ x.hasProcessorData('tmr', 'improc2.tests.MockFittedData'))
+assert(x.hasData('cy', 'improc2.tests.MockFittedData'))
+assert(~ x.hasData('tmr', 'improc2.tests.MockFittedData'))
 
 % getting would fail due to ambiguity, but 'has' query succeeds.
-assert(x.hasProcessorData('cy'))
+assert(x.hasData('cy'))
 
-assert(~x.hasProcessorData('somethingThatDoesNotExist'))
+assert(~x.hasData('somethingThatDoesNotExist'))
 
 %% runProcessor: clears needsUpdate flag to false
 
@@ -244,20 +244,20 @@ graphTester.assertDoNotNeedUpdate('cy:Spots')
 objHolder.obj = objWithFittedData;
 
 graphTester.assertNeedUpdate('cy:Spots','cy:Fitted')
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+assert(isempty(getNumSpots(x.getData('cy:Fitted'))))
 
 x.runProcessor(imageProviders, 'cy:Spots')
 
 graphTester.assertNeedUpdate('cy:Fitted')
 graphTester.assertDoNotNeedUpdate('cy:Spots')
-assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
+assert(isempty(getNumSpots(x.getData('cy:Fitted'))))
 
 x.runProcessor(imageProviders, 'cy:Fitted')
 
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted')
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
-assert(getNumSpots(x.getProcessorData('cy:Fitted')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Fitted')) == cyNumSpots)
 
 
 x.runProcessor(imageProviders, 'tmr:Spots')
@@ -265,18 +265,18 @@ x.runProcessor(imageProviders, 'tmr:Fitted')
 
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'cy:Fitted', 'tmr:Spots', 'tmr:Fitted')
 
-registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+registrar.registerNewData(improc2.tests.MockColocolizerData(), ...
     {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
 
 graphTester.assertNeedUpdate('coloc')
-colocData = x.getProcessorData('coloc');
+colocData = x.getData('coloc');
 assert(isempty(colocData.numSpotsA))
 assert(isempty(colocData.numSpotsB))
 
 x.runProcessor(imageProviders, 'coloc')
 
 graphTester.assertDoNotNeedUpdate('coloc')
-colocData = x.getProcessorData('coloc');
+colocData = x.getData('coloc');
 assert(colocData.numSpotsA == cyNumSpots)
 assert(colocData.numSpotsB == tmrNumSpots)
 
@@ -335,15 +335,15 @@ improc2.tests.shouldThrowError( @() x.runProcessor({}, 'coloc'), ...
 %% Updating: will run everything runnable in the tree.
 
 objHolder.obj = objWithFittedData;
-registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+registrar.registerNewData(improc2.tests.MockColocolizerData(), ...
     {'cy:Fitted', 'tmr:Fitted'}, 'coloc')
 
 
 graphTester.assertNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
-assert(isempty(getNumSpots(x.getProcessorData('tmr:Fitted'))))
-assert(isempty(getNumSpots(x.getProcessorData('cy:Fitted'))))
-colocData = x.getProcessorData('coloc');
+assert(isempty(getNumSpots(x.getData('tmr:Fitted'))))
+assert(isempty(getNumSpots(x.getData('cy:Fitted'))))
+colocData = x.getData('coloc');
 assert(isempty(colocData.numSpotsA))
 assert(isempty(colocData.numSpotsB))
 
@@ -352,9 +352,9 @@ x.updateAllProcessedData(imageProviders)
 graphTester.assertDoNotNeedUpdate('cy:Spots', 'tmr:Spots', 'cy:Fitted', ...
     'tmr:Fitted', 'coloc')
 
-assert(getNumSpots(x.getProcessorData('tmr:Fitted')) == tmrNumSpots)
-assert(getNumSpots(x.getProcessorData('cy:Fitted')) == cyNumSpots)
-colocData = x.getProcessorData('coloc');
+assert(getNumSpots(x.getData('tmr:Fitted')) == tmrNumSpots)
+assert(getNumSpots(x.getData('cy:Fitted')) == cyNumSpots)
+colocData = x.getData('coloc');
 assert(colocData.numSpotsA == cyNumSpots)
 assert(colocData.numSpotsB == tmrNumSpots)
 
@@ -362,27 +362,27 @@ assert(colocData.numSpotsB == tmrNumSpots)
 
 objHolder.obj = baseObj;
 
-registrar.registerNewProcessor(improc2.tests.MockManualSpotsData(), 'cy', 'cy:Manual')
-registrar.registerNewProcessor(tmrSpotsData, 'tmr', 'tmr:Spots')
-registrar.registerNewProcessor(improc2.tests.MockFittedData(), {'cy:Manual', 'cy'}, 'cy:FittedToManual')
-registrar.registerNewProcessor(improc2.tests.MockFittedData(), {'tmr:Spots', 'tmr'}, 'tmr:Fitted')
-registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+registrar.registerNewData(improc2.tests.MockManualSpotsData(), 'cy', 'cy:Manual')
+registrar.registerNewData(tmrSpotsData, 'tmr', 'tmr:Spots')
+registrar.registerNewData(improc2.tests.MockFittedData(), {'cy:Manual', 'cy'}, 'cy:FittedToManual')
+registrar.registerNewData(improc2.tests.MockFittedData(), {'tmr:Spots', 'tmr'}, 'tmr:Fitted')
+registrar.registerNewData(improc2.tests.MockColocolizerData(), ...
     {'cy:FittedToManual', 'tmr:Fitted'}, 'coloc')
 
 graphTester.assertNeedUpdate('cy:Manual', 'cy:FittedToManual', ...
     'tmr:Spots', 'tmr:Fitted', 'coloc')
 
-assert(~isa(x.getProcessorData('cy:Manual'), 'improc2.interfaces.ProcessedData'))
+assert(~isa(x.getData('cy:Manual'), 'improc2.interfaces.ProcessedData'))
 
 x.updateAllProcessedData(imageProviders)
 
 graphTester.assertDoNotNeedUpdate('tmr:Spots', 'tmr:Fitted')
 graphTester.assertNeedUpdate('cy:Manual', 'cy:FittedToManual', 'coloc')
 
-cyManual = x.getProcessorData('cy:Manual');
+cyManual = x.getData('cy:Manual');
 cyManual.numSpots = 35;
 cyManual.needsUpdate = false;
-x.setProcessorData(cyManual, 'cy:Manual')
+x.setData(cyManual, 'cy:Manual')
 
 x.updateAllProcessedData(imageProviders)
 
@@ -399,29 +399,29 @@ independentData = improc2.tests.MockNoDependentsData();
 independentData.value = mockFactor;
 assert(isa(independentData, 'improc2.interfaces.NodeData'))
 
-registrar.registerNewProcessor(independentData, {}, 'factorSource')
+registrar.registerNewData(independentData, {}, 'factorSource')
 
 dependsOnBothRoots = improc2.tests.MockNeedsSpotsAndIndependentData();
 assert(isa(dependsOnBothRoots, 'improc2.interfaces.ProcessedData'))
 
-registrar.registerNewProcessor(dependsOnBothRoots, {'cy:Spots', 'factorSource'}, 'multipliedSpots')
+registrar.registerNewData(dependsOnBothRoots, {'cy:Spots', 'factorSource'}, 'multipliedSpots')
 
 x.updateAllProcessedData(imageProviders)
 
 
-assert(getNumSpots(x.getProcessorData('cy:Spots')) == cyNumSpots)
+assert(getNumSpots(x.getData('cy:Spots')) == cyNumSpots)
 assert(cyNumSpots ~= 0)
 
 expectedSpots = cyNumSpots * mockFactor;
-assert(getNumSpots(x.getProcessorData('multipliedSpots')) == expectedSpots)
+assert(getNumSpots(x.getData('multipliedSpots')) == expectedSpots)
 
 graphTester.assertDoNotNeedUpdate('multipliedSpots', 'factorSource')
 
 
-factorSource = x.getProcessorData('factorSource');
+factorSource = x.getData('factorSource');
 newFactor = 56;
 factorSource.value = newFactor;
-x.setProcessorData(factorSource, 'factorSource');
+x.setData(factorSource, 'factorSource');
 
 graphTester.assertDoNotNeedUpdate('factorSource')
 graphTester.assertNeedUpdate('multipliedSpots')
@@ -432,22 +432,22 @@ x.updateAllProcessedData(imageProviders)
 graphTester.assertDoNotNeedUpdate('multipliedSpots', 'factorSource')
 
 expectedSpots = cyNumSpots * newFactor;
-assert(getNumSpots(x.getProcessorData('multipliedSpots')) == expectedSpots)
+assert(getNumSpots(x.getData('multipliedSpots')) == expectedSpots)
 
 
 %% graph for wiki page
 
 objHolder.obj = objWithSpotsData;
 
-registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+registrar.registerNewData(improc2.tests.MockColocolizerData(), ...
     {'cy:Spots', 'tmr:Spots'}, 'colocolization')
 
-registrar.registerNewProcessor(improc2.tests.MockSpotsData(0), {'dapi'}, 'nuclearMask') 
+registrar.registerNewData(improc2.tests.MockSpotsData(0), {'dapi'}, 'nuclearMask') 
 
-registrar.registerNewProcessor(improc2.nodeProcs.ThresholdQCData(), ...
+registrar.registerNewData(improc2.nodeProcs.ThresholdQCData(), ...
     {'cy:Spots'}, 'cy:theshQC')
 
-registrar.registerNewProcessor(improc2.nodeProcs.ThresholdQCData(), ...
+registrar.registerNewData(improc2.nodeProcs.ThresholdQCData(), ...
     {'tmr:Spots'}, 'tmr:theshQC')
 
 x.updateAllProcessedData(imageProviders)

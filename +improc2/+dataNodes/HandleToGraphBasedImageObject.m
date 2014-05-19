@@ -53,7 +53,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             dirPath = channelNode.data.dirPath;
         end
         
-        function [pData, foundNodeLabel] = getProcessorData(p, nodeLabel, dataClassName)
+        function [pData, foundNodeLabel] = getData(p, nodeLabel, dataClassName)
             if nargin < 3
                 node = p.findDataNode(nodeLabel);
             else
@@ -63,7 +63,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             foundNodeLabel = node.label;
         end
         
-        function setProcessorData(p, pData, nodeLabel, dataClassName)
+        function setData(p, pData, nodeLabel, dataClassName)
             if nargin < 4
                 nodeToUpdate = p.findDataNode(nodeLabel);
             else
@@ -79,7 +79,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                 nodeToUpdate.label, nodeToUpdate.data);
         end
         
-        function boolean = hasProcessorData(p, nodeLabel, dataClassName)
+        function boolean = hasData(p, nodeLabel, dataClassName)
             if nargin < 3
                 dataClassName = 'improc2.interfaces.NodeData';
             end
@@ -98,7 +98,7 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             if nargin == 4
                 extraGetArgs{1} = dataClassName;
             end
-            [pDataToProcess, labelOfDataToProcess] = p.getProcessorData(nodeLabel, extraGetArgs{:});
+            [pDataToProcess, labelOfDataToProcess] = p.getData(nodeLabel, extraGetArgs{:});
             assert(isa(pDataToProcess, 'improc2.interfaces.ProcessedData'), ...
                 'improc2:DataNotRunnable', ...
                 'Data at node %s is not an improc2.interfaces.ProcessedData.', nodeLabel)

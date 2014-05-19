@@ -12,7 +12,7 @@ classdef ProcessorRegistrarForLegacyimage_object < improc2.interfaces.ProcessorR
         function p = ProcessorRegistrarForLegacyimage_object(imObHolder)
             p.imObHolder = imObHolder;
         end
-        function boolean = hasProcessorData(p, channelName, className)
+        function boolean = hasData(p, channelName, className)
             proc = p.imObHolder.obj.channels.(channelName).processor;
             if isempty(proc)
                 boolean = false;
@@ -20,7 +20,7 @@ classdef ProcessorRegistrarForLegacyimage_object < improc2.interfaces.ProcessorR
                 boolean = isa(proc, className);
             end
         end
-        function registerNewProcessor(p, proc, channelName)
+        function registerNewData(p, proc, channelName)
             error('improc2:NoLegacySupport', ...
                 ['cannot register processors to legacy image_objects.\n',...
                 'Simply *set* them with an image object handle'])

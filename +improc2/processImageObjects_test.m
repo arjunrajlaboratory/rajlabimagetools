@@ -9,7 +9,7 @@ channelNames = tools.objectHandle.channelNames;
 tools.iterator.goToFirstObject();
 while tools.iterator.continueIteration;
     for channelName = channelNames
-        assert(~ tools.objectHandle.hasProcessorData(channelName))
+        assert(~ tools.objectHandle.hasData(channelName))
     end
     tools.iterator.goToNextObject();
 end
@@ -20,9 +20,9 @@ channelsToProcess = {'dapi', 'trans', 'cy'};
 improc2.processImageObjects(collection, channelsToProcess)
 tools.refresh();
 
-hasProcOfClass = @(channelName, className) tools.objectHandle.hasProcessorData(channelName, className);
+hasProcOfClass = @(channelName, className) tools.objectHandle.hasData(channelName, className);
 
-needsUpdate = @(varargin) getfield(tools.objectHandle.getProcessorData(varargin), 'needsUpdate');
+needsUpdate = @(varargin) getfield(tools.objectHandle.getData(varargin), 'needsUpdate');
 
 rnaChannelSetupCorrectly = @(channelName) ...
     hasProcOfClass(channelName, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData') && ...
@@ -40,8 +40,8 @@ while tools.iterator.continueIteration;
     assert(hasProcOfClass('transProc', 'improc2.nodeProcs.TransProcessedData'))
     assert(~needsUpdate('transProc'))
     assert(rnaChannelSetupCorrectly('cy'))
-    assert(~ tools.objectHandle.hasProcessorData('tmr'))
-    assert(~ tools.objectHandle.hasProcessorData('alexa'))
+    assert(~ tools.objectHandle.hasData('tmr'))
+    assert(~ tools.objectHandle.hasData('alexa'))
     tools.iterator.goToNextObject();
 end
 

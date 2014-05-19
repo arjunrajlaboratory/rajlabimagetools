@@ -1,8 +1,8 @@
 classdef ProcessorRegistrar < handle
     
     methods (Abstract = true)
-        registerNewProcessor(p, proc, channelName)
-        boolean = hasProcessorData(p, channelName, className)
+        registerNewData(p, proc, channelName)
+        boolean = hasData(p, channelName, className)
     end
     
 end

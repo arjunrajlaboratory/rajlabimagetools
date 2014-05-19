@@ -86,8 +86,8 @@ tools.objectHandle.view()
 
 %% getting:
 
-cySpots = tools.objectHandle.getProcessorData('cy');
-volProc = tools.objectHandle.getProcessorData(...
+cySpots = tools.objectHandle.getData('cy');
+volProc = tools.objectHandle.getData(...
     'imageObject', 'improc2.nodeProcs.VolumeFromSpotsCloud');
 
 

@@ -18,7 +18,7 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
         function set.obj(p, obj)
             p.objHolder.obj = obj;
         end
-        function registerNewProcessor(p, data, parentNodeLabels, newNodeLabel)
+        function registerNewData(p, data, parentNodeLabels, newNodeLabel)
             
             if ischar(parentNodeLabels); 
                 parentNodeLabels = {parentNodeLabels}; 
@@ -41,7 +41,7 @@ classdef ProcessorRegistrarForGraphBasedImageObject < improc2.interfaces.Process
             p.obj.graph = addNode(p.obj.graph, newNode);
         end
         
-        function boolean = hasProcessorData(p, channelNameOrNodeName, dataClassName)
+        function boolean = hasData(p, channelNameOrNodeName, dataClassName)
         end
         
         function disp(p)

@@ -11,19 +11,19 @@ x = improc2.extraction.ProcessorDataExtractor(objectHandle);
 x.setExtractField('tmr.isClear', 'hasClearThreshold', 'tmr:threshQC')
 x.setExtractFuncOrMethod('cy.RNA', @getNumSpots, 'cy')
 
-if ~isfield(objectHandle.getProcessorData('trans'), 'hasClearThreshold')
+if ~isfield(objectHandle.getData('trans'), 'hasClearThreshold')
     improc2.tests.shouldThrowError(@() x.setExtractField('trans.isClear', ...
         'hasClearThreshold', 'trans'))
 end
 
-if length(getSpotCoordinates(objectHandle.getProcessorData('cy'))) > 0
+if length(getSpotCoordinates(objectHandle.getData('cy'))) > 0
     improc2.tests.shouldThrowError(@() x.setExtractFuncOrMethod('cy.RNA', ...
         @getSpotCoordinates, 'cy'))
 end
 
 
-expectedTMRisClear = getfield(objectHandle.getProcessorData('tmr:threshQC'), 'hasClearThreshold');
-expectedCySpots = getNumSpots(objectHandle.getProcessorData('cy'));
+expectedTMRisClear = getfield(objectHandle.getData('tmr:threshQC'), 'hasClearThreshold');
+expectedCySpots = getNumSpots(objectHandle.getData('cy'));
 
 extracted = x.extractData();
 

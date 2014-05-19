@@ -30,7 +30,7 @@ classdef HandleToLegacyimage_object < improc2.interfaces.ImageObjectHandle
         function channelNames = get.channelNames(p)
             channelNames = fields(p.imObHolder.obj.channels);
         end
-        function boolean = hasProcessorData(p, channelName, className)
+        function boolean = hasData(p, channelName, className)
             proc = p.imObHolder.obj.channels.(channelName).processor;
             if isempty(proc)
                 boolean = false;
@@ -38,10 +38,10 @@ classdef HandleToLegacyimage_object < improc2.interfaces.ImageObjectHandle
                 boolean = isa(proc, className);
             end
         end
-        function proc = getProcessorData(p, channelName, varargin)
+        function proc = getData(p, channelName, varargin)
             proc = p.imObHolder.obj.channels.(channelName).processor;
         end
-        function setProcessorData(p, proc, channelName, varargin)
+        function setData(p, proc, channelName, varargin)
             p.imObHolder.obj.channels.(channelName).processor = proc;
         end
         function filename = getImageFileName(p, channelName)
