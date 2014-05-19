@@ -232,7 +232,7 @@ assert(~x.hasProcessorData('somethingThatDoesNotExist'))
 
 objHolder.obj = objWithSpotsData;
 
-imageProviders = dentist.utils.makeFilledChannelArray({'cy','tmr'}, ...
+imageProviders = dentist.utils.makeFilledChannelArray({'cy','tmr','dapi'}, ...
     @(channelName) improc2.tests.MockCroppedImageProvider());
 
 graphTester.assertNeedUpdate('cy:Spots')
@@ -433,3 +433,21 @@ graphTester.assertDoNotNeedUpdate('multipliedSpots', 'factorSource')
 
 expectedSpots = cyNumSpots * newFactor;
 assert(getNumSpots(x.getProcessorData('multipliedSpots')) == expectedSpots)
+
+
+%% graph for wiki page
+
+objHolder.obj = objWithSpotsData;
+
+registrar.registerNewProcessor(improc2.tests.MockColocolizerData(), ...
+    {'cy:Spots', 'tmr:Spots'}, 'colocolization')
+
+registrar.registerNewProcessor(improc2.tests.MockSpotsData(0), {'dapi'}, 'nuclearMask') 
+
+registrar.registerNewProcessor(improc2.nodeProcs.ThresholdQCData(), ...
+    {'cy:Spots'}, 'cy:theshQC')
+
+registrar.registerNewProcessor(improc2.nodeProcs.ThresholdQCData(), ...
+    {'tmr:Spots'}, 'tmr:theshQC')
+
+x.updateAllProcessedData(imageProviders)
