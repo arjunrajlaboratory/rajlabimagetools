@@ -20,7 +20,7 @@ classdef DataAdder < handle
                 dirPathOrAnArrayCollection = pwd;
             end
             tools = improc2.launchImageObjectTools(dirPathOrAnArrayCollection);
-            p.registrar = tools.processorRegistrar;
+            p.registrar = tools.dataRegistrar;
             p.objectHandle = tools.objectHandle;
             p.iterator = tools.iterator;
         end

@@ -18,19 +18,19 @@ function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
     
     if isa(objHolder.obj, 'improc2.dataNodes.GraphBasedImageObject')
         imgObjH = improc2.dataNodes.HandleToGraphBasedImageObject(objHolder);
-        processorRegistrar = improc2.dataNodes.ProcessorRegistrarForGraphBasedImageObject(objHolder);
+        dataRegistrar = improc2.dataNodes.ProcessorRegistrarForGraphBasedImageObject(objHolder);
         annotationsHandle = improc2.ImageObjectAnnotationsHandle(objHolder);
         
     elseif isa(objHolder.obj, 'improc2.ImageObject')
         
         imgObjH = improc2.ImageObjectHandle(objHolder);
-        processorRegistrar = improc2.ProcessorRegistrar(objHolder);
+        dataRegistrar = improc2.ProcessorRegistrar(objHolder);
         annotationsHandle = improc2.ImageObjectAnnotationsHandle(objHolder);
         
     elseif isa(objHolder.obj, 'image_object')
         
         imgObjH = improc2.utils.HandleToLegacyimage_object(objHolder);
-        processorRegistrar = ...
+        dataRegistrar = ...
             improc2.utils.ProcessorRegistrarForLegacyimage_object(objHolder);
         annotationsHandle = ...
             improc2.Legacyimage_objectAnnotationsHandle(objHolder);
@@ -51,7 +51,7 @@ function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
     controlStruct.navigator = navigator;
     controlStruct.iterator = improc2.ImageObjectIterator(navigator);
     controlStruct.objectHandle = imgObjH;
-    controlStruct.processorRegistrar = processorRegistrar;
+    controlStruct.dataRegistrar = dataRegistrar;
     controlStruct.annotations = annotations;
     controlStruct.annotationItemAdder = annotationItemAdder;
     controlStruct.refresh = @navigator.discardUnsavedChangesAndReload;
