@@ -138,7 +138,7 @@ function [threshold] = imregmaxThresh(varargin)
     end
 
     lgMx = log(numMx);
-    numMxD = gradient(smooth(lgMx),ss);  % first derivative
+    numMxD = gradient(smoothenCDF(lgMx),ss);  % first derivative
     numMxDD = gradient(numMxD);  % second derivative
 
     % first stable point (at the "plateau")
@@ -180,6 +180,15 @@ function [threshold] = imregmaxThresh(varargin)
         hold off; drawnow;
     end
 
+function resultcdf = smoothenCDF(cdf)
+    usersMatlabInstallHasSmooth = (exist('smooth', 'file') == 2);
+    
+    if usersMatlabInstallHasSmooth
+        resultcdf = smooth(cdf);
+    else
+        resultcdf = cdf;
+    end
+    
 
 function [bkgdRatio] = backgroundRatio(thresholds,numMx,ss,verboseFlag)
 % Analyzes the plot of log(number of remaining maxima) VS intensity threshold 
@@ -187,7 +196,7 @@ function [bkgdRatio] = backgroundRatio(thresholds,numMx,ss,verboseFlag)
 % of background to the total regional max intensities. 
 
     lgMx = log(numMx);  % log(number of remaining maxima)
-    lgMxD = gradient(smooth(lgMx),ss);  % 1st derivative, the slope
+    lgMxD = gradient(smoothenCDF(lgMx),ss);  % 1st derivative, the slope
     lgMxDD = gradient(lgMxD,ss); % 2nd derivative 
     zcInds = zCross(lgMxDD,'minus_plus');  % zCross for most negative slope 
     zcInd = zcInds(1);  % first minus-to-plus zero cross 
