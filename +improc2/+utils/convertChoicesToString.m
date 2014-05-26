@@ -3,7 +3,7 @@ function choicesAsString = convertChoicesToString(itemChoices, itemClassName)
         case 'improc2.TypeCheckedLogical'
             choicesAsString = 'logical true or false';
         case {'improc2.TypeCheckedFactor', 'improc2.TypeCheckedYesNoOrNA'}
-            choicesAsString = strjoin(itemChoices, ', ');
+            choicesAsString = improc2.utils.stringJoin(itemChoices, ', ');
         case 'improc2.TypeCheckedNumeric'
             choicesAsString = itemChoices;
         case 'improc2.TypeCheckedString'

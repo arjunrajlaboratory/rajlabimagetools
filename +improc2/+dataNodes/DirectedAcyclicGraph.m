@@ -83,7 +83,7 @@ classdef DirectedAcyclicGraph
             for nodeNumber = 1:length(p.nodes)
                 node = p.nodes{nodeNumber};
                 if ~isempty(node.dependencyNodeLabels)
-                    dependencyDescription = strjoin(node.dependencyNodeLabels, ', ');
+                    dependencyDescription = improc2.utils.stringJoin(node.dependencyNodeLabels, ', ');
                     dependencyDescription = [' depends on ', dependencyDescription, ''];
                 else
                     dependencyDescription = ' is a root';

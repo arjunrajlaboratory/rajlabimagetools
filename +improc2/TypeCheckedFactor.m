@@ -45,7 +45,7 @@ classdef TypeCheckedFactor < improc2.interfaces.TypeCheckedValue
             assert(ischar(value), 'improc2:InvalidValue', ...
                 'value must be a string (see ischar)')
             assert(any(strcmp(value, p.choices)), 'improc2:InvalidValue', ...
-                'value must be one of: %s', strjoin(p.choices, ', '))
+                'value must be one of: %s', improc2.utils.stringJoin(p.choices, ', '))
         end
     end
     

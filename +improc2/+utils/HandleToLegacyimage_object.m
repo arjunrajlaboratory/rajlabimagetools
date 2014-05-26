@@ -53,7 +53,7 @@ classdef HandleToLegacyimage_object < improc2.interfaces.ImageObjectHandle
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p);
             fprintf('* Channels:\n')
-            fprintf('\t%s\n', strjoin(p.channelNames(:)', ' '))
+            fprintf('\t%s\n', improc2.utils.stringJoin(p.channelNames(:)', ' '))
         end
     end
 end

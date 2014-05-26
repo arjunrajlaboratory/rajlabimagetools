@@ -31,7 +31,7 @@ classdef MutuallyExclusiveToggleGroup < handle
         function activateButton(p, buttonName)
             assert(ismember(buttonName, p.buttonNames), ...
                 'improc2:BadArguments', ...
-                'specified button name is not one of %s', strjoin(p.buttonNames(:)', ' or ')) 
+                'specified button name is not one of %s', improc2.utils.stringJoin(p.buttonNames(:)', ' or ')) 
             
             if ~strcmp(buttonName, p.nameOfActiveButton)
                 p.doOnToggleOutOf(p.nameOfActiveButton)
