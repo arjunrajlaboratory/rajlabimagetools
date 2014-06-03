@@ -1,9 +1,15 @@
-dentist.tests.cleanupForTests;
 
-testDataDir = dentist.tests.data.locator();
-imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(testDataDir);
-imageDirectoryReader.implementGridLayout(2,2,'down','right','nosnake');
-numPixelOverlap = 103;
+
+imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(...
+    dentistConfig.dirPath);
+imageDirectoryReader.implementGridLayout(...
+    dentistConfig.rows,...
+    dentistConfig.cols,...
+    dentistConfig.layout.nextFileDirection,...
+    dentistConfig.layout.secondaryDirection,...
+    dentistConfig.layout.snakeOrNoSnake);
+
+numPixelOverlap = dentistConfig.numPixelOverlap;
 imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
 
 verboseFlag = false;

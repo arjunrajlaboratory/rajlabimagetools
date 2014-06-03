@@ -7,12 +7,12 @@ classdef ImageFileDirectoryReader < handle
         availableChannels;
         Nrows;
         Ncols;
+        imgExts;
+        fileNums;
     end
     
     properties (SetAccess = private, GetAccess = private)
         filePathsGrid;
-        fileNums;
-        imgExts;
     end
     
     properties (Dependent = true)
