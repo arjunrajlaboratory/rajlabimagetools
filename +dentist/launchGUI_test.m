@@ -16,4 +16,4 @@ dentistConfig.numPixelOverlap = 103;
 saveDataToDisk = false;
 dentistData = dentist.processImages(dentistConfig, saveDataToDisk);
 
-dentist.launchingScript;
+controls = dentist.launchGUI(dentistConfig, dentistData);
