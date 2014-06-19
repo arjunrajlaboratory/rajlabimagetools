@@ -11,6 +11,7 @@ function deletionsUISubsystem = buildDeletionsUISubsystem(resources)
     visibilityToggleablePolygonDisplayer = dentist.utils.VisibilityToggleableDisplayer(...
         polygonDisplayer);
     visibilityToggleablePolygonDisplayer.setVisibilityAndDrawIfActive(false);
+    visibilityToggleablePolygonDisplayer.draw();
 	deletionsSubsystem.addActionAfterDeletion(...
         visibilityToggleablePolygonDisplayer, @draw);
     

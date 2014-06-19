@@ -28,9 +28,6 @@ imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverla
 resources = dentistData;
 dataSystem = dentist.buildDataSubystem(resources);
 
-% Data saver:
-
-
 
 % MakeGUI 
 
