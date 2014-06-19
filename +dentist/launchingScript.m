@@ -5,8 +5,11 @@ if ~exist('dentistConfig', 'var')
     dentistConfig = dentist.utils.loadConfig(workingDirectory);
 end
 
-if ~exist('dentistData', 'var')
+if exist('dentistData', 'var')
+    saveToDisk = false;
+else
     dentistData = dentist.utils.loadData(workingDirectory);
+    saveToDisk = true;
 end
 
 
@@ -131,6 +134,7 @@ dataSystem.thresholdsHolder.addActionOnUpdate(deletionsUISubsystem, @draw);
 dataSystem.deletionsSubsystem.addActionAfterDeletion(deletionsUISubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(deletionsUISubsystem, @draw);
 
+
 % Add interactions
 
 resources = struct();
@@ -139,3 +143,15 @@ resources.displaySubsystem = displaySubsystem;
 resources.deletionsUISubsystem = deletionsUISubsystem;
 
 dentist.addImageAndThumbnailInteractions(resources);
+
+
+% add Data Saving Control:
+
+savingUI = dentist.utils.SavingUI(...
+    gui.saveButton, dataSystem.dataSaver, saveToDisk, workingDirectory);
+
+set(gui.saveButton, 'Enable', 'on');
+set(gui.saveButton, 'Callback', @(varargin) savingUI.save());
+
+dataSystem.thresholdsHolder.addActionOnUpdate(savingUI, @setButtonToAlarm);
+dataSystem.deletionsSubsystem.addActionAfterDeletion(savingUI, @setButtonToAlarm);

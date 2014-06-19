@@ -9,7 +9,7 @@ classdef DataSaver < handle
             p.dataSources = dataSources;
         end
         
-        function dentistData = save(p)
+        function dentistData = getDataToSave(p)
             [assignedSpots, centroids, spotToCentroidMappings] = ...
                 dentist.utils.saveSpotsAndCentroids(...
                 p.dataSources.candidateSpotsAndCentroids);
@@ -29,6 +29,11 @@ classdef DataSaver < handle
             dentistData.thresholds = thresholds;
             dentistData.frequencyTables = frequencyTables;
             dentistData.deletionPolygons = deletionPolygons;
+        end
+        
+        function save(p, workingDirectory)
+            dentistData = p.getDataToSave();
+            dentist.utils.saveData(dentistData, workingDirectory);
         end
     end
     

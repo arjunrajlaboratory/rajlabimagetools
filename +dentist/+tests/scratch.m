@@ -31,4 +31,8 @@ dentist.setImageOverlap(103);
 
 %%
 
-dentistdentist.processImages();
+dentist.processImages();
+
+%%
+
+dentist.launchingScript;
