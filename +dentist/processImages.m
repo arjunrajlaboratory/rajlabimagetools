@@ -1,8 +1,12 @@
-function dentistData = processImages(dentistConfig)
+function dentistData = processImages(dentistConfig, saveDataFlag)
     
     workingDirectory = pwd;
     if nargin < 1
         dentistConfig = dentist.utils.loadConfig(workingDirectory);
+    end
+    
+    if nargin < 2
+        saveDataFlag = true;
     end
     
     imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(...
@@ -50,7 +54,9 @@ function dentistData = processImages(dentistConfig)
     dentistData.frequencyTables = frequencyTables;
     dentistData.deletionPolygons = deletionPolygons;
     
-    fprintf('Saving data...\n')
-    dentist.utils.saveData(dentistData, workingDirectory);
+    if saveDataFlag
+        fprintf('Saving data...\n')
+        dentist.utils.saveData(dentistData, workingDirectory);
+    end
     fprintf('DONE\n')
     

@@ -1,4 +1,14 @@
 
+workingDirectory = pwd;
+
+if ~exist('dentistConfig', 'var')
+    dentistConfig = dentist.utils.loadConfig(workingDirectory);
+end
+
+if ~exist('dentistData', 'var')
+    dentistData = dentist.utils.loadData(workingDirectory);
+end
+
 
 imageDirectoryReader = dentist.utils.ImageFileDirectoryReader(...
     dentistConfig.dirPath);
@@ -12,34 +22,11 @@ imageDirectoryReader.implementGridLayout(...
 numPixelOverlap = dentistConfig.numPixelOverlap;
 imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
 
-verboseFlag = false;
-[spots, centroids, frequencyTables, thresholdsArray] = ...
-    dentist.findSpotsAndCentroidsAllTiles(imageProvider, verboseFlag);
-
-%%
-maxDistance = 200;
-[spotToCentroidMappings, assignedSpots] = spots.applyForEachChannel(...
-    @dentist.utils.assignSpotsToCentroids, centroids, maxDistance);
-
-%%
-thresholdsInAllTiles = thresholdsArray.aggregateAllPositions(@(x,y) [x, y]);
-thresholds = thresholdsInAllTiles.applyForEachChannel(@median);
-
-%%
-deletionPolygons = {};
 
 % DataSubsystem
 
-resources = struct();
-resources.centroids = centroids;
-resources.assignedSpots = assignedSpots;
-resources.spotToCentroidMappings = spotToCentroidMappings;
-resources.thresholds = thresholds;
-resources.frequencyTables = frequencyTables;
-resources.deletionPolygons = deletionPolygons;
-
+resources = dentistData;
 data = dentist.buildDataSubystem(resources);
-thumbnails = assignedSpots.applyForEachChannel(@(x) rand(1000,1000));
 
 % MakeGUI 
 
