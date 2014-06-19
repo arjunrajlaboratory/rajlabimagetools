@@ -31,11 +31,21 @@ function out = buildDataSubystem(resources)
         deleteableCandidates, thresholdsHolder);
     frequencyTableSource = dentist.utils.FrequencyTableSource(frequencyTables);
     
+    
+    dataSources = struct();
+    dataSources.candidateSpotsAndCentroids = candidateSpotsAndCentroids;
+    dataSources.thresholdsHolder = thresholdsHolder;
+    dataSources.frequencyTableSource = frequencyTableSource;
+    dataSources.deletionsSubsystem = deletionsSubsystem;
+    
+    dataSaver = dentist.DataSaver(dataSources);
+    
     out = struct();
     out.deletionsSubsystem = deletionsSubsystem;
     out.thresholdsHolder = thresholdsHolder;
     out.spotsAndCentroids = spotsAndCentroids;
     out.frequencyTableSource = frequencyTableSource;
+    out.dataSaver = dataSaver;
     
 end
 

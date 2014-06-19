@@ -4,6 +4,9 @@ classdef FrequencyTableSource < handle
     
     properties (SetAccess = private, GetAccess = private)
         frequencyTableArray
+    end
+    
+    properties (SetAccess = private)
         channelNames
     end
     
@@ -14,7 +17,7 @@ classdef FrequencyTableSource < handle
         end
         
         function spotTable = getSpotFrequencyTable(p, channelName)
-           spotTable = p.frequencyTableArray.getByChannelName(channelName);
+            spotTable = p.frequencyTableArray.getByChannelName(channelName);
         end
     end
 end

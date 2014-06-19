@@ -26,7 +26,11 @@ imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverla
 % DataSubsystem
 
 resources = dentistData;
-data = dentist.buildDataSubystem(resources);
+dataSystem = dentist.buildDataSubystem(resources);
+
+% Data saver:
+
+
 
 % MakeGUI 
 
@@ -35,7 +39,7 @@ gui = dentist.createAndLayOutMainGUI();
 % Channel Setting
 
 channelSynchronizer = dentist.utils.ChannelSwitchCoordinator(...
-    data.spotsAndCentroids.channelNames);
+    dataSystem.spotsAndCentroids.channelNames);
 channelSynchronizer.attachUIControl(gui.chanPop);
 
 % Hot to translate Numspots into colors
@@ -47,7 +51,7 @@ numSpotsToColorTranslators = dentist.utils.makeFilledChannelArray(...
 
 % Thumbnails
 resources = struct();
-resources.centroidsAndNumSpotsSource = data.spotsAndCentroids;
+resources.centroidsAndNumSpotsSource = dataSystem.spotsAndCentroids;
 resources.numSpotsToColorTranslators = numSpotsToColorTranslators;
 resources.imageWidthAndHeight = dentist.utils.computeTiledImageWidthAndHeight(...
     imageProvider);
@@ -69,7 +73,7 @@ set(gui.makeThumbnailsButton, 'CallBack', ...
 resources = struct(); 
 resources.gui =  gui;
 resources.imageProvider = imageProvider;
-resources.spotsAndCentroids = data.spotsAndCentroids;
+resources.spotsAndCentroids = dataSystem.spotsAndCentroids;
 resources.thumbnails = thumbnailsProvider;
 resources.channelHolder = channelSynchronizer;
 resources.numSpotsToColorTranslators = numSpotsToColorTranslators;
@@ -80,8 +84,8 @@ resources.zoomTransitionMediumToWide = 1600;
 
 displaySubsystem = dentist.buildImageSubsystem(resources);
 
-data.thresholdsHolder.addActionOnUpdate(displaySubsystem, @draw);
-data.deletionsSubsystem.addActionAfterDeletion(displaySubsystem, @draw);
+dataSystem.thresholdsHolder.addActionOnUpdate(displaySubsystem, @draw);
+dataSystem.deletionsSubsystem.addActionAfterDeletion(displaySubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(displaySubsystem, @draw);
 coloringAndThumbnailSettings.addActionOnSettingsChange(displaySubsystem, @draw);
 thumbnailFactory.addActionAfterMakingThumbnails(displaySubsystem, @draw);
@@ -90,7 +94,7 @@ thumbnailFactory.addActionAfterMakingThumbnails(displaySubsystem, @draw);
 
 resources = struct();
 resources.gui =  gui;
-resources.spotsAndCentroids = data.spotsAndCentroids;
+resources.spotsAndCentroids = dataSystem.spotsAndCentroids;
 resources.viewportHolder = displaySubsystem;
 resources.channelHolder = channelSynchronizer;
 
@@ -99,35 +103,35 @@ configurations.sizeOfViewportWhenFocusedOnCentroid = 800;
 
 listBoxSubsystem = dentist.buildCentroidsListBoxSubsystem(resources, configurations);
 
-data.thresholdsHolder.addActionOnUpdate(listBoxSubsystem, @draw);
-data.deletionsSubsystem.addActionAfterDeletion(listBoxSubsystem, @draw);
+dataSystem.thresholdsHolder.addActionOnUpdate(listBoxSubsystem, @draw);
+dataSystem.deletionsSubsystem.addActionAfterDeletion(listBoxSubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(listBoxSubsystem, @draw);
 
 % threshold Plot subsystem
 
 resources = struct();
 resources.gui = gui;
-resources.frequencyTableSource = data.frequencyTableSource;
-resources.thresholdsHolder = data.thresholdsHolder;
+resources.frequencyTableSource = dataSystem.frequencyTableSource;
+resources.thresholdsHolder = dataSystem.thresholdsHolder;
 resources.channelHolder = channelSynchronizer;
 
 thresholdPlotSubsystem = dentist.buildThresholdPlotSubsystem(resources);
 
-data.thresholdsHolder.addActionOnUpdate(thresholdPlotSubsystem, @draw);
-data.deletionsSubsystem.addActionAfterDeletion(thresholdPlotSubsystem, @draw);
+dataSystem.thresholdsHolder.addActionOnUpdate(thresholdPlotSubsystem, @draw);
+dataSystem.deletionsSubsystem.addActionAfterDeletion(thresholdPlotSubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(thresholdPlotSubsystem, @draw);
 
 % DeletionsUISubsystem
 
 resources = struct();
 resources.gui = gui;
-resources.deletionsSubsystem = data.deletionsSubsystem;
+resources.deletionsSubsystem = dataSystem.deletionsSubsystem;
 
 deletionsUISubsystem = dentist.buildDeletionsUISubsystem(resources);
 
 displaySubsystem.addActionAfterViewportUpdate(deletionsUISubsystem, @draw);
-data.thresholdsHolder.addActionOnUpdate(deletionsUISubsystem, @draw);
-data.deletionsSubsystem.addActionAfterDeletion(deletionsUISubsystem, @draw);
+dataSystem.thresholdsHolder.addActionOnUpdate(deletionsUISubsystem, @draw);
+dataSystem.deletionsSubsystem.addActionAfterDeletion(deletionsUISubsystem, @draw);
 channelSynchronizer.addActionAfterChannelSwitch(deletionsUISubsystem, @draw);
 
 % Add interactions
