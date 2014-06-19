@@ -47,6 +47,10 @@ classdef SpotsPassingThresholdAndCentroids < handle
         function channelNames = get.channelNames(p)
             channelNames = p.candidateSpotsAndCentroids.channelNames;
         end
+        
+        function disp(p)
+            improc2.utils.displayDescriptionOfHandleObject(p)
+        end
     end
     
 end
