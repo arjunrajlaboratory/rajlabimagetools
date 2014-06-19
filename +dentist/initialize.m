@@ -14,6 +14,8 @@ function dentistConfig = initialize(Nrows, Ncols, pathToRawImages)
     dentistConfig.rows = Nrows;
     dentistConfig.cols = Ncols;
     
+    dentistConfig.maxDistance = 200;
+    
     workingDirectory = pwd;
     dentist.utils.saveConfig(dentistConfig, workingDirectory);
 end

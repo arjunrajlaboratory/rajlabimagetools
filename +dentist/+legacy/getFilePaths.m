@@ -294,13 +294,13 @@ function filePaths = updateFilePaths(filePaths,row,col,index,dirPath,nameExt,fou
     s = filesep;
 
     pathDAPI = strcat(dirPath,s,'dapi',indexStr,nameExt);
-    filePaths(row,col,1) = mat2cell(pathDAPI);
+    filePaths(row,col,1) = {pathDAPI};
     %Get the other channel paths
     pathIndex = 2;
     for channel = foundChannels
         if ~strcmp(channel,'dapi') %We already have dapi
             path = strcat(dirPath,s,channel,indexStr,nameExt);
-            filePaths(row,col,pathIndex) = mat2cell(path{1});
+            filePaths(row,col,pathIndex) = path(1);
             pathIndex = pathIndex + 1;
         end
     end

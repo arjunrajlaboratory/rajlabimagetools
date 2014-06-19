@@ -136,7 +136,7 @@ function Td = populateGUI(Hs)
         'Position',[0.495 0.05 0.065 0.45],...
         'BackgroundColor',[1 1 1],...
         'Callback',{@contrastButtonCallBack,1});
-    Td.foundChannels = [mat2cell('dapi')];
+    Td.foundChannels = {'dapi'};
     for channel = Hs.foundChannels
         if ~strcmp(cell2mat(channel),'dapi')
             Td.foundChannels = [Td.foundChannels,channel];
@@ -212,7 +212,7 @@ end
 function shiftButtonCallBack(hObject,eventdata)
     Td = guidata(gcbo);
     set(Td.figH,'Visible','off');
-    TEMP = shiftTiles(Td);
+    TEMP = dentist.legacy.shiftTiles(Td);
     Td.tilesShifted = TEMP.tilesShifted;
     Td.shiftTilesCalled = true;
     guidata(Td.figH,Td);
