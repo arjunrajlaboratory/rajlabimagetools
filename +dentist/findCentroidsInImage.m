@@ -287,7 +287,19 @@ function [centroids] = findCentroidsInImage(imageSource, verboseFlag)
 %         end
         centroids = [centroids; rowRel, colRel];
     end    
-    centroids = dentist.utils.Centroids(centroids(:,2),centroids(:,1));
+    
+    
+    if ~isempty(centroids) 
+        % this will fail if there were no centroids
+        xPositions = centroids(:,2);
+        yPositions = centroids(:,1);
+    else
+        xPositions = [];
+        yPositions = [];
+    end
+  
+    centroids = dentist.utils.Centroids(xPositions,yPositions);
+    
     
     if verboseFlag
         figure(1);
