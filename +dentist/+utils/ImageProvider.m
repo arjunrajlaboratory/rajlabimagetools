@@ -138,6 +138,7 @@ classdef ImageProvider < handle
         function img = getImageByChannelByTile(p, channelName, tile)
             filePath = p.imageDirectoryReader.getFilePathByChannelByPosition(...
                 channelName, tile);
+            fprintf('reading image %s...\n', filePath) 
             img = imread(filePath);
             if ~all(size(img) == p.standardImageSize)
                 size(img)
