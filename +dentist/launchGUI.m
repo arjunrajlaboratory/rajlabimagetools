@@ -24,12 +24,14 @@ function controls = launchGUI(dentistConfig, dentistData)
     numPixelOverlap = dentistConfig.numPixelOverlap;
     imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
     
+    controls.imageProvider = imageProvider;
     
     % DataSubsystem
     
     resources = dentistData;
     dataSystem = dentist.buildDataSubystem(resources);
     
+    controls.dataSystem = dataSystem;
     
     % MakeGUI
     
@@ -41,7 +43,9 @@ function controls = launchGUI(dentistConfig, dentistData)
         dataSystem.spotsAndCentroids.channelNames);
     channelSynchronizer.attachUIControl(gui.chanPop);
     
-    % Hot to translate Numspots into colors
+    controls.channelHolder = channelSynchronizer;
+    
+    % How to translate Numspots into colors
     
     makeDefaultColorer = @() dentist.utils.ValueToColorTranslator(...
         @(numSpots) numSpots/max(numSpots(:)), jet(64));
@@ -67,6 +71,10 @@ function controls = launchGUI(dentistConfig, dentistData)
     set(gui.makeThumbnailsButton, 'CallBack', ...
         @(varargin) thumbnailFactory.makeAllThumbnails())
     
+    controls.coloringAndThumbnailSettings = coloringAndThumbnailSettings;
+    
+    
+    
     % Image subsystem
     
     resources = struct();
@@ -82,6 +90,8 @@ function controls = launchGUI(dentistConfig, dentistData)
     resources.zoomTransitionMediumToWide = 1600;
     
     displaySubsystem = dentist.buildImageSubsystem(resources);
+    
+    controls.displaySubsystem = displaySubsystem;
     
     dataSystem.thresholdsHolder.addActionOnUpdate(displaySubsystem, @draw);
     dataSystem.deletionsSubsystem.addActionAfterDeletion(displaySubsystem, @draw);
@@ -119,6 +129,8 @@ function controls = launchGUI(dentistConfig, dentistData)
     dataSystem.thresholdsHolder.addActionOnUpdate(thresholdPlotSubsystem, @draw);
     dataSystem.deletionsSubsystem.addActionAfterDeletion(thresholdPlotSubsystem, @draw);
     channelSynchronizer.addActionAfterChannelSwitch(thresholdPlotSubsystem, @draw);
+    
+    controls.thresholdPlotSubsystem = thresholdPlotSubsystem;
     
     % DeletionsUISubsystem
     
