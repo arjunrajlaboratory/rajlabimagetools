@@ -85,6 +85,15 @@ function centroids = deleteDuplicates(minPixelDistance,centroids1, centroids2)
     if (nargin  == 2)
         centroids2 = centroids1;
     end
+    
+    % exit immediately if either input is empty. Otherwise
+    % positions1 or positions2 below will not be two-column, and
+    % pdist fails.
+    if length(centroids2) == 0 || length(centroids1) == 0
+        centroids = centroids1;
+        return
+    end
+    
     positions1 = [centroids1.xPositions,...
         centroids1.yPositions];
     positions2 = [centroids2.xPositions,...
