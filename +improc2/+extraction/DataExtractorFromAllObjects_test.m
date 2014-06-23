@@ -15,7 +15,7 @@ objectHandleExtractor.setExtractingFunction('area', @(objH) sum(sum(getCroppedMa
 
 x = improc2.extraction.DataExtractorFromAllObjects(...
     tools.iterator, tools.navigator, objectHandleExtractor, processorDataExtractor, ...
-    annotationExtractor);
+    annotationExtractor,tools.objectHandle);
 x.extractFromProcessorData('', 'hasClearThreshold', 'tmr:threshQC') 
 x.extractFromProcessorData('', @getNumSpots, 'cy')
 

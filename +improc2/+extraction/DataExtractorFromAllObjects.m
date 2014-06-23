@@ -6,17 +6,19 @@ classdef DataExtractorFromAllObjects < handle
         objectHandleExtractor
         processorDataExtractor
         annotationDataExtractor
+        objectHandle
     end
     
     methods
         function p = DataExtractorFromAllObjects(iterator, navigator, ...
                 objectHandleExtractor, ...
-                processorDataExtractor, annotationDataExtractor)
+                processorDataExtractor, annotationDataExtractor, objectHandle)
             p.iterator = iterator;
             p.navigator = navigator;
             p.objectHandleExtractor = objectHandleExtractor;
             p.processorDataExtractor = processorDataExtractor;
             p.annotationDataExtractor = annotationDataExtractor;
+            p.objectHandle = objectHandle;
         end
         
         function celltableout = extractAllToCellTable(p)
@@ -60,6 +62,16 @@ classdef DataExtractorFromAllObjects < handle
             p.objectHandleExtractor.displayExtractionSpecification();
             p.processorDataExtractor.displayExtractionSpecification();
         end
+        
+        function viewObjectHandle(p)
+            p.objectHandle.view();
+        end
+        
+        function [data] = getDataFromObjectHandle(p,nodeLabel,varargin)
+            data = p.objectHandle.getData(nodeLabel, varargin{:});
+        end
+                
+        
     end
     methods (Access = private)
         function extractedDataAsRow = extractFromThisObject(p)

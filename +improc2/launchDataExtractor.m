@@ -11,7 +11,7 @@ function varargout = launchDataExtractor(dirPathOrAnArrayCollection)
     
     dataExtractor = improc2.extraction.DataExtractorFromAllObjects(...
         tools.iterator, tools.navigator, objectHandleExtractor, processorDataExtractor, ...
-        annotationExtractor);
+        annotationExtractor, tools.objectHandle);
     if nargout == 1
         varargout = cell(1);
         varargout{1} = dataExtractor;
