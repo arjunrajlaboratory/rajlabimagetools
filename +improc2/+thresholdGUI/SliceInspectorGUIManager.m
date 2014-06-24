@@ -15,7 +15,7 @@ classdef SliceInspectorGUIManager < handle
             p.keyboardInterpreter = buildResources.keyboardInterpreter;
         end
         function launchGUI(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 figure(p.figH)
             else
                 p.buildGUI()
@@ -24,18 +24,21 @@ classdef SliceInspectorGUIManager < handle
                     @keyboardInterpreter.keyPressCallBackFunc)
             end
         end
+        function TF = isActive(p)
+            TF = ~isempty(p.sliceBrowser) && isvalid(p.sliceBrowser);
+        end
         function updateIfActive(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 p.sliceBrowser.draw()
             end
         end
         function goUpOneSlice(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 p.sliceBrowser.goUpOneSlice()
             end
         end
         function goDownOneSlice(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 p.sliceBrowser.goDownOneSlice()
             end
         end

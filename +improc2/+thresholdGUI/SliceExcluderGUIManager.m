@@ -14,7 +14,7 @@ classdef SliceExcluderGUIManager < handle
             p.keyboardInterpreter = buildResources.keyboardInterpreter;
         end
         function launchGUI(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 figure(p.figH)
             else
                 p.buildGUI()
@@ -23,8 +23,11 @@ classdef SliceExcluderGUIManager < handle
                     @keyboardInterpreter.keyPressCallBackFunc)
             end
         end
+        function TF = isActive(p)
+            TF = ~isempty(p.spotsPerSliceDisplayer) && isvalid(p.spotsPerSliceDisplayer);
+        end
         function updateIfActive(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if p.isActive()
                 p.spotsPerSliceDisplayer.draw()
             end
         end

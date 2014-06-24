@@ -17,7 +17,7 @@ classdef ImageWindowModuleSingleton < handle
             p.keyboardInterpreter = resources.keyboardInterpreter;
         end
         function launchGUI(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if ~isempty(p.imageWindowModule) && isvalid(p.imageWindowModule)
                 figure(p.figH)
             else
                 p.buildGUI()
@@ -48,7 +48,7 @@ classdef ImageWindowModuleSingleton < handle
         end
         
         function updateIfActive(p)
-            if ~isempty(p.figH) && ishandle(p.figH)
+            if isvalid(p.imageWindowModule)
                 p.imageWindowModule.draw()
             end
         end
