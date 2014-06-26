@@ -164,6 +164,12 @@ classdef ImageObjectArrayCollectionNavigator < handle
             loadedObjects = p.imageObjectArrayCollection.getObjectsArray(p.currentArrayNum);
             dataArrayIsNotEmpty = ~isempty(loadedObjects);
             if dataArrayIsNotEmpty
+                % validate that these are good objects
+                % using the errorIfInvalid method defined for each type of
+                % object.
+                for i = 1:length(loadedObjects)
+                    errorIfInvalid(loadedObjects(i))
+                end
                 p.objects = loadedObjects;
             end
         end
