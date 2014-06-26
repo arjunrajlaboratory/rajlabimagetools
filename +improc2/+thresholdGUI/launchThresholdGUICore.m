@@ -1,11 +1,12 @@
 function outStruct = launchThresholdGUICore(varargin)
     
     browsingTools = improc2.launchImageObjectBrowsingTools(varargin{:});
+    
+    %%
     gui = improc2.thresholdGUI.layOutThresholdGUICore();
     set(gui.figH, 'HandleVisibility', 'callback')
     
     objectHandle = browsingTools.objectHandle;
-    
     
     %%
     [rnaChannels, rnaProcessorClassName] = improc2.thresholdGUI.findRNAChannels(objectHandle);
@@ -16,7 +17,12 @@ function outStruct = launchThresholdGUICore(varargin)
     rnaProcessorDataHolder = improc2.utils.ProcessorDataHolder(...
         objectHandle, rnaChannelSwitch, rnaProcessorClassName);
     
+    %% models for threshold review and for hasClearThreshold status
+    
     if isa(rnaProcessorDataHolder.processorData, 'improc2.interfaces.NodeData')
+        % these are new-style image objects
+        
+        % make sure there is a thresholdQCData node in every RNA channel
         channelHasQCDataFunc = @(channelName) objectHandle.hasData(...
             channelName, 'improc2.nodeProcs.ThresholdQCData');
         assert(all(cellfun(channelHasQCDataFunc, rnaChannels)), ...
@@ -28,9 +34,12 @@ function outStruct = launchThresholdGUICore(varargin)
             thresholdQCDataHolder);
         clearThresholdProcessorDataHolder = thresholdQCDataHolder;
     else
+        % legacy image objects
         thresholdReviewFlagger = improc2.thresholdGUI.NullThresholdReviewFlagger();
         clearThresholdProcessorDataHolder = rnaProcessorDataHolder;
     end
+    
+    %% rna image Holder and image/thresholdplot saturation values
     
     rnaScaledImageHolder = improc2.utils.ImageFromProcessorDataHolder(rnaProcessorDataHolder);
     saturationValuesHolder = improc2.utils.FixedContrastSettings(rnaChannelSwitch, rnaScaledImageHolder);

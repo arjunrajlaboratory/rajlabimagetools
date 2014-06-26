@@ -8,6 +8,9 @@ classdef FileBasedImageObjectArrayCollection < improc2.interfaces.ObjectArrayCol
         function p = FileBasedImageObjectArrayCollection(...
                 imageObjectDataFiles, varargin)
             p.imageObjectDataFiles = imageObjectDataFiles;
+            % GPN: force matlab to throw errors if class file cannot be
+            % loaded. Forever. 
+            warning('error','MATLAB:load:cannotInstantiateLoadedVariable')
         end
         
         function objects = getObjectsArray(p, n)
