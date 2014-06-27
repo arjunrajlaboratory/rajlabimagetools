@@ -11,6 +11,8 @@ classdef ZSlicer < handle
             p.sliceToTake = sliceToTake;
         end
         function slicedImg = sliceImage(p, img)
+            numSlicesAvailable = size(img, 3);
+            p.sliceToTake = min(p.sliceToTake, numSlicesAvailable);
             slicedImg = img(:, :, p.sliceToTake);
         end
         function [XsInSlice, YsInSlice] = slicePoints(p, Xs, Ys, Zs)
