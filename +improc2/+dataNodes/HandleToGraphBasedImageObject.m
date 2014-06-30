@@ -149,6 +149,16 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             improc2.utils.displayDescriptionOfHandleObject(p);
         end
         
+        function nodesWithData = getLabelsOfNodesWithData(p)
+            nodesWithData = {};
+            graph = p.objHolder.obj.graph;
+            for i = 1:length(graph.nodes)
+                node = graph.nodes{i};
+                if isa(node.data, 'improc2.interfaces.NodeData')
+                    nodesWithData(end + 1) = {node.label};
+                end
+            end
+        end
     end
     
     methods (Access  = private)
