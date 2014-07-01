@@ -11,7 +11,11 @@ function addAnnotationItemsToAllObjects(annotationStruct, varargin)
     while iterator.continueIteration;
         for i = 1:length(newItemNames)
             itemName = newItemNames{i};
-            annotationItemAdder.addItem(itemName, annotationStruct.(itemName));
+            try
+                annotationItemAdder.addItem(itemName, annotationStruct.(itemName));
+            catch err
+                fprintf('Could not add annotation because %s\n', err.message)
+            end
         end
         iterator.goToNextObject()
     end
