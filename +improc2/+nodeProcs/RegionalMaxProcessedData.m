@@ -135,6 +135,49 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
             numSpots = sum(p.regionalMaxValues>p.threshold);
         end
         
+                
+        function thresholdSensitivity = getThresholdSensitivity(p)
+            regionalMaxValues = double(p.regionalMaxValues);  % Assumes this is sorted from lowest to highest
+            threshold = p.threshold;
+            
+            if threshold >= max(regionalMaxValues) % i.e., threshold results in no spots
+                thresholdSensitivity = 0;
+            else
+                % Note: if regionalMaxValues has any duplicate values, then
+                % interpolation won't work. So we have to add something to
+                % spread out these values a bit.
+                
+                diffRegionalMaxValues = diff(regionalMaxValues);
+                duplicateIndices = find(diffRegionalMaxValues==0);
+                minDiff = min(diffRegionalMaxValues(diffRegionalMaxValues ~= 0));
+                regionalMaxValues(duplicateIndices) = regionalMaxValues(duplicateIndices) - minDiff/100; % separates these duplicate values
+                                
+                minRegionalMaxValue = min(regionalMaxValues);
+                %maxRegionalMaxValue = max(regionalMaxValues); % instead, included more complex logic here to get rid of txn site outliers
+                regionalMaxValuesAboveThreshold = regionalMaxValues(regionalMaxValues > threshold);
+                numRegionalMaxValuesAboveThreshold = numel(regionalMaxValuesAboveThreshold);
+                % Logic is: if more than 5 spots, get rid of at least 2 or
+                % 10% of total spots, whichever is higher.
+                if numRegionalMaxValuesAboveThreshold > 5
+                    mx = max([2,round(0.10*numRegionalMaxValuesAboveThreshold)]);
+                    maxRegionalMaxValue = max(regionalMaxValues(1:end-mx));
+                else
+                    maxRegionalMaxValue = max(regionalMaxValues);
+                end
+                                
+                y = numel(regionalMaxValues):-1:1;
+                x = linspace(minRegionalMaxValue,maxRegionalMaxValue,200);
+                
+                regionalMaxPlateauPlot = interp1(regionalMaxValues,y,x);
+                
+                derivativeSmoothedPlateauPlot = diff(smooth(log(regionalMaxPlateauPlot)));
+                
+                sensitivity = interp1(x(1:end-1) + (x(2)-x(1))/2, derivativeSmoothedPlateauPlot, threshold);
+                
+                thresholdSensitivity = -sensitivity;
+            end
+        end
+        
         function [I,J,K] = getSpotCoordinates(p)
             spotInds = p.regionalMaxValues > p.threshold;
             if isempty(spotInds)  % threshold results in no spots
