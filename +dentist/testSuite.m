@@ -1,3 +1,5 @@
+display('dentist.legacy.getLayoutOrientation_test')
+dentist.legacy.getLayoutOrientation_test;
 display('dentist.utils.asRowAndColumn_test')
 dentist.utils.asRowAndColumn_test;
 display('dentist.utils.assignSpotsToCentroids_test')
@@ -144,5 +146,5 @@ display('dentist.findSpotsInTile_test')
 dentist.findSpotsInTile_test;
 display('dentist.ImageDisplaySubsystem_test')
 dentist.ImageDisplaySubsystem_test;
-display('dentist.launchingScript_test')
-dentist.launchingScript_test;
+display('dentist.launchGUI_test')
+dentist.launchGUI_test;
