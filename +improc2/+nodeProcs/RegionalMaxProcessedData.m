@@ -150,7 +150,7 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
                 diffRegionalMaxValues = diff(regionalMaxValues);
                 duplicateIndices = find(diffRegionalMaxValues==0);
                 minDiff = min(diffRegionalMaxValues(diffRegionalMaxValues ~= 0));
-                regionalMaxValues(duplicateIndices) = regionalMaxValues(duplicateIndices) - minDiff/100; % separates these duplicate values
+                regionalMaxValues(duplicateIndices) = regionalMaxValues(duplicateIndices) - minDiff/100*(1-duplicateIndices/length(regionalMaxValues)); % separates these duplicate values
                                 
                 minRegionalMaxValue = min(regionalMaxValues);
                 %maxRegionalMaxValue = max(regionalMaxValues); % instead, included more complex logic here to get rid of txn site outliers
