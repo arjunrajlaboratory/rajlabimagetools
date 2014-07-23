@@ -14,6 +14,13 @@ firstProcessorData = run(unprocessedData, channelStackContainer);
 x = improc2.nodeProcs.TwoStageSpotFitProcessedData();
 xProcessed = run(x, firstProcessorData, channelStackContainer);
 
+
+%Test no spots boundary case
+firstProcessorData.threshold = 1000000;
+xProcessed2 = run(x, firstProcessorData, channelStackContainer);
+
+
+
 assert(length(xProcessed.getFittedSpots()) == firstProcessorData.getNumSpots())
 assert(length(xProcessed.getFittedBackgLevels()) == firstProcessorData.getNumSpots())
 

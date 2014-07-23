@@ -36,6 +36,13 @@ classdef TwoStageSpotFitProcessedData < improc2.interfaces.ProcessedData & ...
         
         function pDataAfterProcessing = run(pData, spotsProvider, channelStackContainer)
             
+            if isempty(spotsProvider.getSpotCoordinates())
+            spots = improc2.fitting.Gaussian2dSpot.empty;
+            pData = setFittedSpots(pData, spots); 
+            pData = setFittedBackgLevels(pData, spotsProvider.getSpotCoordinates());
+            pDataAfterProcessing = pData;
+            else
+            
             [Is, Js, Ks] = spotsProvider.getSpotCoordinates();
             Xs = Js;
             Ys = Is;
@@ -49,6 +56,8 @@ classdef TwoStageSpotFitProcessedData < improc2.interfaces.ProcessedData & ...
                 improc2.fitting.fitSpotPositionsThenRefineForAmplitude(...
                 filteredImg, croppedImg, Xs, Ys, Zs);
             pDataAfterProcessing = pData;
+            
+            end
         end
         
         function spots = getFittedSpots(pData)
