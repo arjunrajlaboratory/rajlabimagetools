@@ -12,23 +12,20 @@
 
 % Paul Ginart, 2013
 
-classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
+classdef SNPColocalizerData < improc2.interfaces.ProcessedData
     
     
     properties
-        needsUpdate = true;
+        needsUpdate = true
     end
-    
     properties (Constant = true)
-        dependencyClassNames = {'improc2.interfaces.FittedSpotsContainer', ...
-            'improc2.interfaces.FittedSpotsContainer', ...
+        dependencyClassNames = {...
+            'improc2.interfaces.FittedSpotsContainer',...
+            'improc2.interfaces.FittedSpotsContainer',...
             'improc2.interfaces.FittedSpotsContainer'};
-        dependencyDescriptions = {'fitted guide', 'fitted snpA', 'fitted snpB'};
+        dependencyDescriptions = {'guide', 'snpA', 'snpB'};
     end
     
-    properties
-        metadata
-    end
     
     properties (SetAccess = private)
         initialDistance; % Distance for colocalization in the first pass
@@ -40,6 +37,8 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
         % (especially compared with x and y).
         
         shiftFlag; %true if performing a shift correction
+        
+        guideData;
         
         % Alternative:
         % snpMap
@@ -70,7 +69,91 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
         
         guide_data %dataSetObjects that contain the above information in coherent form
         snpA_data
-        snpB_data
+        snpB_data 
+    end
+    
+    methods
+        
+        function p = run(p, guideFittedSpotsHolder, ...
+                snpAFittedSpotsHolder, snpBFittedSpotsHolder)
+            
+            guideSpots = getFittedSpots(guideFittedSpotsHolder);
+            snpASpots = getFittedSpots(snpAFittedSpotsHolder);
+            snpBSpots = getFittedSpots(snpBFittedSpotsHolder);
+            
+            guide_zCoordinates = arrayfun(@(x) x* p.zDeform, [guideSpots.zPlane]);
+            snpA_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpASpots.zPlane]);
+            snpB_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpBSpots.zPlane]);
+            
+            guidePositions = [[guideSpots.xCenter]', [guideSpots.yCenter]', guide_zCoordinates'];
+            snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
+            snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', snpB_zCoordinates'];
+                 
+            [pairsA, shiftsA] = colocalizePositions(p, guidePositions,snpAPositions);
+            [pairsB, shiftsB] = colocalizePositions(p, guidePositions,snpBPositions);
+
+            idx_guide = zeros(length(guideSpots), 1);
+            
+            idx_guide(pairsA(:,1)) = idx_guide(pairsA(:,1)) + 1;
+            idx_guide(pairsB(:,1)) = idx_guide(pairsB(:,1)) + 1;
+            
+            Labels = cell(length(guidePositions),1);     %Vector that idenitifies the label of each guide probe
+            Labels(idx_guide == 0) = cellstr('undetec');
+            Labels(pairsA(:,1)) = p.snpMap.names(2);
+            Labels(pairsB(:,1)) = p.snpMap.names(3);
+            Labels(idx_guide == 2) = cellstr('3-color'); %order matters here
+            
+            levels = {p.snpMap.names{2}, p.snpMap.names{3}, 'undetec', '3-color'};
+            labels = nominal();
+            labels = addlevels(labels, levels);
+            
+            p.guideData = dataset();
+            p.data.(p.snpMap.channels{1}).ID = [1:length(guideSpots)]';
+            p.data.(p.snpMap.channels{1}).position =  guidePositions;
+            p.data.(p.snpMap.channels{1}).amplitude = guideSpots.amplitude;
+            p.data.(p.snpMap.channels{1}).sigma = guideSpots.sigma;
+            p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
+            
+            
+            fprintf('Currently run does nothing\n');
+        end
+        
+        function [pairs,  shifts] = colocalizePositions(p, guidePositions, snpPositions)
+            
+            pairwiseDist = pdist2(guidePositions, snpPositions);
+            
+            [minGuideDistances, minSnpIndex] = min(pairwiseDist');
+            
+            % find guides and SNPs that have snp within < initialDistance
+            guide_colocalized_Index = find(minGuideDistances < p.initialDistance)';
+            snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
+            
+            % chromatic shift for each one of these
+            % try to make dimensions involved more explicit
+            totalShift = guidePositions(guide_colocalized_Index,:) ...
+                - snpPositions(snp_colocalized_Index,:);
+            medianShift = median(totalShift);
+            
+            
+            snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
+            pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+            
+            [minGuideDistances, minSnpIndex] = min(pairwiseDist');
+            
+            % find guides and SNPs that have snp within < initialDistance
+            guide_colocalized_Index = find(minGuideDistances < p.finalDistance)';
+            snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
+            
+            % move out of loop if want to keep shiftflag= false option.
+            pairs = [guide_colocalized_Index, snp_colocalized_Index];
+            
+            shifts = zeros(length(guidePositions), 3);
+            shifts(guide_colocalized_Index,:) = guidePositions(guide_colocalized_Index,:) ...
+                - snpPositions(snp_colocalized_Index,:);
+            
+            
+            
+        end
     end
     
     methods
@@ -101,10 +184,6 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
             
         end
         
-        function p = run(p, guideFittedSpotsHolder, snpAFittedSpotsHolder, snpBFittedSpotsHolder)
-            fprintf('Currently run does nothing\n');
-        end
-        
         % THE OLD PROCESSING FUNCTION
         function p = oldRunMethod(p,inObj)
             %Load in data from gaussian post-processor and place into dataset
@@ -117,7 +196,7 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
                 if isfield(inObj.channels.(p.snpMap.channels{i}).metadata,'gaussFitPostProc')
                     
                    % change ' to (:)
-                    x = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.xp';  % Draws data from post-processed fit
+                    x = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.xp';  %Draws data from post-processed fit
                     y = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.yp';
                     z = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.zp';
                     
@@ -129,12 +208,14 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
                     p.data.(p.snpMap.channels{i}).amplitude = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.amp';
                     p.data.(p.snpMap.channels{i}).sigma = inObj.channels.(p.snpMap.channels{i}).metadata.gaussFitPostProc.sig';
                     
-                    pos_transformed.(p.snpMap.channels{i}) = [x, y, z * p.zDeform]; % temporarily store z-deformed coordinates for localization
+                    pos_transformed.(p.snpMap.channels{i}) = [x, y, z * p.zDeform]; %temporarily store z-deformed coordinates for localization
                     
                     if isempty(pos_transformed.(p.snpMap.channels{i}))
-                        pos_transformed.(p.snpMap.channels{i}) = zeros(0,3); % set data equal to zero so that things work later
+                        pos_transformed.(p.snpMap.channels{i}) = zeros(0,3); %set data equal to zero so that things work later
                     end
+                    
                 else
+
                     % Should be an error. Won't be necessary in newest version. 
                     fprintf('Have to run gaussFitPostProc first\n');
                 end
@@ -250,6 +331,7 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
             %Get Labels for SNPS
             three_color_spots_ID = find(idx_guide == 2);
             for i = 2:3
+                Labels = []; %Clear variable
                 
                 snp_3color_pairs_index = find(ismember(pairs{i-1}(:,1), three_color_spots_ID));
                 snp_3color_IDs = pairs{i-1}(snp_3color_pairs_index,2);
@@ -262,10 +344,152 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData;
                 labels = addlevels(labels, levels);
                 p.data.(p.snpMap.channels{i}).labels = vertcat(labels, nominal(Labels));
                 
+%                 p.data.(p.snpMap.channels{i}).labels = nominal(Labels);
+%                 levelsToAdd_idx = ~ismember(levels, getlevels(p.data.(p.snpMap.channels{i}).labels));
+%                 
+%                 if any(levelsToAdd_idx)
+%                 p.data.(p.snpMap.channels{i}).labels = addlevels(p.data.(p.snpMap.channels{i}).labels, ...
+%                 cellstr(levels(levelsToAdd_idx)));
+%                 end
+            
                 
                 p.data.(p.snpMap.channels{i}).guide_neighbors = zeros(numSpots(i),1);
                 p.data.(p.snpMap.channels{i}).guide_neighbors(pairs{i-1}(:,2)) = pairs{i-1}(:,1);
-            end 
-        end         
+            end
+
+            
+        end
+        
+        function showSNP(p,inObj,whichLabel)
+            % Plots all spots on max merge of guide probe channel and
+            % single SNP channel as labeled by whichLabel
+            if p.isProcessed % If the processor has already been run
+                
+                idx_snpMap_vector = find(strcmp(p.snpMap.names, whichLabel));
+                snpChannel = p.snpMap.channels{idx_snpMap_vector};
+                
+                img = inObj.channelStk(p.snpMap.channels{1});
+                
+                shift = ['medDiff_1', num2str(idx_snpMap_vector)]; %Set which shift we are colocalizing with respect to
+                posSNP = ['pos_', num2str(idx_snpMap_vector)];
+                
+                guidePositions = p.pos_1;
+                snpPositions = p.(posSNP);
+                shifts = p.(shift);
+                snpPositions = bsxfun(@plus, snpPositions, shifts);
+                
+                imgmax = max(img,[],3);  %MAX MERGE
+                
+                hold off;
+                imgmax = imadjust(imgmax,[0.3 0.5],[]);
+                imshow(imgmax,[]);  %Plot image
+                
+                hold on;
+                plot(guidePositions(:,2),guidePositions(:,1),'go');  % First the ref channel in green
+                plot(snpPositions(:,2), snpPositions(:,1), 'co');  % other channel in cyan
+                plot(guidePositions(p.labels_1 == whichLabel,2), guidePositions(p.labels_1 == whichLabel,1),'mo','markersize',10); %Plot the co_localized spots
+                
+                hold off;
+            else
+                fprintf('Colocalization analysis not run yet.\n');
+            end;
+        end;
+        
+        function showResults(p, inObj)
+            
+            if p.isProcessed % If the processor has already been run
+                img = inObj.channelStk(p.snpMap.channels{1}); %Get image in guide channel
+                guidePositions = p.pos_1;
+                
+                snpA_IDs = p.neighborIDs_1(:,1);
+                snpB_IDs = p.neighborIDs_1(:,2);
+                
+                snpAidx = snpA_IDs(snpA_IDs > 0);
+                snpBidx = snpB_IDs(snpB_IDs > 0);
+                
+                snpAPositions = p.pos_2;
+                snpBPositions = p.pos_3;
+                
+                snpAPositions = snpAPositions(snpAidx,:);
+                snpBPositions = snpBPositions(snpBidx,:);
+                
+                snpAPositions = bsxfun(@plus, snpAPositions, p.medDiff_12);  %Add in the median shift
+                snpBPositions = bsxfun(@plus, snpBPositions, p.medDiff_13);
+                
+                imgmax = max(img,[],3);  %MAX MERGE
+                
+                hold off;
+                spotsPic = figure;
+                
+                imshow(imgmax,[]);  %Plot image
+                
+                %
+                hold on;
+                plot(guidePositions(:,2),guidePositions(:,1),'yo');  % First the ref channel in green
+                plot(guidePositions(p.labels_1 == p.snpMap.names{2},2), guidePositions(p.labels_1 == p.snpMap.names{2},1),'co','markersize',10); %Plot the co_localized spots
+                plot(guidePositions(p.labels_1 == p.snpMap.names{3},2), guidePositions(p.labels_1 == p.snpMap.names{3},1),'mo','markersize',10); %Plot the co_localized spots
+                
+                color3_idx =  p.labels_1 == '3-color';
+                
+                intensities2 = [p.intensity_2(p.neighborIDs_1(color3_idx, 1)), p.intensity_2(p.neighborIDs_1(p.labels_1 == p.snpMap.names{2},1))];
+                intensities3 = [p.intensity_3(p.neighborIDs_1(color3_idx, 2)), p.intensity_3(p.neighborIDs_1(p.labels_1 == p.snpMap.names{3},2))];
+                
+                [n xout] = hist(intensities2, 500);
+                xout(end) = max(intensities2);
+                percentile2 = cumsum(n./length(intensities2));
+                [n2 xout2] = hist(intensities3, 500);
+                xout2(end) = max(intensities3);
+                percentile3 = cumsum(n2./length(intensities3));
+                
+                snpIntensity = [p.intensity_2(p.neighborIDs_1(color3_idx, 1))', p.intensity_3(p.neighborIDs_1(color3_idx, 2))'] %Intensity of spots
+                snpPercentiles = [];
+                for i = 1:length(snpIntensity)
+                    snpPercentiles = [snpPercentiles; percentile2(find(xout >= snpIntensity(i,1), 1,'first')), percentile3(find(xout2 >= snpIntensity(i,2), 1,'first'))];
+                    color3_2(i) = percentile2(find(xout >= snpIntensity(i,1), 1,'first')) > percentile3(find(xout2 >= snpIntensity(i,2), 1,'first'));
+                end
+                
+                color3guides = guidePositions(color3_idx,:);
+                
+                plot(color3guides(color3_2, 2), color3guides(color3_2, 1), 'co', 'markersize',10)
+                plot(color3guides(~color3_2, 2), color3guides(~color3_2, 1), 'mo', 'markersize',10)
+                legend(p.snpMap.names)
+                
+                name = inObj(1).channels.gfp.filename;
+                name = name(4:6);
+                
+                print(spotsPic, '-dtiff', ['spots', name]);
+                
+                hold off;
+                
+                %                 intensityPic = figure;
+                %                 scatter(snpIntensity(:,1), snpIntensity(:,2));
+                %                 title('Intensity Scatter');
+                %                 xlabel([p.snpMap.names{2}, ' pixel intensity']);
+                %                 ylabel([p.snpMap.names{3}, ' pixel intenisty']);
+                %                 print(intensityPic, '-djpeg', ['intensity', name]);
+                
+                
+                %                 percentilePic = figure;
+                %                 scatter(snpPercentiles(:,1), snpPercentiles(:,2));
+                %                 title('Percentile Scatter');
+                %                 xlabel(p.snpMap.names{2});
+                %                 ylabel(p.snpMap.names{3});
+                %                 print(percentilePic, '-djpeg', ['percentile', name]);
+                %                 close all
+                %
+                
+            else
+                fprintf('Colocalization analysis not run yet.\n');
+            end;
+            
+        end
+        
     end
+    
 end
+
+
+
+
+
+
