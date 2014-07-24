@@ -44,6 +44,13 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data.Ys = [];
             p.objectHandle.setData(data, p.dataNodeLabel);
         end
+        
+        function flagAsReviewed(p)
+            fprintf('flagged!!\n')
+            data = p.objectHandle.getData(p.dataNodeLabel);
+            data.needsUpdate = false;
+            p.objectHandle.setData(data, p.dataNodeLabel);
+        end
     end
     
 end

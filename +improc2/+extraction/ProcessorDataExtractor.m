@@ -48,6 +48,9 @@ classdef ProcessorDataExtractor < handle
                 extraArgsToGet = p.extraArgsToGetProc{i};
                 
                 procData = p.objectHandle.getData(channelName, extraArgsToGet{:});
+                if isprop(procData, 'needsUpdate') && procData.needsUpdate
+                    warning('Data being extracted is flagged as needing an update!')
+                end    
                 extractedDatum = functionOfProcData(procData);
                 extractedData = [extractedData ; {nameInOutput, extractedDatum}];
             end
