@@ -8,7 +8,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
     
     methods
         
-        function p = TranscriptionSitesCollectionFromObjectHandle(objectHandle, dataNodeLabel)
+        function p = IntronExonTranscriptionSitesCollection(objectHandle, dataNodeLabel)
             p.objectHandle = objectHandle;
             p.dataNodeLabel = dataNodeLabel;
         end
