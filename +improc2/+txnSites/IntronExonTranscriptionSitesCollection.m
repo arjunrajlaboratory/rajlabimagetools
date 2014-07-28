@@ -1,5 +1,5 @@
 classdef IntronExonTranscriptionSitesCollection < ...
-        opm.txnsites.interfaces.TranscriptionSitesCollection
+        improc2.txnSites.interfaces.TranscriptionSitesCollection
     
     properties (Access = private)
         objectHandle
@@ -46,7 +46,6 @@ classdef IntronExonTranscriptionSitesCollection < ...
         end
         
         function flagAsReviewed(p)
-            fprintf('flagged!!\n')
             data = p.objectHandle.getData(p.dataNodeLabel);
             data.needsUpdate = false;
             p.objectHandle.setData(data, p.dataNodeLabel);

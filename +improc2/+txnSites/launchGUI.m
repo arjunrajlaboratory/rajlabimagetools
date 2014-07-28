@@ -25,7 +25,7 @@ imageHolders.dapi = ...
     'dapi', ...
     'improc2.nodeProcs.DapiProcessedData');
 
-improc2.txnSites.launchIntronExonTxnSiteGUI(navigator, nodeDataBasedTxnSitesCollection, imageHolders)
+improc2.txnSites.IntronExonTxnSiteGUIcore(navigator, nodeDataBasedTxnSitesCollection, imageHolders)
 
 improc2.launchAnnotationsGUI(tools.annotations)
 

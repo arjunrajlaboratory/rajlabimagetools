@@ -7,9 +7,9 @@
 % tools
 % baseTxnSitesCollection
 
-function launchIntronExonTxnSiteGUI(navigator, baseTxnSitesCollection, imageHolders)
+function IntronExonTxnSiteGUIcore(navigator, baseTxnSitesCollection, imageHolders)
 
-gui = opm.txnsites.layOutGUI();
+gui = improc2.txnSites.layOutGUI();
 
 imgAx = gui.imgAx;
 figH = gui.figH;
@@ -39,7 +39,7 @@ UIToParamsForComposite.attachUIControl('exonMultiplier', exonMultiplierTextBox)
 
 
 
-compositeImageMaker = opm.txnsites.CompositeImageMaker(exonImageHolder, ...
+compositeImageMaker = improc2.txnSites.CompositeImageMaker(exonImageHolder, ...
     intronImageHolder, dapiImageHolder, paramsForComposite);
 
 sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(intronImageHolder);
@@ -49,10 +49,10 @@ compositeImageDisplayer = improc2.utils.ImageDisplayer(imgAx, compositeImageMake
 
 
 
-txnSitesCollection = opm.txnsites.utils.NotifyingTranscriptionSitesCollection(...
+txnSitesCollection = improc2.txnSites.utils.NotifyingTranscriptionSitesCollection(...
     baseTxnSitesCollection);
 
-txnSitesDisplayer = opm.txnsites.utils.TranscriptionSitesDisplayer(imgAx, txnSitesCollection);
+txnSitesDisplayer = improc2.txnSites.utils.TranscriptionSitesDisplayer(imgAx, txnSitesCollection);
 
 mainWindowDisplayer = dentist.utils.DisplayerSequence(...
     compositeImageDisplayer, txnSitesDisplayer);
@@ -63,7 +63,7 @@ UIToParamsForComposite.addActionAfterSettingAnyValue(mainWindowDisplayer, @draw)
 
 
 txnSiteAddingInterpreter = ...
-    opm.txnsites.utils.TranscriptionSiteAddingInterpreter(txnSitesCollection);
+    improc2.txnSites.utils.TranscriptionSiteAddingInterpreter(txnSitesCollection);
 
 zoomInterpreter = dentist.utils.ImageZoomingMouseInterpreter(viewportHolder);
 
@@ -97,7 +97,7 @@ zoomPanAddToggler = dentist.utils.FunctionExecutingToggleGroup(...
 
 zoomPanAddToggler.initialize('add');
 
-zoomAddTwoWaySwitcher = opm.txnsites.utils.TwoWayActionAlternator(...
+zoomAddTwoWaySwitcher = improc2.txnSites.utils.TwoWayActionAlternator(...
     @() zoomPanAddToggler.activateButton('add'), ...
     @() zoomPanAddToggler.activateButton('zoom'));
 
