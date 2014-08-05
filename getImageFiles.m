@@ -47,7 +47,7 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
             foundChannels = [foundChannels channel];
             % Use regular expressions to enforce strict filename matching and also 
             % pull out file numbering from filenames for use later
-            expr = [cell2mat(channel) '(\d{3})(\.stk|\.tif|\.tiff)$'];  % channel%03d\.tif/stk only
+            expr = [cell2mat(channel) '(\d{3})(\.stk|\.tif|\.tiff|\.TIF)$'];  % channel%03d\.tif/stk only
             fileNums = [];
             for k = 1:numel(RNAfiles)
                 [tokenStr] = regexp(RNAfiles(k).name,expr,'tokens');
