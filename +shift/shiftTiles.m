@@ -26,7 +26,7 @@
 % 4 4 4 5 5 5 
 % 4 4 4 
 %--------------------------------------------------------------------------
-function CT = shiftTiles(filePaths)
+function CT = shiftTiles(filePaths, foundChannels)
     Hs = shift.createAndLayoutMainGUI();
     imageProvider = shift.ImageProvider(filePaths);
     keyInterpreter = shift.KeyPressInterpreter(Hs.figH);
@@ -44,6 +44,8 @@ function CT = shiftTiles(filePaths)
         axesManager, Hs.figH});
     set(Hs.bringFrontButton, 'Callback',{@bringToFrontCallback, axesManager,...
         Hs.figH});
+    set(Hs.processTilesButton, 'Callback',{@processTilesCallBack,...
+        imageProvider, axesManager, foundChannels});
     
     axesManager.displayImage();
 end
@@ -56,10 +58,19 @@ function bringToFrontCallback(hObject, eventData, axesManager, figH)
     axesManager.bringSelectedToFront();
     setFocusToFigure(figH);
 end
+function processTilesCallBack(hObject, eventData, imageProvider,...
+    axesManager, foundChannels)
+    imageProvider.filePaths
+    imageProvider.imageSize
+    
+    shift.process.processTiles(imageProvider.filePaths, imageProvider.imageSize,...
+        axesManager.rightUL, axesManager.downUL, foundChannels)
+end
 function setFocusToFigure(figH)
     warning off MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame
     javaFrame = get(figH,'JavaFrame');
     javaFrame.getAxisComponent.requestFocus;
 end
+
 
 
