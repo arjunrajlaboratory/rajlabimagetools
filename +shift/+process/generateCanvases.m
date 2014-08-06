@@ -3,7 +3,12 @@ function canvases = generateCanvases(r, c, filePaths, imageSize,...
     tileSize, grid)
     canvases = cell(1,size(filePaths,3));
     for index = 1:size(filePaths,3)
-        canvases{1,index} = zeros(tileSize);
+        if numel(imageSize) == 2
+            canvasSize = tileSize;
+        else
+            canvasSize = [tileSize,3];
+        end
+        canvases{1,index} = zeros(canvasSize);
     end
     gridMaskR = grid(:,:,1) >= r & grid(:,:,1) <= r + tileSize(1);
     gridMaskC = grid(:,:,2) >= c & grid(:,:,2) <= c + tileSize(2);
@@ -29,8 +34,8 @@ function canvases = generateCanvases(r, c, filePaths, imageSize,...
         for index = 1:size(filePaths,3)
             img = imread(filePaths{rInd, cInd, index});
             canvas = canvases{1,index};
-            canvas(rBegC:rEndC,cBegC:cEndC) = img(rBegI:rEndI,cBegI:cEndI);
-            canvases{1,index} = canvas;
+            canvas(rBegC:rEndC,cBegC:cEndC,:) = img(rBegI:rEndI,cBegI:cEndI,:);
+            canvases{1,index} = uint8(canvas);
         end
     end
 end

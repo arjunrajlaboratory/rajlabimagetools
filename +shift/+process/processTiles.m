@@ -3,7 +3,7 @@ function processTiles(filePaths, imageSize, rightUL, downUL, foundChannels)
     numTilesR = size(filePaths,1);
     numTilesC = size(filePaths,2);
     
-    [tileSize, grid] = shift.process.getGridAndTileSize(imageSize, rightUL,...
+    [tileSize, grid, numTilesR, numTilesC] = shift.process.getGridAndTileSize(imageSize, rightUL,...
             downUL, numTilesR, numTilesC);
 
     %----------------------------------------------------------------------
@@ -64,23 +64,24 @@ function saveCanvases(canvases, dirName, fileNum, foundChannels)
     for index = 1:numel(canvases)
         fileName = cell2mat(foundChannels(index));
         fileName = [fileName,indexStr];
-        fileName = [dirName,filesep,fileName,'.tif'];
+        filePath = [dirName,filesep,fileName,'.tif'];
         canvas = cell2mat(canvases(index));
-
-        t = Tiff(fileName,'w');
-
-        % http://www.mathworks.com/help/matlab/import_export/exporting-to-images.html
-        tags.ImageLength   = size(canvas,1);
-        tags.ImageWidth    = size(canvas,2);
-        tags.Photometric   = Tiff.Photometric.MinIsBlack;
-        tags.BitsPerSample = 64;
-        tags.SampleFormat  = Tiff.SampleFormat.IEEEFP;
-        tags.RowsPerStrip  = 16;
-        tags.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
-        tags.SamplesPerPixel = 1;
-
-        t.setTag(tags);
-        t.write(canvas);
+        imwrite(canvas, filePath);
+        
+%         t = Tiff(filePath,'w');
+% 
+%         % http://www.mathworks.com/help/matlab/import_export/exporting-to-images.html
+%         tags.ImageLength   = size(canvas,1);
+%         tags.ImageWidth    = size(canvas,2);
+%         tags.Photometric   = Tiff.Photometric.MinIsBlack;
+%         tags.BitsPerSample = 64;
+%         tags.SampleFormat  = Tiff.SampleFormat.IEEEFP;
+%         tags.RowsPerStrip  = 16;
+%         tags.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
+%         tags.SamplesPerPixel = size(canvas,3);
+% 
+%         t.setTag(tags);
+%         t.write(canvas);
     end
 end
 

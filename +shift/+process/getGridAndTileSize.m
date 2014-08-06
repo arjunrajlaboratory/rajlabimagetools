@@ -1,4 +1,4 @@
-function [tileSize, grid] = getGridAndTileSize(imageSize, rightUL,...
+function [tileSize, grid, numTilesR, numTilesC] = getGridAndTileSize(imageSize, rightUL,...
     downUL, numTilesR, numTilesC)
     %----------------------------------------------------------------------
     % Determine overlap in each direction
@@ -6,14 +6,12 @@ function [tileSize, grid] = getGridAndTileSize(imageSize, rightUL,...
     overlapR = (imageSize(1) + 1) - downUL(1);
     %----------------------------------------------------------------------
     % Figure out what sizeR (row_size of each new image should be)
-    scanSizeR = ((imageSize(1) * numTilesR) - (overlapR * (numTilesR - 1)) ...
-                - overlapR * numTilesR);
+    scanSizeR = ((imageSize(1) * numTilesR) - (overlapR * (numTilesR - 1)));
     numTilesR = ceil(scanSizeR/imageSize(1));
     tileSizeR = floor(scanSizeR/numTilesR);
     %----------------------------------------------------------------------
     % Figure out what size (col_size of each new image should be)
-    scanSizeC = ((imageSize(2) * numTilesC) - (overlapC * (numTilesC - 1)) ...
-                - overlapC * numTilesC);
+    scanSizeC = ((imageSize(2) * numTilesC) - (overlapC * (numTilesC - 1)));
     numTilesC = ceil(scanSizeC/imageSize(2));
     tileSizeC = floor(scanSizeC/numTilesC);
     %----------------------------------------------------------------------
