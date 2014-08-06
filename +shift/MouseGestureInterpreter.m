@@ -42,6 +42,7 @@ classdef MouseGestureInterpreter < handle
             set(p.figH, 'WindowButtonMotionFcn', @p.moveCallback);
             set(p.figH, 'WindowButtonUpFcn', @p.buttonUpCallBack);
             p.pointAtButtonDown = get(p.axH, 'CurrentPoint');
+            display('button down');
             p.selectionTypeAtButtonDown = get(p.figH, 'SelectionType');
             p.doOnButtonDown;
         end

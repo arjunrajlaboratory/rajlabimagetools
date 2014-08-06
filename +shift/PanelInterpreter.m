@@ -3,16 +3,14 @@ classdef PanelInterpreter < shift.MouseGestureInterpreter
     %   Detailed explanation goes here
     
     properties
-        figHandle
         axesHandle
         axesManager
     end
     
     methods
-        function p = PanelInterpreter(figHandle, axesHandle, axesManager)
-            p.figHandle = figHandle;
-            p.axesHandle = axesHandle;
+        function p = PanelInterpreter(axesManager, axesHandle)
             p.axesManager = axesManager;
+            p.axesHandle = axesHandle;
         end
         function moveCallback(p, varargin)
         end
@@ -24,6 +22,7 @@ classdef PanelInterpreter < shift.MouseGestureInterpreter
             clickLocation = get(p.axesHandle,'CurrentPoint');
             row = clickLocation(1,2);
             col = clickLocation(1,1);
+            display('Clicked!');
             p.axesManager.registerClick([row, col]);
         end
     end

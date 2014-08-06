@@ -59,8 +59,9 @@ classdef ImageProvider < handle
             indexToImageMap = containers.Map([1,2,3,4],{p.currentImage,...
                    p.rightImage, p.downImage,...
                    p.downRightImage});
-            canvas = zeros(p.imageSize(1) * 2, p.imageSize(2) * 2);
-            for index = numel(order):-1:1
+            canvas = zeros(p.imageSize(1) * 2, p.imageSize(2) * 2,size(p.currentImage,3));
+            for indexLoc = numel(order):-1:1
+                index = order(indexLoc);
                 upperLeft = indexToLocMap(index);
                 image = indexToImageMap(index);
                 rBegCanvas = max(1,upperLeft(1));
@@ -78,9 +79,11 @@ classdef ImageProvider < handle
                     cBegImage = 2 + abs(upperLeft(2));
                 end
                 imagePiece = image(rBegImage:(rEndCanvas - rBegCanvas +...
-                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage));
-                canvas(rBegCanvas:rEndCanvas,cBegCanvas:cEndCanvas) = imagePiece;
+                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage),:);
+                canvas(rBegCanvas:rEndCanvas,cBegCanvas:cEndCanvas,:) = imagePiece;
             end 
+            canvas = uint8(canvas);
+            display('hello');
         end
     end
     

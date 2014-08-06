@@ -10,13 +10,13 @@ for r = 1:3
         index = ((r-1) * 3) + c;
         
         dapi = zeros(10,10);
-        dapi(:) = index/255;
+        dapi(:) = index/9 *255;
         dapiName = ['dapi00',num2str(index),'.tiff'];
         dapiPath = [dirPath, filesep, dapiName];
         imwrite(dapi, dapiPath);
         
         tmr = zeros(10,10);
-        tmr(:) = index/255;
+        tmr(:) = index/9 *255;
         tmrName = ['tmr00',num2str(index),'.tiff'];
         tmrPath = [dirPath, filesep, tmrName];
         imwrite(tmr, tmrPath);
@@ -91,6 +91,6 @@ assert(isnumeric(provider.rightImage));
 assert(isnumeric(provider.downImage));
 assert(isnumeric(provider.downRightImage));
 
-rmdir(dirPath,'s');
+% rmdir(dirPath,'s');
 display('ImageProvider_test - All tests passed!');
 

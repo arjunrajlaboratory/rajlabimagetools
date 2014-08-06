@@ -30,10 +30,36 @@ function CT = shiftTiles(filePaths)
     Hs = shift.createAndLayoutMainGUI();
     imageProvider = shift.ImageProvider(filePaths);
     keyInterpreter = shift.KeyPressInterpreter(Hs.figH);
-    axesManager = shift.AxesManager(imageProvider, keyInterpreter);
+    axesManager = shift.AxesManager(Hs.imgAx, imageProvider, keyInterpreter);
     keyInterpreter.setAxesManager(axesManager);
-    panelInterpreter = shift.PanelInterpreter(Hs.figH, Hs.imgAx, axesManager);
+    panelInterpreter = shift.PanelInterpreter(axesManager, Hs.imgAx);
+    panelInterpreter.wireToFigureAndAxes(Hs.figH, Hs.imgAx);
+    axesManager.setPanelInterpreter(panelInterpreter);
     
     CT.imageProvider = imageProvider;
     CT.axesManager = axesManager;
+    
+    
+    set(Hs.nextButton, 'Callback',{@nextButtonCallback, imageProvider,...
+        axesManager, Hs.figH});
+    set(Hs.bringFrontButton, 'Callback',{@bringToFrontCallback, axesManager,...
+        Hs.figH});
+    
+    axesManager.displayImage();
 end
+function nextButtonCallback(hObject, eventData, imageProvider, axesManager, figH)
+    imageProvider.moveToNextImageSet();
+    axesManager.displayImage();
+    setFocusToFigure(figH);
+end
+function bringToFrontCallback(hObject, eventData, axesManager, figH)
+    axesManager.bringSelectedToFront();
+    setFocusToFigure(figH);
+end
+function setFocusToFigure(figH)
+    warning off MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame
+    javaFrame = get(figH,'JavaFrame');
+    javaFrame.getAxisComponent.requestFocus;
+end
+
+

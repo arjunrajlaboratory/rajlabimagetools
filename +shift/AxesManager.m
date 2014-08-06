@@ -10,10 +10,13 @@ classdef AxesManager < handle
         selected
         order
         keyInterpreter
+        panelInterpreter
+        
+        imgAx
     end
     
     methods
-        function p = AxesManager(imageProvider, keyInterpreter)
+        function p = AxesManager(imgAx, imageProvider, keyInterpreter)
             p.imageProvider = imageProvider;
             p.currentUL = [1, 1];
             p.rightUL = [1, p.imageProvider.imageSize(2) + 1];
@@ -23,15 +26,18 @@ classdef AxesManager < handle
             p.selected = [];
             p.keyInterpreter = keyInterpreter;
             p.order = [1,2,3,4];
+            p.imgAx = imgAx;
         end
         function p = moveVertical(p, direction)
             if ~(direction == -1 || direction == 1)
                error('Only values of -1 or 1 permitted for direction argument'); 
             end
             p.shiftSelectedImages(1, direction);
+            p.displayImage();
         end
         function p = moveHorizontal(p, direction)
             p.shiftSelectedImages(2, direction);
+            p.displayImage();
         end
         function bringSelectedToFront(p)
             movedUpIndexes = [];
@@ -42,6 +48,7 @@ classdef AxesManager < handle
             end
             p.order(ismember(p.order, movedUpIndexes)) = [];
             p.order = [movedUpIndexes, p.order];
+            p.displayImage();
         end
         function registerClick(p, point)
             selectedIndex = -1;
@@ -72,6 +79,7 @@ classdef AxesManager < handle
             else
                 p.selected = selectedIndex;
             end
+            p.displayImage();
         end
         function p = ensureProperSelection(p)
             p.selected(p.selected == 1) = [];
@@ -111,14 +119,40 @@ classdef AxesManager < handle
                 inc = 5;
             end
         end
+        function setPanelInterpreter(p, panelInterpreter)
+            p.panelInterpreter = panelInterpreter;
+        end
         function displayImage(p)
             indexToLoc = containers.Map([1,2,3,4],{p.currentUL, p.rightUL,...
                    p.downUL, p.downRightUL});
-            canvas = p.imageProvider.getCanvas(indexToLoc);
+            canvas = p.imageProvider.getCanvas(indexToLoc, p.order);
+            set(p.imgAx, 'xlim',[0, size(canvas,1)]);
+            set(p.imgAx, 'ylim',[0, size(canvas,2)]);
+            imgH = imshow(canvas,'Parent',p.imgAx);
+            p.drawCircles();
+            p.panelInterpreter.rewire();
+            display('Rewiring');
         end
-        function plotCircles() 
+        function drawCircles(p)
+            indexToLoc = containers.Map([1,2,3,4],{p.currentUL, p.rightUL,...
+                   p.downUL, p.downRightUL});
+            for selection = p.selected
+                upperLeft = indexToLoc(selection);
+                row = upperLeft(1) + p.imageProvider.imageSize(1)/2;
+                col = upperLeft(2) + p.imageProvider.imageSize(2)/2;
+                cH = p.circle(col, row, ceil(p.imageProvider.imageSize(1)/100));
+                set(cH, 'HitTest', 'off');
+                display('drawing circle');
+            end  
         end
-  
+        function h = circle(p, x,y,r)
+            hold on
+            th = 0:pi/50:2*pi;
+            xunit = r * cos(th) + x;
+            yunit = r * sin(th) + y;
+            h = plot(xunit, yunit, 'Parent', p.imgAx);
+            hold off
+        end
     end
 end
 
