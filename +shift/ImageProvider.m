@@ -9,6 +9,9 @@ classdef ImageProvider < handle
         currentCol
         currentRow
         chanIndex
+        borderCheckH
+        positionText
+        contrastButtonDown
         
         imageSize
         
@@ -19,8 +22,9 @@ classdef ImageProvider < handle
     end
     
     methods
-        function p = ImageProvider(filePaths)
+        function p = ImageProvider(filePaths, borderCheckH, positionText)
             p.filePaths = filePaths;
+            p.borderCheckH = borderCheckH;
             p.numRows = size(p.filePaths,1);
             p.numCols = size(p.filePaths,2);
             p.currentCol = 1;
@@ -28,6 +32,8 @@ classdef ImageProvider < handle
             p.chanIndex = 1;
             p = p.loadImages();
             p.imageSize = size(p.currentImage);
+            p.positionText = positionText;
+            p.contrastButtonDown = false;
         end
         function p = moveToNextImageSet(p)
             p.currentCol = p.currentCol + 1;
@@ -39,11 +45,29 @@ classdef ImageProvider < handle
                 end
             end
             p = p.loadImages();
+            p.positionText.setPosition(p.currentRow, p.currentCol);
+        end
+        function p = moveToPreviousImageSet(p)
+            p.currentCol = p.currentCol - 1;
+            if p.currentCol == 0
+                p.currentCol = p.numCols - 1;
+                p.currentRow = p.currentRow - 1;
+                if p.currentRow == 0
+                    p.currentRow = p.numRows - 1;
+                end
+            end
+            p = p.loadImages();
+            p.positionText.setPosition(p.currentRow, p.currentCol);
         end
         function p = moveToRandomImageSet(p)
             p.currentRow = ceil(rand * (p.numRows - 1));
             p.currentCol = ceil(rand * (p.numCols - 1));
             p = p.loadImages();
+            p.positionText.setPosition(p.currentRow, p.currentCol);
+        end
+        function p = setChanIndex(p, chanIndex)
+           p.chanIndex = chanIndex;
+           p.loadImages();
         end
         function p = loadImages(p)
             p.currentImage = imread(cell2mat(p.filePaths(p.currentRow,...
@@ -63,7 +87,15 @@ classdef ImageProvider < handle
             for indexLoc = numel(order):-1:1
                 index = order(indexLoc);
                 upperLeft = indexToLocMap(index);
-                image = indexToImageMap(index);
+                
+                image = imadjust(indexToImageMap(index));
+                if p.contrastButtonDown
+                    image = image * 2;
+                end
+                if get(p.borderCheckH,'Value') == 1
+                   image = p.addBorderToImage(image); 
+                end
+                
                 rBegCanvas = max(1,upperLeft(1));
                 cBegCanvas = max(1,upperLeft(2));
                 rEndCanvas = min(upperLeft(1) + size(image,1) - 1, size(canvas,1));
@@ -78,12 +110,18 @@ classdef ImageProvider < handle
                 else 
                     cBegImage = 2 + abs(upperLeft(2));
                 end
-                imagePiece = imadjust(image(rBegImage:(rEndCanvas - rBegCanvas +...
-                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage),:));
+                imagePiece = image(rBegImage:(rEndCanvas - rBegCanvas +...
+                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage),:);
                 canvas(rBegCanvas:rEndCanvas,cBegCanvas:cEndCanvas,:) = imagePiece;
             end 
             canvas = uint16(canvas);
             display('hello');
+        end
+        function image = addBorderToImage(p,image)
+            image(1:5,1:end) = inf;
+            image(end-5:end,1:end) = inf;
+            image(1:end,1:5) = inf;
+            image(1:end,end-5:end) = inf;
         end
     end
     

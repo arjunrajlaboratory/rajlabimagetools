@@ -11,13 +11,16 @@ classdef AxesManager < handle
         order
         keyInterpreter
         panelInterpreter
+        lastImage
         
         imgAx
+        figH
     end
     
     methods
-        function p = AxesManager(imgAx, imageProvider, keyInterpreter)
+        function p = AxesManager(imgAx, figH, imageProvider, keyInterpreter)
             p.imageProvider = imageProvider;
+            p.figH = figH;
             p.currentUL = [1, 1];
             p.rightUL = [1, p.imageProvider.imageSize(2) + 1];
             p.downUL = [p.imageProvider.imageSize(1) + 1, 1];
@@ -81,6 +84,11 @@ classdef AxesManager < handle
             end
             p.displayImage();
         end
+        function setFocusToFigure(p)
+            warning off MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame
+            javaFrame = get(p.figH,'JavaFrame');
+            javaFrame.getAxisComponent.requestFocus;
+        end
         function p = ensureProperSelection(p)
             p.selected(p.selected == 1) = [];
             if numel(find(p.selected == 2 | p.selected == 3)) >= 1 %If right or down selected
@@ -127,6 +135,7 @@ classdef AxesManager < handle
                    p.downUL, p.downRightUL});
             canvas = p.imageProvider.getCanvas(indexToLoc, p.order);
             canvas = imadjust(canvas);
+            p.lastImage = canvas;
             set(p.imgAx, 'xlim',[0, size(canvas,1)]);
             set(p.imgAx, 'ylim',[0, size(canvas,2)]);
             imgH = imshow(canvas,'Parent',p.imgAx);

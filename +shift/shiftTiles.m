@@ -28,9 +28,10 @@
 %--------------------------------------------------------------------------
 function CT = shiftTiles(filePaths, foundChannels)
     Hs = shift.createAndLayoutMainGUI();
-    imageProvider = shift.ImageProvider(filePaths);
+    positionText = shift.PositionTextBox(Hs.positionTextBox);
+    imageProvider = shift.ImageProvider(filePaths, Hs.borderCheck, positionText);
     keyInterpreter = shift.KeyPressInterpreter(Hs.figH);
-    axesManager = shift.AxesManager(Hs.imgAx, imageProvider, keyInterpreter);
+    axesManager = shift.AxesManager(Hs.imgAx, Hs.figH, imageProvider, keyInterpreter);
     keyInterpreter.setAxesManager(axesManager);
     panelInterpreter = shift.PanelInterpreter(axesManager, Hs.imgAx);
     panelInterpreter.wireToFigureAndAxes(Hs.figH, Hs.imgAx);
@@ -39,14 +40,34 @@ function CT = shiftTiles(filePaths, foundChannels)
     CT.imageProvider = imageProvider;
     CT.axesManager = axesManager;
     
+    shift.ChannelDropDown(Hs.chanDropDown,foundChannels, imageProvider,...
+        axesManager);
+    shift.BorderCheck(Hs.borderCheck, imageProvider, axesManager);
     
     set(Hs.nextButton, 'Callback',{@nextButtonCallback, imageProvider,...
+        axesManager, Hs.figH});
+    set(Hs.prevButton, 'Callback',{@previousButtonCallback, imageProvider,...
         axesManager, Hs.figH});
     set(Hs.bringFrontButton, 'Callback',{@bringToFrontCallback, axesManager,...
         Hs.figH});
     set(Hs.processTilesButton, 'Callback',{@processTilesCallBack,...
         imageProvider, axesManager, foundChannels});
-    
+    set(Hs.randomButton, 'Callback', {@randomButtonCallback, imageProvider,...
+        axesManager, Hs.figH});
+    set(Hs.analyzeButton, 'Callback', {@analyzeButtonCallback, axesManager});
+    set(Hs.contrastButton, 'Callback', {@contrastButtonCallback, imageProvider,...
+        axesManager});
+    axesManager.displayImage();
+end
+function analyzeButtonCallback(hObject, eventData, axesManager)
+    figure,imshow(axesManager.lastImage);
+end
+function contrastButtonCallback(hObject, eventData, imageProvider, axesManager)
+    if get(hObject,'Value') == 1
+        imageProvider.contrastButtonDown = true;
+    else
+        imageProvider.contrastButtonDown = false;
+    end
     axesManager.displayImage();
 end
 function nextButtonCallback(hObject, eventData, imageProvider, axesManager, figH)
@@ -54,8 +75,18 @@ function nextButtonCallback(hObject, eventData, imageProvider, axesManager, figH
     axesManager.displayImage();
     setFocusToFigure(figH);
 end
+function previousButtonCallback(hObject, eventData, imageProvider, axesManager, figH)
+    imageProvider.moveToPreviousImageSet();
+    axesManager.displayImage();
+    setFocusToFigure(figH);
+end
 function bringToFrontCallback(hObject, eventData, axesManager, figH)
     axesManager.bringSelectedToFront();
+    setFocusToFigure(figH);
+end
+function randomButtonCallback(hObject, eventData, imageProvider, axesManager, figH)
+    imageProvider.moveToRandomImageSet();
+    axesManager.displayImage();
     setFocusToFigure(figH);
 end
 function processTilesCallBack(hObject, eventData, imageProvider,...
