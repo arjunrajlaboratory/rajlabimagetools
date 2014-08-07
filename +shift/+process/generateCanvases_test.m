@@ -41,8 +41,8 @@ c = 10;
 canvases = shift.process.generateCanvases(r, c, filePaths, imageSize,...
         tileSize, grid);
 canvas = canvases{1};
-canvasExpected = [0 0 0 0 0; 0 5 5 5 5; 0 5 5 5 5; 0 5 5 5 5; 0 5 5 5 5];
-assert(all(all(canvas == canvasExpected)))
+canvasExpected = [1 2 2 2 2; 4 5 5 5 5; 4 5 5 5 5; 4 5 5 5 5; 4 5 5 5 5];
+assert(all(all(canvas == canvasExpected)),'a')
 % Test 2
 imageSize = [10, 10];
 tileSize = [15, 15];
@@ -64,7 +64,30 @@ canvasExpected(1:10,1:10) = 5;
 canvasExpected(11:15,1:10) = 8;
 canvasExpected(1:10,11:15) = 6;
 canvasExpected(11:15,11:15) = 9;
-assert(all(all(canvas == canvasExpected)));
+assert(all(all(canvas == canvasExpected)),'b');
+% Test 3
+imageSize = [10, 10];
+tileSize = [6, 6];
+gridR = [1, 1, 1;...
+        6, 6, 6;...
+        11, 11, 11];
+    
+gridC = [1, 6, 11;...
+        1, 6, 11;...
+        1, 6, 11];
+grid = cat(3, gridR,gridC);
+r = 7;
+c = 7;
+canvases = shift.process.generateCanvases(r, c, filePaths, imageSize,...
+        tileSize, grid);
+canvas = canvases{1};
+canvasExpected = [5 5 5 5 6 6;...
+                  5 5 5 5 6 6;...
+                  5 5 5 5 6 6;...
+                  5 5 5 5 6 6;...
+                  8 8 8 8 9 9;...
+                  8 8 8 8 9 9]
+assert(all(all(canvas == canvasExpected)),'c');
 
 
 

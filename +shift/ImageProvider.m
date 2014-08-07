@@ -78,11 +78,11 @@ classdef ImageProvider < handle
                 else 
                     cBegImage = 2 + abs(upperLeft(2));
                 end
-                imagePiece = image(rBegImage:(rEndCanvas - rBegCanvas +...
-                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage),:);
+                imagePiece = imadjust(image(rBegImage:(rEndCanvas - rBegCanvas +...
+                    rBegImage),cBegImage:(cEndCanvas - cBegCanvas + cBegImage),:));
                 canvas(rBegCanvas:rEndCanvas,cBegCanvas:cEndCanvas,:) = imagePiece;
             end 
-            canvas = uint8(canvas);
+            canvas = uint16(canvas);
             display('hello');
         end
     end

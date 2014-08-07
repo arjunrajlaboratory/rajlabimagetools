@@ -126,6 +126,7 @@ classdef AxesManager < handle
             indexToLoc = containers.Map([1,2,3,4],{p.currentUL, p.rightUL,...
                    p.downUL, p.downRightUL});
             canvas = p.imageProvider.getCanvas(indexToLoc, p.order);
+            canvas = imadjust(canvas);
             set(p.imgAx, 'xlim',[0, size(canvas,1)]);
             set(p.imgAx, 'ylim',[0, size(canvas,2)]);
             imgH = imshow(canvas,'Parent',p.imgAx);

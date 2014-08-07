@@ -20,8 +20,8 @@ function [tileSize, grid, numTilesR, numTilesC] = getGridAndTileSize(imageSize, 
     grid = zeros(numTilesR,numTilesC,2);
     for r = 1:numTilesR
         for c = 1:numTilesC
-            rBegAbs = 1 + ((rightUL(1) - 1) * (c - 1)) + ((downUL(1) - 1) * (r - 1));
-            cBegAbs = 1 + ((downUL(2) - 1) * (r - 1)) + ((rightUL(2) - 1) * (c - 1));
+            rBegAbs = 1 + ((downUL(1) - 1) * (r - 1));
+            cBegAbs = 1 + ((rightUL(2) - 1) * (c - 1));
             grid(r,c,:) = [rBegAbs,cBegAbs];
         end
     end
