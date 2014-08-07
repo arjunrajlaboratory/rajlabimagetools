@@ -57,7 +57,11 @@ function CT = shiftTiles(filePaths, foundChannels)
     set(Hs.analyzeButton, 'Callback', {@analyzeButtonCallback, axesManager});
     set(Hs.contrastButton, 'Callback', {@contrastButtonCallback, imageProvider,...
         axesManager});
+    set(Hs.exitButton, 'Callback', {@exitButtonCallback, Hs.figH});
     axesManager.displayImage();
+end
+function exitButtonCallback(hObject, eventData, figH)
+    delete(figH);
 end
 function analyzeButtonCallback(hObject, eventData, axesManager)
     figure,imshow(axesManager.lastImage);
