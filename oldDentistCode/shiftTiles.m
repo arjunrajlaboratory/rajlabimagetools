@@ -250,7 +250,8 @@ end
 %--------------------------------------------------------------------------
 function selectButtonCallBack(hObject, eventData)
     Td = guidata(gcbo);
-    uiresume(Td.figH);
+    delete(Td.figH);
+    %uiresume(Td.figH);
 end
 %--------------------------------------------------------------------------
 % When random button hit goes to random image

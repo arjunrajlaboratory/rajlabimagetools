@@ -1,5 +1,5 @@
 function dentistConfig = setImageOverlap(numPixelOverlap)
-    
+    display('in set image overlap');
     workingDirectory = pwd;
     dentistConfig = dentist.utils.loadConfig(workingDirectory);
     
@@ -25,9 +25,9 @@ function numPixelOverlap = launchOverlapGUI(dentistConfig)
     inputs.foundChannels = imageDirectoryReader.availableChannels;
     inputs.layoutIndex = dentistConfig.layout.layoutIndex;
     inputs.dirPath = dentistConfig.dirPath;
-    
+    display('getting file paths');
     inputs = dentist.legacy.getFilePaths(inputs);
-    
+    display('launchign overlap');
     % launches the GUI
     output = dentist.legacy.getImageOverlap(inputs);
     numPixelOverlap = output.overlap;

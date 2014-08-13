@@ -3,7 +3,7 @@ function processTiles(filePaths, imageSize, rightUL, downUL, foundChannels)
     numTilesR = size(filePaths,1);
     numTilesC = size(filePaths,2);
     
-    [tileSize, grid, numTilesR, numTilesC] = shift.process.getGridAndTileSize(imageSize, rightUL,...
+    [tileSize, grid, numTilesR, numTilesC] = dentist.shift.process.getGridAndTileSize(imageSize, rightUL,...
             downUL, numTilesR, numTilesC);
 
     %----------------------------------------------------------------------
@@ -37,7 +37,7 @@ function processTiles(filePaths, imageSize, rightUL, downUL, foundChannels)
             %--------------------------------------------------------------
             % Paint all images within r --> r + rSize &&
             % c --> c + cSize onto the canvas
-            canvases = shift.process.generateCanvases(r, c, filePaths, imageSize,...
+            canvases = dentist.shift.process.generateCanvases(r, c, filePaths, imageSize,...
                 tileSize, grid);
             %--------------------------------------------------------------
             saveCanvases(canvases, dirName, fileNum, foundChannels);

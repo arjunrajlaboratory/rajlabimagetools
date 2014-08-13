@@ -27,22 +27,23 @@
 % 4 4 4 
 %--------------------------------------------------------------------------
 function CT = shiftTiles(filePaths, foundChannels)
-    Hs = shift.createAndLayoutMainGUI();
-    positionText = shift.PositionTextBox(Hs.positionTextBox);
-    imageProvider = shift.ImageProvider(filePaths, Hs.borderCheck, positionText);
-    keyInterpreter = shift.KeyPressInterpreter(Hs.figH);
-    axesManager = shift.AxesManager(Hs.imgAx, Hs.figH, imageProvider, keyInterpreter);
+    Hs = dentist.shift.createAndLayoutMainGUI();
+    display('Shift GUI launched');
+    positionText = dentist.shift.PositionTextBox(Hs.positionTextBox);
+    imageProvider = dentist.shift.ImageProvider(filePaths, Hs.borderCheck, positionText);
+    keyInterpreter = dentist.shift.KeyPressInterpreter(Hs.figH);
+    axesManager = dentist.shift.AxesManager(Hs.imgAx, Hs.figH, imageProvider, keyInterpreter);
     keyInterpreter.setAxesManager(axesManager);
-    panelInterpreter = shift.PanelInterpreter(axesManager, Hs.imgAx);
+    panelInterpreter = dentist.shift.PanelInterpreter(axesManager, Hs.imgAx);
     panelInterpreter.wireToFigureAndAxes(Hs.figH, Hs.imgAx);
     axesManager.setPanelInterpreter(panelInterpreter);
     
     CT.imageProvider = imageProvider;
     CT.axesManager = axesManager;
     
-    shift.ChannelDropDown(Hs.chanDropDown,foundChannels, imageProvider,...
+    dentist.shift.ChannelDropDown(Hs.chanDropDown,foundChannels, imageProvider,...
         axesManager);
-    shift.BorderCheck(Hs.borderCheck, imageProvider, axesManager);
+    dentist.shift.BorderCheck(Hs.borderCheck, imageProvider, axesManager);
     
     set(Hs.nextButton, 'Callback',{@nextButtonCallback, imageProvider,...
         axesManager, Hs.figH});
@@ -59,8 +60,12 @@ function CT = shiftTiles(filePaths, foundChannels)
         axesManager});
     set(Hs.exitButton, 'Callback', {@exitButtonCallback, Hs.figH});
     axesManager.displayImage();
+    
+    uiwait(Hs.figH);
+    
 end
 function exitButtonCallback(hObject, eventData, figH)
+    uiresume(figH);
     delete(figH);
 end
 function analyzeButtonCallback(hObject, eventData, axesManager)
@@ -98,7 +103,7 @@ function processTilesCallBack(hObject, eventData, imageProvider,...
     imageProvider.filePaths
     imageProvider.imageSize
     
-    shift.process.processTiles(imageProvider.filePaths, imageProvider.imageSize,...
+    dentist.shift.process.processTiles(imageProvider.filePaths, imageProvider.imageSize,...
         axesManager.rightUL, axesManager.downUL, foundChannels)
 end
 function setFocusToFigure(figH)

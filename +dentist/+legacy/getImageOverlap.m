@@ -212,11 +212,16 @@ end
 function shiftButtonCallBack(hObject,eventdata)
     Td = guidata(gcbo);
     set(Td.figH,'Visible','off');
-    TEMP = dentist.legacy.shiftTiles(Td);
-    Td.tilesShifted = TEMP.tilesShifted;
-    Td.shiftTilesCalled = true;
+    %TEMP = shiftTiles(Td);
+    display('launchign shift GUI');
+    shift.launchShiftGUI();
+    %TEMP = shift.shiftTiles(Td.filePaths, Td.foundChannels);
+    Td.tilesShifted = true;
+    %Td.shiftTilesCalled = true;
     guidata(Td.figH,Td);
     uiresume(Td.figH);
+    display(['Navigate into the new directory "ModifiedImages#" and run',...
+        ' the Dentist commands again']);
 end
 function contrastButtonCallBack(hObject,eventdata,direction)
     Td = guidata(gcbo);

@@ -1,4 +1,4 @@
-classdef PanelInterpreter < shift.MouseGestureInterpreter
+classdef PanelInterpreter < dentist.shift.MouseGestureInterpreter
     %UNTITLED6 Summary of this class goes here
     %   Detailed explanation goes here
     

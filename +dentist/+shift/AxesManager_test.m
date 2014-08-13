@@ -25,11 +25,11 @@ for r = 1:3
         filePaths{r,c,2} = dapiPath;
     end
 end
-provider = shift.ImageProvider(filePaths);
+provider = dentist.shift.ImageProvider(filePaths);
 
-keyInterpreter = shift.AxesManager_KeyPressInterpreter_stub();
+keyInterpreter = dentist.shift.AxesManager_KeyPressInterpreter_stub();
 
-axesManager = shift.AxesManager(provider, keyInterpreter);
+axesManager = dentist.shift.AxesManager(provider, keyInterpreter);
 
 % =========== TEST SELECTION ==========
 keyInterpreter.controlDown = false;

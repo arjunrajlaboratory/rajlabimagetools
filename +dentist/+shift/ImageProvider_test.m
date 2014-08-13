@@ -25,7 +25,7 @@ for r = 1:3
         filePaths{r,c,2} = dapiPath;
     end
 end
-provider = shift.ImageProvider(filePaths);
+provider = dentist.shift.ImageProvider(filePaths);
 
 % Test normal movements
 assert(all(all(provider.currentImage == 1)),'Current-Initial');
