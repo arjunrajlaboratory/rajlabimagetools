@@ -81,6 +81,10 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData
             snpASpots = getFittedSpots(snpAFittedSpotsHolder);
             snpBSpots = getFittedSpots(snpBFittedSpotsHolder);
             
+            numGuide = numel(guideSpots);
+            numsnpA = numel(snpASpots);
+            numsnpB = numel(snpBSpots);
+            
             guide_zCoordinates = arrayfun(@(x) x* p.zDeform, [guideSpots.zPlane]);
             snpA_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpASpots.zPlane]);
             snpB_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpBSpots.zPlane]);
@@ -92,34 +96,139 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData
             [pairsA, shiftsA] = colocalizePositions(p, guidePositions,snpAPositions);
             [pairsB, shiftsB] = colocalizePositions(p, guidePositions,snpBPositions);
 
-            idx_guide = zeros(length(guideSpots), 1);
+            idx_guide = zeros(numGuide, 1);
+            Labels = cell(numGuide,1);     %Vector that idenitifies the label of each guide probe
             
-            idx_guide(pairsA(:,1)) = idx_guide(pairsA(:,1)) + 1;
-            idx_guide(pairsB(:,1)) = idx_guide(pairsB(:,1)) + 1;
+            idx_snpA = zeros(numsnpA, 1);
+            LabelsA = cell(numsnpA,1);
             
-            Labels = cell(length(guidePositions),1);     %Vector that idenitifies the label of each guide probe
+            idx_snpB = zeros(numsnpB, 1);
+            LabelsB = cell(numsnpB,1);
+            
+            idx_coGuideSnpA = zeros(numGuide, 1);
+            idx_coGuideSnpB = zeros(numGuide, 1);
+            
+            positions_coGuideSnpA = zeros(numGuide, 3);
+            positions_coGuideSnpB = zeros(numGuide, 3);
+            
+            amplitude_coGuideSnpA = zeros(numGuide, 1);
+            amplitude_coGuideSnpB = zeros(numGuide, 1);
+            
+            sigma_coGuideSnpA = zeros(numGuide, 1);
+            sigma_coGuideSnpB = zeros(numGuide, 1);
+            
+            
+            if ~isempty(pairsA)
+              idx_guide(pairsA(:,1)) = idx_guide(pairsA(:,1)) + 1;
+              Labels(pairsA(:,1)) = p.snpMap.names(2);
+              
+              idx_snpA(pairsA(:,2)) = idx_snpA(pairsA(:,2)) + 1;
+              LabelsA(pairsA(:,2)) = p.snpMap.names(2);
+              
+              idx_coGuideSnpA(pairsA(:,1)) = pairsA(:,2);
+              positions_coGuideSnpA(pairsA(:,1),:) = snpAPositions(pairsA(:,2),:);
+              
+              amplitudeSNPA = [snpASpots.amplitude]';
+              sigmaSNPA = [snpASpots.sigma]';
+              
+              amplitude_coGuideSnpA(pairsA(:,1)) = amplitudeSNPA(pairsA(:,2));
+              sigma_coGuideSnpA(pairsA(:,1)) = sigmaSNPA(pairsA(:,2));
+              
+            end
+            
+            if ~isempty(pairsB)
+                idx_guide(pairsB(:,1)) = idx_guide(pairsB(:,1)) + 1;
+                Labels(pairsB(:,1)) = p.snpMap.names(3);
+                
+                idx_snpB(pairsB(:,2)) = idx_snpB(pairsB(:,2)) + 1;
+                LabelsB(pairsB(:,2)) = p.snpMap.names(3);
+                
+                idx_coGuideSnpB(pairsB(:,1)) = pairsB(:,2);
+                
+                positions_coGuideSnpB(pairsB(:,1),:) = snpBPositions(pairsB(:,2),:);
+              
+                amplitudeSNPB = [snpBSpots.amplitude]';
+                sigmaSNPB = [snpBSpots.sigma]';
+              
+                amplitude_coGuideSnpB(pairsB(:,1)) = amplitudeSNPB(pairsB(:,2));
+                sigma_coGuideSnpB(pairsB(:,1)) = sigmaSNPB(pairsB(:,2));
+            end
+            
             Labels(idx_guide == 0) = cellstr('undetec');
-            Labels(pairsA(:,1)) = p.snpMap.names(2);
-            Labels(pairsB(:,1)) = p.snpMap.names(3);
             Labels(idx_guide == 2) = cellstr('3-color'); %order matters here
-            
             levels = {p.snpMap.names{2}, p.snpMap.names{3}, 'undetec', '3-color'};
             labels = nominal();
             labels = addlevels(labels, levels);
             
-            p.guideData = dataset();
-            p.data.(p.snpMap.channels{1}).ID = [1:length(guideSpots)]';
-            p.data.(p.snpMap.channels{1}).position =  guidePositions;
-            p.data.(p.snpMap.channels{1}).amplitude = guideSpots.amplitude;
-            p.data.(p.snpMap.channels{1}).sigma = guideSpots.sigma;
+            LabelsA(idx_snpA == 0) = cellstr('undetec');
+            levelsA = {p.snpMap.names{2}, 'undetec', '3-color'};
+            labelsA = nominal();
+            labelsA = addlevels(labelsA, levelsA);
+            
+            LabelsB(idx_snpB == 0) = cellstr('undetec');
+            levelsB = {p.snpMap.names{3}, 'undetec', '3-color'};
+            labelsB = nominal();
+            labelsB = addlevels(labelsB, levelsB);
+            
+            
+            p.guideData = dataset();  
+            p.data.(p.snpMap.channels{1}).ID = [1:numGuide]';
+            p.data.(p.snpMap.channels{1}).position =  guidePositions;dat2 = dataset();
+            p.data.(p.snpMap.channels{1}).amplitude = [guideSpots.amplitude]';
+            p.data.(p.snpMap.channels{1}).sigma = [guideSpots.sigma]';
             p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
             
+            p.data.(p.snpMap.channels{1}).snpA_ID = idx_coGuideSnpA; 
+            p.data.(p.snpMap.channels{1}).snpA_positions = positions_coGuideSnpA;
+            p.data.(p.snpMap.channels{1}).snpA_amplitude = amplitude_coGuideSnpA;
+            p.data.(p.snpMap.channels{1}).snpA_sigma = sigma_coGuideSnpA;
             
-            fprintf('Currently run does nothing\n');
+          
+            p.data.(p.snpMap.channels{1}).snpB_ID = idx_coGuideSnpB;
+            p.data.(p.snpMap.channels{1}).snpB_positions = positions_coGuideSnpB;
+            p.data.(p.snpMap.channels{1}).snpB_amplitude = amplitude_coGuideSnpB;
+            p.data.(p.snpMap.channels{1}).snpB_sigma = sigma_coGuideSnpB;
+            
+            if sum(idx_guide == 2)
+                three_color_spots_ID = find(idx_guide == 2);
+                
+                snp_3color_pairs_indexA = find(ismember(pairsA(:,1), three_color_spots_ID));
+                snp_3color_IDs_A = pairsA(snp_3color_pairs_indexA,2);
+                LabelsA(snp_3color_IDs_A) = cellstr('3-color');
+                
+                snp_3color_pairs_indexB = find(ismember(pairsB(:,1), three_color_spots_ID));
+                snp_3color_IDs_B = pairsB(snp_3color_pairs_indexB,2);
+                LabelsB(snp_3color_IDs_B) = cellstr('3-color');
+            end
+
+            p.data.(p.snpMap.channels{2}).ID = [1:numsnpA]';
+            p.data.(p.snpMap.channels{2}).position = snpAPositions;
+            p.data.(p.snpMap.channels{2}).amplitude = [snpASpots.amplitude]';
+            p.data.(p.snpMap.channels{2}).sigma = [snpASpots.sigma]';
+            p.data.(p.snpMap.channels{2}).labels = vertcat(labelsA, nominal(LabelsA));
+            
+            p.data.(p.snpMap.channels{3}).ID = [1:numsnpB]';
+            p.data.(p.snpMap.channels{3}).position = snpBPositions;
+            p.data.(p.snpMap.channels{3}).amplitude = [snpBSpots.amplitude]';
+            p.data.(p.snpMap.channels{3}).sigma = [snpBSpots.sigma]';
+            p.data.(p.snpMap.channels{3}).labels = vertcat(labelsB, nominal(LabelsB));
+            
+            
+            
+%             
+%             if sum(idx_coGuideSnpA) > 0
+%                 p.data.(p.snpMap.channels{1}).snpA_positions(logical(idx_coGuideSnpA)) = ...
+%                     p.data.(p.snpMap.channels{2}).position(logical(idx_coGuideSnpA));
+%             end
+%             
+            
+            
+            %fprintf('Currently run does nothing\n');
         end
         
         function [pairs,  shifts] = colocalizePositions(p, guidePositions, snpPositions)
             
+            if and(~isempty(guidePositions), ~isempty(snpPositions))
             pairwiseDist = pdist2(guidePositions, snpPositions);
             
             [minGuideDistances, minSnpIndex] = min(pairwiseDist');
@@ -150,6 +259,12 @@ classdef SNPColocalizerData < improc2.interfaces.ProcessedData
             shifts = zeros(length(guidePositions), 3);
             shifts(guide_colocalized_Index,:) = guidePositions(guide_colocalized_Index,:) ...
                 - snpPositions(snp_colocalized_Index,:);
+            
+            else
+               
+                pairs = [];
+                shifts = [];
+            end
             
             
             

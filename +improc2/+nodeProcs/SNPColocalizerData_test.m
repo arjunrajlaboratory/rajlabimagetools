@@ -24,7 +24,9 @@ AProcData = improc2.tests.MockFittedSpotsProcessorData(ASpots);
 BProcData = improc2.tests.MockFittedSpotsProcessorData(BSpots);
 
 
-snpMap = [];
+snpMap.names = {'guide', 'WT', 'MUT'}; 
+snpMap.channels = {'gfp', 'tmr', 'cy'};
+
 x = improc2.nodeProcs.SNPColocalizerData(snpMap);
 xProcessed = run(x, guideProcData, AProcData, BProcData);
 
