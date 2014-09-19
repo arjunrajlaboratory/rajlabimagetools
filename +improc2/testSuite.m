@@ -38,6 +38,8 @@ display('improc2.nodeProcs.SNPColocalizerData_test')
 improc2.nodeProcs.SNPColocalizerData_test;
 display('improc2.nodeProcs.ThresholdQCData_test')
 improc2.nodeProcs.ThresholdQCData_test;
+display('improc2.nodeProcs.TotalIntensityProcessedData_test')
+improc2.nodeProcs.TotalIntensityProcessedData_test;
 display('improc2.nodeProcs.TransProcessedData_test')
 improc2.nodeProcs.TransProcessedData_test;
 display('improc2.nodeProcs.TwoStageSpotFitProcessedData_test')
@@ -56,6 +58,14 @@ display('improc2.thresholdGUI.SliceExclusionMouseInterpreter_test')
 improc2.thresholdGUI.SliceExclusionMouseInterpreter_test;
 display('improc2.thresholdGUI.SpotsPerSliceDisplayer_test')
 improc2.thresholdGUI.SpotsPerSliceDisplayer_test;
+display('improc2.txnSites.utils.TranscriptionSiteAddingInterpreter_test')
+improc2.txnSites.utils.TranscriptionSiteAddingInterpreter_test;
+display('improc2.txnSites.utils.TranscriptionSitesDisplayer_test')
+improc2.txnSites.utils.TranscriptionSitesDisplayer_test;
+display('improc2.txnSites.addTxnSiteData_test')
+improc2.txnSites.addTxnSiteData_test;
+display('improc2.txnSites.launchGUI_test')
+improc2.txnSites.launchGUI_test;
 display('improc2.utils.addRowToCellTable_test')
 improc2.utils.addRowToCellTable_test;
 display('improc2.utils.applyATrousImageFilter_test')

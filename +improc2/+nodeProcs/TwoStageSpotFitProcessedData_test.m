@@ -14,15 +14,17 @@ firstProcessorData = run(unprocessedData, channelStackContainer);
 x = improc2.nodeProcs.TwoStageSpotFitProcessedData();
 xProcessed = run(x, firstProcessorData, channelStackContainer);
 
+assert(length(xProcessed.getFittedSpots()) == firstProcessorData.getNumSpots())
+assert(length(xProcessed.getFittedBackgLevels()) == firstProcessorData.getNumSpots())
 
 %Test no spots boundary case
 firstProcessorData.threshold = 1000000;
 xProcessed2 = run(x, firstProcessorData, channelStackContainer);
 
 
+assert(length(xProcessed2.getFittedSpots()) == firstProcessorData.getNumSpots())
+assert(length(xProcessed2.getFittedBackgLevels()) == firstProcessorData.getNumSpots())
 
-assert(length(xProcessed.getFittedSpots()) == firstProcessorData.getNumSpots())
-assert(length(xProcessed.getFittedBackgLevels()) == firstProcessorData.getNumSpots())
 
 fittedSpotsImg = zeros(size(channelStackContainer.croppedImage));
 
