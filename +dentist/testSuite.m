@@ -1,5 +1,15 @@
-display('dentist.legacy.getLayoutOrientation_test')
-dentist.legacy.getLayoutOrientation_test;
+% display('dentist.legacy.getLayoutOrientation_test')
+% dentist.legacy.getLayoutOrientation_test;
+display('dentist.shift.process.generateCanvases_test')
+dentist.shift.process.generateCanvases_test;
+display('dentist.shift.process.getGridAndTileSize_test')
+dentist.shift.process.getGridAndTileSize_test;
+display('dentist.shift.AxesManager_test')
+dentist.shift.AxesManager_test;
+display('dentist.shift.ImageProvider_test')
+dentist.shift.ImageProvider_test;
+display('dentist.shift.MouseGestureInterpreter_test')
+dentist.shift.MouseGestureInterpreter_test;
 display('dentist.utils.asRowAndColumn_test')
 dentist.utils.asRowAndColumn_test;
 display('dentist.utils.assignSpotsToCentroids_test')

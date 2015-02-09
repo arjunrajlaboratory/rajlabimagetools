@@ -214,7 +214,7 @@ function shiftButtonCallBack(hObject,eventdata)
     set(Td.figH,'Visible','off');
     %TEMP = shiftTiles(Td);
     display('launchign shift GUI');
-    shift.launchShiftGUI();
+    dentist.shift.launchShiftGUI();
     %TEMP = shift.shiftTiles(Td.filePaths, Td.foundChannels);
     Td.tilesShifted = true;
     %Td.shiftTilesCalled = true;
