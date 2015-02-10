@@ -49,7 +49,11 @@ classdef DapiProcessedData < improc2.interfaces.ProcessedData & ...
             [aTrous, Aj] = aTrousWaveletTransform(imgStackCropped,...
                 numLevels,...
                 sigma);
-            aTrous_merge = max(aTrous(:,:,:,numLevels), [], 3);
+            if size(aTrous, 3) == 1
+                aTrous_merge = max(aTrous(:,:,:,numLevels), [], 3);
+            else
+                aTrous_merge = max(aTrous(:,:,:,numLevels), [], 3);
+            end
             aTrous_mask = aTrous_merge > graythresh(aTrous_merge);
             aTrous_mask = imfill(aTrous_mask, 'holes');
             aTrous_area = sum(aTrous_mask(:));
