@@ -76,6 +76,8 @@ if any(strcmpi(fext,{'.tiff','.tif'}))  % This means we have a TIFF file, allow 
     tiff.bitspersample = info(1).BitsPerSample;
     if tiff.bitspersample == 16
         im_type = 'uint16';
+    elseif tiff.bitspersample == 32
+        im_type = 'uint16';
     elseif tiff.bitspersample == 8
         im_type = 'uint8';
     end;
