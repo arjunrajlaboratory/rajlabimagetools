@@ -6,7 +6,7 @@ numPixelOverlap = 103;
 imageProvider = dentist.utils.ImageProvider(imageDirectoryReader, numPixelOverlap);
 viewport = dentist.utils.TileAwareImageViewport(imageProvider);
 
-channelHolder = dentist.utils.ChannelHolder('dapi');
+channelHolder = dentist.utils.ChannelHolder('tmr');
 
 figH = figure(1);
 set(figH, 'Colormap', gray(256))
