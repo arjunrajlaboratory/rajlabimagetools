@@ -11,6 +11,7 @@ classdef VolumeFromRnaPoints < improc2.interfaces.ProcessedData
         volumeWithNuc
         volume
         volumeRealUnits
+        cellContour
     end
     
     properties (Constant = true)
@@ -111,10 +112,24 @@ classdef VolumeFromRnaPoints < improc2.interfaces.ProcessedData
             volume = sum(height(:));
             volumeRealUnits = volume * pData.xyPixelWidth^2 * pData.planeSpacing;
             
+            cellTop = cellTopReal;
+            %cellTop(~resizedMask) = 0;
+            
             pData.volumeWithNuc = volumeWithNuc;
             pData.volumeRealUnits = volumeRealUnits;
             pData.volume = volume;
+            pData.cellContour = cellTop;
             pDataAfterProcessing = pData;
+        end
+        function showShell(pDataAfterProcessing)
+            celltop2 = medfilt2(pDataAfterProcessing.cellContour, [20,20]);
+            ti = 1:5:size(celltop2,1);
+            tf = 1:5:size(celltop2,2);
+            [qx,qy] = meshgrid(tf,ti);
+            cthalf = celltop2(1:5:end,1:5:end);
+            figure;
+            colormap bone;
+            mesh(qx,qy,cthalf);
         end
     end 
 end
