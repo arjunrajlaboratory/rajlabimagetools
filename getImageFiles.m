@@ -30,13 +30,13 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
     if nargin == 1;  
         numFilter = ''; 
     else
-        if isempty(regexp(numFilter,'^\d{4}'))
-            error('numFilter argument must be %04d formatted string for file number');
+        if isempty(regexp(numFilter,'^\d{3}'))
+            error('numFilter argument must be %03d formatted string for file number');
         end
     end;
 
     for channel = channels
-        if ~isempty(numFilter)  % already formated string %04d limiting to one filenum
+        if ~isempty(numFilter)  % already formated string %03d limiting to one filenum
             RNAfiles = dir([dirPath filesep cell2mat(channel) numFilter '.*']);
         else
             RNAfiles = dir([dirPath filesep cell2mat(channel) '*.*']);
@@ -47,7 +47,7 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
             foundChannels = [foundChannels channel];
             % Use regular expressions to enforce strict filename matching and also 
             % pull out file numbering from filenames for use later
-            expr = [cell2mat(channel) '(\d{4})(\.stk|\.tif|\.tiff|\.TIF)$'];  % channel%03d\.tif/stk only
+            expr = [cell2mat(channel) '(\d{3})(\.stk|\.tif|\.tiff|\.TIF)$'];  % channel%03d\.tif/stk only
             fileNums = [];
             for k = 1:numel(RNAfiles)
                 [tokenStr] = regexp(RNAfiles(k).name,expr,'tokens');
@@ -75,12 +75,12 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
     
     imgExtTrans = ''; imgExtDapi = '';  % stay empty if no DAPI/trans files
     for fileNum = fileNums
-        tF = dir([dirPath filesep 'trans' sprintf('%04d',fileNum) '.*']);
+        tF = dir([dirPath filesep 'trans' sprintf('%03d',fileNum) '.*']);
         if ~isempty(tF)
             transNums = [transNums; fileNum];
             [d,f,imgExtTrans] = fileparts(tF.name);
         end
-        dF = dir([dirPath filesep 'dapi' sprintf('%04d',fileNum) '.*']);
+        dF = dir([dirPath filesep 'dapi' sprintf('%03d',fileNum) '.*']);
         if ~isempty(dF)
             dapiNums  = [dapiNums; fileNum];
             [d,f,imgExtDapi] = fileparts(dF.name);
