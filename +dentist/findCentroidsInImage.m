@@ -299,6 +299,30 @@ function [centroids] = findCentroidsInImage(imageSource, verboseFlag)
     end
   
     centroids = dentist.utils.Centroids(xPositions,yPositions);
+        
+    if ~isempty(centroids) & size(centroids.xPositions,1)>20 
+        dapiImg = im2double(dapiImage);
+        i = 75;
+        filt = fspecial('log',[i i],35);
+        im2 = imfilter(dapiImg,filt,'replicate');
+        irm = imregionalmax(-im2);
+        im3 = -im2.*irm;
+        im4 = im3 > 3e-7;
+        BWObjects = bwconncomp(im4);
+        stats = regionprops(BWObjects,'Centroid','BoundingBox');
+
+        centroids_new = [stats(:).Centroid];  % These two lines put the centroids in a structure that's a bit easier to work with.
+        centroids_new = reshape(centroids_new,2,[]);
+
+        xPositions = centroids_new(1,:);
+        yPositions = centroids_new(2,:);
+        
+        if size(xPositions,2) == 0
+            xPositions = [];
+            yPositions = [];
+            centroids = dentist.utils.Centroids(xPositions,yPositions);
+        end
+    end
     
     
     if verboseFlag

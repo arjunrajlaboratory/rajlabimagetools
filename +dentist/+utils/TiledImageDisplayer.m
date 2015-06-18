@@ -25,7 +25,8 @@ classdef TiledImageDisplayer < dentist.utils.AbstractDisplayer
             [xCoords, yCoords] = getXDataAndYDataFromViewport(viewport);
             p.setAxesToFitCroppedImage(viewport);
             img = viewport.getCroppedImage(p.imageProvider, channelName);
-            rgbImg = p.makeIntoRGB(scale(img));
+            imgDapi = viewport.getCroppedImage(p.imageProvider,'dapi'); %syd edits!
+            rgbImg = p.makeIntoRGB(scale(img),scale(imgDapi));
             
             p.deactivate();
             p.imageH = image('CData', rgbImg, 'XData', xCoords, 'YData', yCoords, ...
@@ -54,8 +55,8 @@ classdef TiledImageDisplayer < dentist.utils.AbstractDisplayer
                 delete(p.imageH)
             end
         end
-        function rgbImage = makeIntoRGB(p, img)
-            rgbImage = cat(3, img, img, img);
+        function rgbImage = makeIntoRGB(p, img, imgDapi)
+            rgbImage = cat(3, img/2, img/2, (img + imgDapi)/2); %syd edits
         end
     end
 end

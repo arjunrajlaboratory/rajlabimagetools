@@ -74,7 +74,7 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
     if isempty(RNAchannel); return; end;
     
     imgExtTrans = ''; imgExtDapi = '';  % stay empty if no DAPI/trans files
-    for fileNum = fileNums
+    for fileNum = 1
         tF = dir([dirPath filesep 'trans' sprintf('%03d',fileNum) '.*']);
         if ~isempty(tF)
             transNums = [transNums; fileNum];
@@ -86,22 +86,23 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
             [d,f,imgExtDapi] = fileparts(dF.name);
         end
     end
+
     imgExts = [imgExts imgExtDapi]; % save the last DAPI filename ext
     imgExts = [imgExts imgExtTrans]; % save the last trans filename ext
 
     % Check the numbering of files between all channels
-    if ~isempty(transNums) 
-        foundChannels = [foundChannels 'trans']; 
-        if numel(fileNums) ~= numel(transNums)
-            error('Numbering of RNA/trans files does not match');
-        end
-    end
+%     if ~isempty(transNums) 
+%         foundChannels = [foundChannels 'trans']; 
+%         if numel(fileNums) ~= numel(transNums)
+%             error('Numbering of RNA/trans files does not match');
+%         end
+%     end
 
     if ~isempty(dapiNums)  
         foundChannels = [foundChannels 'dapi'];  
-        if numel(fileNums) ~= numel(dapiNums)
-            error('Numbering of RNA/dapi files does not match');
-        end
+%         if numel(fileNums) ~= numel(dapiNums)
+%             error('Numbering of RNA/dapi files does not match');
+%         end
     end
 
     % sort alphabetical since a lot of other functions MATLAB (e.g. intersect()) 

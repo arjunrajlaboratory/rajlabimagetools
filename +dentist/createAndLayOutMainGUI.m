@@ -65,7 +65,7 @@ Hs.centList = uicontrol('Parent',figH,...
     'ForegroundColor',[1 1 1],...
     'BackgroundColor',[0.247 0.247 0.247]);
 Hs.centroidsCheck = makeCheckBox(figH, 'Centroids', [0.710 0.630 0.080 0.0375], 1);
-Hs.numSpotsCheck = makeCheckBox(figH, 'NumSpots', [0.790 0.630 0.080 0.0375], 0);
+Hs.numSpotsCheck = makeCheckBox(figH, 'NumSpots', [0.790 0.630 0.080 0.0375]);
 Hs.spotsCheck = makeCheckBox(figH, 'Spots', [0.880 0.630 0.136 0.0375], 0);
 Hs.filterButton = makeButton(figH, 'Filter', [0.850 0.680 0.068 0.0320]);
 set(Hs.filterButton, 'Value', 0)
@@ -137,10 +137,11 @@ checkboxH = uicontrol('Parent',Parent,...
     'Units','normalized',...
     'Position',Position,...
     'ForegroundColor',[1 1 1],...
-    'BackgroundColor',[0.247 0.247 0.247]);
-if nargin == 4
-    set(checkboxH, 'Value', Value)
-end
+    'BackgroundColor',[0.247 0.247 0.247],...
+    'Value',0);
+% if nargin == 4
+%     set(checkboxH, 'Value', Value)
+% end
 end
 
 function radioH = makeRadio(Parent, String, Position)

@@ -1,6 +1,7 @@
 classdef ImageDisplaySubsystem < handle
     
     properties (SetAccess = private, GetAccess = private)
+    %properties (SetAccess = public, GetAccess = public)
         viewportHolder
         thumbnailDisplayer
         mainWindowDisplayer
