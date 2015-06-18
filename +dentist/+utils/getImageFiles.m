@@ -91,12 +91,12 @@ function [foundChannels,fileNums,imgExts] = getImageFiles(dirPath,numFilter)
     imgExts = [imgExts imgExtTrans]; % save the last trans filename ext
 
     % Check the numbering of files between all channels
-    if ~isempty(transNums) 
-        foundChannels = [foundChannels 'trans']; 
-        if numel(fileNums) ~= numel(transNums)
-            error('Numbering of RNA/trans files does not match');
-        end
-    end
+%     if ~isempty(transNums) 
+%         foundChannels = [foundChannels 'trans']; 
+%         if numel(fileNums) ~= numel(transNums)
+%             error('Numbering of RNA/trans files does not match');
+%         end
+%     end
 
     if ~isempty(dapiNums)  
         foundChannels = [foundChannels 'dapi'];  

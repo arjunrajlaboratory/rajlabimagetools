@@ -15,8 +15,11 @@ classdef AxisSetDisplayer < dentist.utils.AbstractDisplayer
         function draw(p)
             viewport = p.viewportHolder.getViewport();
             set(p.axH, 'XLim', viewport.ulCornerXPosition + ...
-                [-0.5, (viewport.width - 1 + 0.5)], 'YLim', ...
-                viewport.ulCornerYPosition + [-0.5, (viewport.height -1 +0.5)])
+                [-0.5, (viewport.width*0.1 - 1 + 0.5)], 'YLim', ...
+                viewport.ulCornerYPosition + [-0.5, (viewport.height*0.1 -1 +0.5)])
+            % multiplying by 0.1 helps everything load faster
+            % we apply the 0.1 multiplier to the centroid positions as well
+            % in 'CentroidsDisplayer.m'
         end
         function deactivate(p)
         end

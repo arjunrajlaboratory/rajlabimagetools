@@ -7,6 +7,11 @@ function [varargout] = computeTiledImageWidthAndHeight(objectWithTilingImageInfo
         - (Ncols - 1) * numPixelOverlap;
     imageHeight = Nrows * imageSize(:,1) ...
         - (Nrows - 1) * numPixelOverlap;
+    
+    % this helps it run faster on big scans
+    %imageHeight = imageHeight*0.1;
+    %imageWidth = imageWidth*0.1
+    
     if nargout == 1
         varargout{1} = [imageWidth, imageHeight];
     elseif nargout == 2

@@ -28,8 +28,13 @@ classdef CentroidsDisplayer < dentist.utils.AbstractDisplayer
             p.clearGraphics();
             centroids = p.centroidsAndNumSpotsSource.getCentroids();
             viewport = p.viewportHolder.getViewport();
+
             [centroidsInViewport, inViewportIndices] = ...
                 dentist.utils.filterPointsByViewport(centroids, viewport);
+            
+            % this helps it load faster.
+            centroidsInViewport.xPositions = centroidsInViewport.xPositions*0.1;
+            centroidsInViewport.yPositions = centroidsInViewport.yPositions*0.1;
             
             channelName = p.channelHolder.getChannelName();
             numSpots = p.centroidsAndNumSpotsSource.getNumSpotsForCentroids(channelName);
