@@ -1,0 +1,25 @@
+"chr" "bploc" "gene" "consequence" "dbsnp_annot" "dist1" "dist2" "dist3" "source" "id" "observed" "C57BL.6J" "CAST.EiJ" "X"
+"4935" 7 28894073 "Actn4" "U3" "U3:Actn4" NA NA NA "[1]" "rs240287517" "A/T" "A" "T" NA
+"4936" 7 28894227 "Actn4" "U3" "U3:Actn4" NA NA NA "[1]" "rs49372731" "C/T" "C" "T" NA
+"4937" 7 28896098 "Actn4" "[multi]" "Cn:Actn4::777+Cn:Actn4:HQ:777" NA NA NA "[1]" "rs13461078" "A/G" "A" "G" NA
+"4938" 7 28897035 "Actn4" "Cs" "Cs:Actn4:I:678" NA NA NA "[1]" "rs48068906" "A/G" "A" "G" NA
+"4939" 7 28898132 "Actn4" "Cs" "Cs:Actn4:K:605" NA NA NA "[1]" "rs48444250" "C/T" "C" "T" NA
+"4940" 7 28898345 "Actn4" "Cs" "Cs:Actn4:E:563" NA NA NA "[1]" "rs264595518" "C/T" "C" "T" NA
+"4941" 7 28901888 "Actn4" "Cs" "Cs:Actn4:A:478" NA NA NA "[1]" "rs51066274" "A/G" "A" "G" NA
+"4942" 7 28904674 "Actn4" "Cs" "Cs:Actn4:G:387" NA NA NA "[1]" "rs13461084" "A/G" "T" "C" NA
+"4943" 7 28907053 "Actn4" "Cs" "Cs:Actn4:A:278" NA NA NA "[1]" "rs13461081" "C/T" "A" "G" NA
+"4944" 7 28919012 "Actn4" "[multi]" "Cn:Actn4::74+Cn:Actn4:NK:74" NA NA NA "[1]" "rs13461080" "A/G" "A" "G" NA
+"5678" 7 30224205 "Tbcb" "U3" "U3:Tbcb" NA NA NA "[1]" "rs240782504" "C/T" "C" "T" NA
+"5679" 7 30224227 "Tbcb" "U3" "U3:Tbcb" NA NA NA "[1]" "rs48834075" "G/T" "G" "T" NA
+"5680" 7 30224251 "Tbcb" "Cs" "Cs:Tbcb:Y:239" NA NA NA "[1]" "rs225722376" "A/G" "G" "A" NA
+"5681" 7 30226995 "Tbcb" "Cs" "Cs:Tbcb:P:132" NA NA NA "[1]" "rs50961883" "C/T" "C" "T" NA
+"5682" 7 30227027 "Tbcb" "Cs" "Cs:Tbcb:R:122" NA NA NA "[1]" "rs48354177" "G/T" "G" "T" NA
+"5683" 7 30227686 "Tbcb" "Cs" "Cs:Tbcb:S:91" NA NA NA "[1]" "rs32527318" "A/G" "A" "G" NA
+"5684" 7 30231845 "Tbcb" "U5" "U5:Tbcb" NA NA NA "[1]" "rs32496186" "C/T" "C" "T" NA
+"5685" 7 30231846 "Tbcb" "U5" "U5:Tbcb" NA NA NA "[1]" "rs247151183" "C/T" "T" "C" NA
+"5686" 7 30231869 "Tbcb" "U5" "U5:Tbcb" NA NA NA "[1]" "rs227854502" "A/G" "G" "A" NA
+"5687" 7 30231924 "Tbcb" "U5" "U5:Tbcb" NA NA NA "[1]" "rs216351791" "A/C" "A" "C" NA
+"4717" 7 28322030 "Supt5" "Cs" "Cs:Supt5:T:447" NA NA NA "[1]" "rs237820363" "A/G" "A" "G" NA
+"4718" 7 28322126 "Supt5" "Cs" "Cs:Supt5:E:415" NA NA NA "[1]" "rs37835717" "C/T" "T" "C" NA
+"4719" 7 28329436 "Supt5" "Cs" "Cs:Supt5:A:144" NA NA NA "[1]" "rs37775222" "A/G" "A" "G" NA
+"4720" 7 28331516 "Supt5" "Cn" "Cn:Supt5:QR:30" NA NA NA "[1]" "rs36326278" "C/T" "T" "C" NA
