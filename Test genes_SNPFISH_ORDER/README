@@ -1,4 +1,0 @@
-README - Test genes SNP FISH probe design
-
-Note: makeProbesfromFasta.py in this directory run; Actn4_SNP8, Actn4_SNP9, Tbcb_SNP5, 
-Tbcb_SNP6, Supt5_SNP2, and Supt5_SNP4 cut due to proximity to intron-exon junctions.
