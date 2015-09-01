@@ -6,7 +6,7 @@ img = zeros(10,10) + backg;
 g = improc2.fitting.Gaussian2dSpot(3.5, 7, 1, 1);
 img = improc2.tests.addGaussianSpotToImage(img, g);
 
-% imshow(img, 'InitialMagnification', 'fit')
+imshow(img, 'InitialMagnification', 'fit')
 
 p = improc2.fitting.GaussianSpotFitter(img);
 
