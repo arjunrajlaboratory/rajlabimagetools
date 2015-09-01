@@ -35,7 +35,7 @@ classdef TwoStageSpotFitProcessedData < improc2.interfaces.ProcessedData & ...
         end
         
         function pDataAfterProcessing = run(pData, spotsProvider, channelStackContainer)
-            
+
             if isempty(spotsProvider.getSpotCoordinates())
             spots = improc2.fitting.Gaussian2dSpot.empty;
             pData = setFittedSpots(pData, spots); 
