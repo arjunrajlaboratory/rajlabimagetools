@@ -23,7 +23,7 @@ classdef ThresholdPlotMouseInterpreter < dentist.utils.MouseGestureInterpreter
             end
             p.getCurrentXPosition
             width = abs(p.pointAtButtonDown(1,1) - p.currentXPosition);
-            if width == 0
+            if width < 1e-3
                 p.doOnPointSelection()
             else
                 p.zoomToRange()
