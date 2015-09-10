@@ -56,12 +56,12 @@ function RenameFiles
             % Increase size of channels vector if necessary
             if numel(channels) < chanNum
                 for index = 1:(chanNum - numel(channels))
-                    channels = [channels,mat2cell([])];
+                    channels = [channels,{[]}];
                 end
             end
             mat = cell2mat(channels(chanNum));
             mat = [mat,fileNum];
-            channels(chanNum) = mat2cell(mat);
+            channels(chanNum) = {mat};
         end
     end
     numFiles = [];
@@ -127,7 +127,7 @@ function RenameFiles
         for chanIndex = 1:numel(channels)
             name = input(strcat('Enter channel name for w',int2str(chanIndex),': '),'s');
             name(name == ' ') = [];
-            newNames = [newNames;mat2cell(name)];
+            newNames = [newNames;{name}];
         end
         display(' ');
         for chanIndex = 1:numel(channels)
