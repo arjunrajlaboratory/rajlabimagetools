@@ -21,7 +21,7 @@ function processImageObjects_expansion(dirPathOrAnArrayCollection, channelsToPro
         if isa(processorData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData_expansion')
             qcData = improc2.nodeProcs.ThresholdQCData();
             qcLabel = [channelName, ':threshQC_expansion'];
-            dataAdder.addDataToObject(qcData, channelName, qcLabel)
+            dataAdder.addDataToObject(qcData, [channelName,':Expansion_Spots'], qcLabel)
         end
     end
     
