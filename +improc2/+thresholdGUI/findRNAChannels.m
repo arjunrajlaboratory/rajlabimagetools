@@ -1,4 +1,9 @@
-function [rnaChannels, rnaProcessorClassName] = findRNAChannels(objectHandle)
+function [rnaChannels, rnaProcessorClassName] = findRNAChannels(objectHandle, varargin{:})
+    
+
+    ip = inputParser;
+    ip.addOptional('explicit_processor', struct());
+    ip.parse(varargin{:});
     
     rnaProcessorClassName = 'improc2.nodeProcs.aTrousRegionalMaxProcessedData';
     rnaChannels = improc2.utils.findChannelsWithProcessorsOfRequiredType(...
