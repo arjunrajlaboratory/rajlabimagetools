@@ -9,7 +9,7 @@ function outStruct = launchThresholdGUICore(varargin)
     objectHandle = browsingTools.objectHandle;
     
     %%
-    [rnaChannels, rnaProcessorClassName] = improc2.thresholdGUI.findRNAChannels(objectHandle);
+    [rnaChannels, rnaProcessorClassName] = improc2.thresholdGUI.findRNAChannels(objectHandle, varargin{:});
     
     rnaChannelSwitch = dentist.utils.ChannelSwitchCoordinator(rnaChannels);
     rnaChannelSwitch.attachUIControl(gui.channelMenu);
