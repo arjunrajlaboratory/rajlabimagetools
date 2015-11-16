@@ -1,7 +1,9 @@
-function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
+function controlStruct = launchImageObjectTools(varargin)
     if nargin < 1
         dirPathOrAnArrayCollection = pwd;
     end
+    
+    
     
     if isa(dirPathOrAnArrayCollection, 'improc2.interfaces.ObjectArrayCollection')
         arrayCollection = dirPathOrAnArrayCollection;
@@ -11,6 +13,7 @@ function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
         arrayCollection = improc2.utils.FileBasedImageObjectArrayCollection(...
             dataFiles);
     end
+   
     
     objHolder = improc2.utils.ObjectHolder();
     navigator = improc2.utils.ImageObjectArrayCollectionNavigator(...
