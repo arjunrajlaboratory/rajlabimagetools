@@ -1,4 +1,4 @@
-function controlStruct = launchImageObjectTools(varargin)
+function controlStruct = launchImageObjectTools(dirPathOrAnArrayCollection)
     if nargin < 1
         dirPathOrAnArrayCollection = pwd;
     end
