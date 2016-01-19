@@ -1,4 +1,4 @@
-function [rnaChannels, rnaProcessorClassName] = findRNAChannels(objectHandle, varargin)
+ function [rnaChannels, rnaProcessorClassName] = findRNAChannels(objectHandle, varargin)
     
 
 
