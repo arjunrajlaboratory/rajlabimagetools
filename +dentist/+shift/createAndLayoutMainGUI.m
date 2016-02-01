@@ -80,7 +80,8 @@ function Hs = createAndLayoutMainGUI()
         'Units','normalized',...
         'Position',[0.604 0.05 0.188 0.45],...
         'BackgroundColor',[1 1 1]);
-    Hs.foundChannels = [mat2cell('dapi')];
+    %Hs.foundChannels = [mat2cell('dapi')];
+    Hs.foundChannels = {'dapi'};
     for channel = Hs.foundChannels
         if ~strcmp(cell2mat(channel),'dapi')
             Hs.foundChannels = [Hs.foundChannels,channel];
