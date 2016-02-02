@@ -67,6 +67,61 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             foundNodeLabel = node.label;
         end
         
+        function [pDataSpotCount, pData] = getOverThreshSpots(p, nodeLabel, dataClassName)
+            if nargin < 3
+                node = p.findDataNode(nodeLabel);
+            else
+                node = p.findDataNode(nodeLabel, dataClassName);
+            end
+            
+            pData = node.data;
+            OTSpots = pData.regionalMaxValues > pData.threshold;
+            pDataSpotCount = numel(find(OTSpots));
+        end
+        
+        function [clickedXs, clickedYs] = getClickedPoints(p, nodeLabel, dataClassName)
+            if nargin < 3
+                node = p.findDataNode(nodeLabel);
+            else
+                node = p.findDataNode(nodeLabel, dataClassName);
+            end
+            clickedXs = node.data.ClickedXs;
+            clickedYs = node.data.ClickedYs;
+        end
+        
+        function [fittedSpotMoltenIntensities] = getMoltenFittedIntensities(p, nodeLabel, dataClassName)
+            if nargin < 3
+                node = p.findDataNode(nodeLabel);
+            else
+                node = p.findDataNode(nodeLabel, dataClassName);
+            end
+            fittedSpots = node.data.getFittedSpots;
+            fittedSpotMoltenIntensities = zeros(1, numel(fittedSpots));
+            for i = 1:numel(fittedSpots)
+                fittedSpotMoltenIntensities(i) = fittedSpots(i).amplitude;
+            end
+            if numel(fittedSpotMoltenIntensities) == 0
+                fittedSpotMoltenIntensities = 0;
+            end
+        end
+        
+        function [fittedSpotSolidIntensities] = getSolidFittedIntensities(p, nodeLabel, dataClassName)
+            if nargin < 3
+                node = p.findDataNode(nodeLabel);
+            else
+                node = p.findDataNode(nodeLabel, dataClassName);
+            end
+            fittedSpots = node.data.getFittedSpots;
+            fittedSpotMoltenIntensities = zeros(1, numel(fittedSpots));
+            for i = 1:numel(fittedSpots)
+                fittedSpotMoltenIntensities(i) = fittedSpots(i).amplitude;
+            end
+            if numel(fittedSpotMoltenIntensities) == 0
+                fittedSpotMoltenIntensities = 0;
+            end
+            fittedSpotSolidIntensities = median(fittedSpotMoltenIntensities);
+        end
+        
         function setData(p, pData, nodeLabel, dataClassName)
             if nargin < 4
                 nodeToUpdate = p.findDataNode(nodeLabel);

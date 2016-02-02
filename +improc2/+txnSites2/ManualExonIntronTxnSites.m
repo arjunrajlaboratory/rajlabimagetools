@@ -5,6 +5,8 @@ classdef ManualExonIntronTxnSites < improc2.interfaces.NodeData
     %channel.
 
     properties
+        ClickedXs %holds the X positions of the actual spot clicked by the user
+        ClickedYs %holds the y positions of the actual spot clicked by the user
         ExonXs %holds the X positions of the fitted exon spot closest to manualy selected TxnSites
         ExonYs %holds the Y positions of the fitted exon spot closest to manualy selected TxnSites
         Intensity %The amplitude of the Guassian that is fit to the spot located at (ExonXs, ExonYs)

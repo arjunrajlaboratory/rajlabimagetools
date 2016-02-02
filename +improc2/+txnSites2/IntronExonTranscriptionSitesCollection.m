@@ -21,6 +21,9 @@ classdef IntronExonTranscriptionSitesCollection < ...
         %the intensity value of the exon spot
         function addTranscriptionSite(p, x, y)
             data = p.objectHandle.getData(p.dataNodeLabel);
+            %Store the coordinates of the clicked point
+            data.ClickedXs = [data.ClickedXs; x];
+            data.ClickedYs = [data.ClickedYs; y];
             ExonSpotData = p.objectHandle.getData(p.parentNodeLabels{1}).getFittedSpots;
             ExonfittedXs = [];
             ExonfittedYs = [];
@@ -56,10 +59,23 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 %colocalized. This may need editing especially without a
                 %chromatic shift
                 colocalized_Index = find(minDistances < 3);
-                data.ColocXs =  data.ExonXs(colocalized_Index);
-                data.ColocYs =  data.ExonYs(colocalized_Index);
-                data.ColocIntensity = data.Intensity(colocalized_Index);
-                fprintf('%s', sprintf([num2str(numel(data.ColocXs)) ' spots Colocalized\n']));
+                data.ColocXs =  data.ExonXs;
+                data.ColocYs =  data.ExonYs;
+                data.ColocIntensity = data.Intensity;
+                
+                %Check to see if the Exon and Intron identified during the
+                %last click colocalize
+                isClickColoc = pdist2([ExonfittedXs(nn), ExonfittedYs(nn)], [IntronfittedXs(mm), IntronfittedYs(mm)]) < 3;
+                
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' spots added\n']));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs(colocalized_Index))) ' spots Colocalized\n']));
+                if ~isClickColoc
+                    fprintf(2, 'This spot is Not Colocalized!\n')
+                    fprintf('-----\n')
+                else
+                    fprintf('This spot is Colocalized!\n')
+                    fprintf('-----\n')
+                end
             else
                 fprintf('%s', sprintf('No intron spots in object\n'))
             end
@@ -74,7 +90,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
         end
         
         function Ints = getTranscriptionSiteInts(p)
-            data = p.objectHandle.getData(p.dapaNodeLabel);
+            data = p.objectHandle.getData(p.dataNodeLabel);
             Ints = data.Ints;
         end
         %Delete the most recently added transcription site
@@ -83,15 +99,20 @@ classdef IntronExonTranscriptionSitesCollection < ...
             if (length(data.ExonXs) ~= length(data.IntronXs))
                 fprintf('%s', sprintf(['There was a mismatch between number of'...
                     ' Exon and Intron spots. \nThis happens when the intron '...
-                    'thershold produces no intron spots. \nI will Delete the last Exon '...
-                    'spot but consider clearing all spots and repicking\n']))
+                    'thershold produces no intron spots. \nThe last Exon '...
+                    'spot will be deleted, but consider clearing all '...
+                    'spots and repicking\n']))
                 if length(data.ExonXs) < 2
                     data.ExonXs = [];
                     data.ExonYs = [];
+                    data.ClickedXs = [];
+                    data.ClickedYs = [];
                     data.Intensity = [];
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
+                    data.ClickedXs = data.ClickedXs(1:(end-1));
+                    data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
                 end
                 
@@ -106,22 +127,27 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 if length(data.ExonXs) < 2
                     data.ExonXs = [];
                     data.ExonYs = [];
+                    data.ClickedXs = [];
+                    data.ClickedYs = [];
                     data.Intensity = [];
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
+                    data.ClickedXs = data.ClickedXs(1:(end-1));
+                    data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
                 end
-                %The index for Colocilzed spots has no refrence to the
+                %The index for Colocalzed spots has no reference to the
                 %uncolocized spot, so to properly adjust, recalculate
                 %colocalization
                 distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
                 [minDistances, minIndex] = min(distance');
                 colocalized_Index = find(minDistances < 3);
-                data.ColocXs =  data.ExonXs(colocalized_Index);
-                data.ColocYs =  data.ExonYs(colocalized_Index);
-                data.ColocIntensity = data.Intensity(colocalized_Index);
-                fprintf('%s', sprintf([num2str(numel(data.ColocXs)) ' spots Colocalized \n']));
+                data.ColocXs =  data.ExonXs;
+                data.ColocYs =  data.ExonYs;
+                data.ColocIntensity = data.Intensity;
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' spots added \n']));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs(colocalized_Index))) ' spots colocalized \n']));
             end
             
             p.objectHandle.setData(data, p.dataNodeLabel);
