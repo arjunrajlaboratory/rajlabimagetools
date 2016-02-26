@@ -70,11 +70,13 @@ numExonSpots = [];
 exonXs = [];
 exonYs = [];
 exonFittedIntensities = [];
+exonIntensities = [];
 %Intron stuff
 numIntronSpots = [];
 intronXs = [];
 intronYs = [];
 intronFittedIntensities = [];
+intronIntensities = [];
 %Txn sites coloc stuff
 numTxnSites = [];
 txnSitesIntensities = [];
