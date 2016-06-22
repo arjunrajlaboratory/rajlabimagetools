@@ -5,21 +5,57 @@ classdef TranscriptionSitesDisplayer < handle
 properties (Access = private)
         axH
         transcriptionSitesCollection
+        intronExonTxnSitesCollection
         lineHandle
     end
     
     methods
-        function p = TranscriptionSitesDisplayer(axH, transcriptionSitesCollection)
+        function p = TranscriptionSitesDisplayer(axH, transcriptionSitesCollection, intronExonTxnSitesCollection)
             p.axH = axH;
             p.transcriptionSitesCollection = transcriptionSitesCollection;
+            p.intronExonTxnSitesCollection = intronExonTxnSitesCollection;
         end
         
         function draw(p)
             p.clearGraphics()
+            IntronSpotData = p.intronExonTxnSitesCollection.objectHandle.getData(p.intronExonTxnSitesCollection.parentNodeLabels{1}).getFittedSpots;
+            Xs = [];
+            Ys = [];
+            %there may be not intron spots so check
+            if (numel(IntronSpotData) > 0)
+                for i = 1:numel(IntronSpotData)
+                    Xs = [Xs, IntronSpotData(i).xCenter];
+                    Ys = [Ys, IntronSpotData(i).yCenter];
+                end
+            end
+            p.lineHandle = line(Xs, Ys, ...
+                'LineStyle', 'none', ...
+                'Marker','o', 'MarkerEdgeColor', 'r', ...
+                'Parent', p.axH, 'HitTest', 'off', 'MarkerSize', 14);
+            
             [Xs, Ys] = p.transcriptionSitesCollection.getTranscriptionSiteXYCoords();
             p.lineHandle = line(Xs, Ys, ...
                 'LineStyle', 'none', ...
                 'Marker','o', 'MarkerEdgeColor', 'g', ...
+                'Parent', p.axH, 'HitTest', 'off', 'MarkerSize', 14);
+        end
+        
+        function drawIntrons(p)
+            p.clearGraphics()
+%             IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
+%             Xs = [];
+%             Ys = [];
+%             %there may be not intron spots so check
+%             if (numel(IntronSpotData) > 0)
+%                 for i = 1:numel(IntronSpotData)
+%                     Xs = [Xs, IntronSpotData(i).xCenter];
+%                     Ys = [Ys, IntronSpotData(i).yCenter];
+%                 end
+%             end
+            [Xs, Ys] = p.transcriptionSitesCollection.getTranscriptionSiteXYCoords();
+            p.lineHandle = line(Xs, Ys, ...
+                'LineStyle', 'none', ...
+                'Marker','o', 'MarkerEdgeColor', 'r', ...
                 'Parent', p.axH, 'HitTest', 'off', 'MarkerSize', 14);
         end
         

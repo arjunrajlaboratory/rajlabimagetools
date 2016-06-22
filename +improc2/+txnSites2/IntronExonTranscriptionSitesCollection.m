@@ -1,7 +1,7 @@
 classdef IntronExonTranscriptionSitesCollection < ...
         improc2.txnSites2.interfaces.TranscriptionSitesCollection
     %Object that interacts with the IntronExon TxnSite Data Nodes
-    properties (Access = private)
+    properties
         objectHandle %The handle to the image object being view
         dataNodeLabel %Label for TxnSite Node
         parentNodeLabels %Label for Fitted Data parent Nodes
@@ -87,6 +87,19 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data = p.objectHandle.getData(p.dataNodeLabel);
             Xs = data.ExonXs;
             Ys = data.ExonYs;
+        end
+        
+        function [Xs, Ys] = getIntronXYCoords(p)
+            IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
+            Xs = [];
+            Ys = [];
+            %there may be not intron spots so check
+            if (numel(IntronSpotData) > 0)
+                for i = 1:numel(IntronSpotData)
+                    Xs = [Xs, IntronSpotData(i).xCenter];
+                    Ys = [Ys, IntronSpotData(i).yCenter];
+                end
+            end
         end
         
         function Ints = getTranscriptionSiteInts(p)
