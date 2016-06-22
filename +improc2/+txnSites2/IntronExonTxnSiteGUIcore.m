@@ -48,7 +48,8 @@ viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolde
 compositeImageDisplayer = improc2.utils.ImageDisplayer(imgAx, compositeImageMaker, viewportHolder);
 txnSitesCollection = improc2.txnSites2.utils.NotifyingTranscriptionSitesCollection(...
     baseTxnSitesCollection);
-txnSitesDisplayer = improc2.txnSites2.utils.TranscriptionSitesDisplayer(imgAx, txnSitesCollection);
+txnSitesDisplayer = improc2.txnSites2.utils.TranscriptionSitesDisplayer(imgAx, txnSitesCollection, baseTxnSitesCollection);
+
 mainWindowDisplayer = dentist.utils.DisplayerSequence(...
     compositeImageDisplayer, txnSitesDisplayer);
 mainWindowDisplayer.draw();

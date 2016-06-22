@@ -33,7 +33,7 @@ classdef NextImageDisplayer < handle
             txnSitesCollection = improc2.txnSites2.utils.NotifyingTranscriptionSitesCollection(...
                 p.baseTxnSitesCollection);
             
-            txnSitesDisplayer = improc2.txnSites2.utils.TranscriptionSitesDisplayer(p.imgAx, txnSitesCollection);
+            txnSitesDisplayer = improc2.txnSites2.utils.TranscriptionSitesDisplayer(p.imgAx, txnSitesCollection, p.baseTxnSitesCollection);
             
             mainWindowDisplayer = dentist.utils.DisplayerSequence(...
                 compositeImageDisplayer, txnSitesDisplayer);
