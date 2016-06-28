@@ -18,7 +18,7 @@ properties (Access = private)
         
         function draw(p)
             p.clearGraphics()
-            IntronSpotData = p.intronExonTxnSitesCollection.objectHandle.getData(p.intronExonTxnSitesCollection.parentNodeLabels{1}).getFittedSpots;
+            IntronSpotData = p.intronExonTxnSitesCollection.objectHandle.getData(p.intronExonTxnSitesCollection.parentNodeLabels{2}).getFittedSpots;
             Xs = [];
             Ys = [];
             %there may be not intron spots so check
