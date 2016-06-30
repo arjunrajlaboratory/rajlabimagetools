@@ -10,7 +10,7 @@
 % Colocalization is performed in two stages to correct for chromatic
 % abberation in dye properties. 
 
-% Paul Ginart, 2013. Updated 2015. 
+% Paul Ginart, 2013. Updated 2016. 
 
 classdef SNPColocalizer < improc2.interfaces.ProcessedData
     
@@ -38,13 +38,10 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
         
         shiftFlag; %true if performing a shift correction 
         
-        guideData;
+        xyPixelDistance;  % xy pixel resolution (standard is 0.13 microns)
+        zStepSize;  %z step size in journal (standard is 0.35 microns)
         
-        % Alternative:
-        % snpMap
-        % snpMap.guide
-        % snpMap.snpA.name
-        % snpMap.snpA.channelName
+        pixelShift;
         
         snpMap % Structure that specifices the SNP mapping. Has two fields.
         %    ex: names - {'guide', 'snpA', 'snpB'}
@@ -63,15 +60,6 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
         %   other SNP probe
         %SNP B Properties
         
-        medDiff_12    % median shift correction between the guide and SNP A
-        medDiff_13    % median shift correction between the guide and SNP B
-        
-        
-        guide_data %dataSetObjects that contain the above information in coherent form
-        snpA_data
-        snpB_data 
-        
-        pixelShift
     end
     
     methods
@@ -87,9 +75,10 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             numsnpA = numel(snpASpots);
             numsnpB = numel(snpBSpots);
             
-            guide_zCoordinates = arrayfun(@(x) x* p.zDeform, [guideSpots.zPlane]);
-            snpA_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpASpots.zPlane]);
-            snpB_zCoordinates = arrayfun(@(x) x* p.zDeform, [snpBSpots.zPlane]);
+            zTransform = p.zStepSize/p.xyPixelDistance * p.zDeform;
+            guide_zCoordinates = arrayfun(@(x) x* zTransform, [guideSpots.zPlane]);
+            snpA_zCoordinates = arrayfun(@(x) x* zTransform, [snpASpots.zPlane]);
+            snpB_zCoordinates = arrayfun(@(x) x* zTransform, [snpBSpots.zPlane]);
             
             guidePositions = [[guideSpots.xCenter]' + p.pixelShift, [guideSpots.yCenter]'+ p.pixelShift, guide_zCoordinates'];
             snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
@@ -172,21 +161,22 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             labelsB = nominal();
             labelsB = addlevels(labelsB, levelsB);
             
-            
-            p.guideData = dataset();  
+            guidePositions(:,3) = guidePositions(:,3) * 1/p.zDeform; 
             p.data.(p.snpMap.channels{1}).ID = [1:numGuide]';
-            p.data.(p.snpMap.channels{1}).position =  guidePositions;dat2 = dataset();
+            p.data.(p.snpMap.channels{1}).position =  guidePositions;
             p.data.(p.snpMap.channels{1}).amplitude = [guideSpots.amplitude]';
             p.data.(p.snpMap.channels{1}).sigma = [guideSpots.sigma]';
             p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
             
-            p.data.(p.snpMap.channels{1}).snpA_ID = idx_coGuideSnpA; 
+            p.data.(p.snpMap.channels{1}).snpA_ID = idx_coGuideSnpA;
+            positions_coGuideSnpA(:,3 ) = positions_coGuideSnpA(:,3) * 1/p.zDeform;
             p.data.(p.snpMap.channels{1}).snpA_positions = positions_coGuideSnpA;
             p.data.(p.snpMap.channels{1}).snpA_amplitude = amplitude_coGuideSnpA;
             p.data.(p.snpMap.channels{1}).snpA_sigma = sigma_coGuideSnpA;
             
           
             p.data.(p.snpMap.channels{1}).snpB_ID = idx_coGuideSnpB;
+            positions_coGuideSnpB(:,3 ) = positions_coGuideSnpB(:,3) * 1/p.zDeform;
             p.data.(p.snpMap.channels{1}).snpB_positions = positions_coGuideSnpB;
             p.data.(p.snpMap.channels{1}).snpB_amplitude = amplitude_coGuideSnpB;
             p.data.(p.snpMap.channels{1}).snpB_sigma = sigma_coGuideSnpB;
@@ -204,12 +194,14 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             end
 
             p.data.(p.snpMap.channels{2}).ID = [1:numsnpA]';
+            snpAPositions(:,3) = snpAPositions(:,3) * 1/p.zDeform;
             p.data.(p.snpMap.channels{2}).position = snpAPositions;
             p.data.(p.snpMap.channels{2}).amplitude = [snpASpots.amplitude]';
             p.data.(p.snpMap.channels{2}).sigma = [snpASpots.sigma]';
             p.data.(p.snpMap.channels{2}).labels = vertcat(labelsA, nominal(LabelsA));
             
             p.data.(p.snpMap.channels{3}).ID = [1:numsnpB]';
+            snpBPositions(:,3) = snpBPositions(:,3) * 1/p.zDeform; 
             p.data.(p.snpMap.channels{3}).position = snpBPositions;
             p.data.(p.snpMap.channels{3}).amplitude = [snpBSpots.amplitude]';
             p.data.(p.snpMap.channels{3}).sigma = [snpBSpots.sigma]';
@@ -338,7 +330,9 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             % Factor to shrink the z distance into pixels.
             % includes a factor to make z distance differences less
             % important
-            parser.addOptional('zDeform',(0.35/.13 * 1/20),@isnumeric);
+            parser.addOptional('zDeform',0.05,@isnumeric);
+            parser.addOptional('xyPixelDistance',0.13,@isnumeric);
+            parser.addOptional('zStepSize',0.35,@isnumeric);
             parser.addOptional('pixelShift', 0, @isnumeric);
             
             parser.parse(varargin{:});
@@ -348,6 +342,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             p.finalDistance = parser.Results.finalDistance;
             p.zDeform = parser.Results.zDeform;
             p.pixelShift = parser.Results.pixelShift;
+            p.xyPixelDistance = parser.Results.xyPixelDistance;
+            p.zStepSize = parser.Results.zStepSize; 
             
         end
         
