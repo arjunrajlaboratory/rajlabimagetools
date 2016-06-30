@@ -10,7 +10,7 @@
 % Colocalization is performed in two stages to correct for chromatic
 % abberation in dye properties. 
 
-% Paul Ginart, 2013. Last updated 2016. 
+% Paul Ginart, 2013. Updated 2016. 
 
 classdef SNPColocalizer < improc2.interfaces.ProcessedData
     
