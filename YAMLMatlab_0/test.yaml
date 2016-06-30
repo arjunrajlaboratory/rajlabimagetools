@@ -1,0 +1,43 @@
+# Rajlab standard readme format in YAML
+--- 
+ID      : Hela-GADPH-FISH1
+date    : 2014-05-26
+
+sample:
+    organism    : Human
+    cell type   : HeLa
+    date fixed  : 2014-05-11
+    
+purpose : >
+  This FISH will test expression of GADPH in HeLa cells
+  and will use this information to compute volume.
+
+experimentalConditions:
+    antifade : TRUE 
+    fixation : formaldehyde
+
+microscopeInformation:
+    scope ID : 3
+    light source intensity : 100
+    perfect Focus : FALSE
+
+channels:
+    tmr :
+        dye   : cy3
+        probe : intLMNA 
+        dilution : 10x
+        
+    alexa : 
+        dye   : atto594
+        probe : GAPDH 
+    gfp : 
+        dye : atto488
+        probe : gfp antibody
+        
+Keywords:
+ - volume
+ - test case
+ - other
+
+notes : |
+ Additional notes go here as metadata if desired. 
