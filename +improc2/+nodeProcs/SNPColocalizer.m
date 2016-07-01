@@ -83,7 +83,11 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             guidePositions = [[guideSpots.xCenter]' + p.pixelShift, [guideSpots.yCenter]'+ p.pixelShift, guide_zCoordinates'];
             snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
             snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', snpB_zCoordinates'];
-                 
+            
+            if size(guidePositions, 2) < 3
+                guidePositions = zeros(0,3);
+            end
+            
             [pairsA, shiftsA] = colocalizePositions(p, guidePositions,snpAPositions);
             [pairsB, shiftsB] = colocalizePositions(p, guidePositions,snpBPositions);
 
@@ -161,7 +165,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             labelsB = nominal();
             labelsB = addlevels(labelsB, levelsB);
             
-            guidePositions(:,3) = guidePositions(:,3) * 1/p.zDeform; 
+            guidePositions(:,3) = guidePositions(:,3) * 1/p.zDeform;
             p.data.(p.snpMap.channels{1}).ID = [1:numGuide]';
             p.data.(p.snpMap.channels{1}).position =  guidePositions;
             p.data.(p.snpMap.channels{1}).amplitude = [guideSpots.amplitude]';
