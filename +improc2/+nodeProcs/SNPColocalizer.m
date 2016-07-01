@@ -35,6 +35,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
                                 % We do that because we aren't fitting z, so
                                 % the z position information is relatively bad
                                 % (especially compared with x and y).
+        zAllow;              % Maximum number of z-planes difference allowed for SNP colocalization with a guide spot
         
         shiftFlag; %true if performing a shift correction 
         
@@ -75,18 +76,26 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             numsnpA = numel(snpASpots);
             numsnpB = numel(snpBSpots);
             
-            zTransform = p.zStepSize/p.xyPixelDistance * p.zDeform;
-            guide_zCoordinates = arrayfun(@(x) x* zTransform, [guideSpots.zPlane]);
-            snpA_zCoordinates = arrayfun(@(x) x* zTransform, [snpASpots.zPlane]);
-            snpB_zCoordinates = arrayfun(@(x) x* zTransform, [snpBSpots.zPlane]);
+% No longer calculating Euclidian distance with Z-dimension            
+%             zTransform = p.zStepSize/p.xyPixelDistance * p.zDeform;
+%             guide_zCoordinates = arrayfun(@(x) x* zTransform, [guideSpots.zPlane]);
+%             snpA_zCoordinates = arrayfun(@(x) x* zTransform, [snpASpots.zPlane]);
+%             snpB_zCoordinates = arrayfun(@(x) x* zTransform, [snpBSpots.zPlane]);
+%             
+%             guidePositions = [[guideSpots.xCenter]' + p.pixelShift, [guideSpots.yCenter]'+ p.pixelShift, guide_zCoordinates'];
+%             snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
+%             snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', snpB_zCoordinates'];
             
-            guidePositions = [[guideSpots.xCenter]' + p.pixelShift, [guideSpots.yCenter]'+ p.pixelShift, guide_zCoordinates'];
-            snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', snpA_zCoordinates'];
-            snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', snpB_zCoordinates'];
+            guidePositions = [[guideSpots.xCenter]' + p.pixelShift, [guideSpots.yCenter]'+ p.pixelShift, [guideSpots.zPlane]'];
+            snpAPositions = [[snpASpots.xCenter]', [snpASpots.yCenter]', [snpASpots.zPlane]'];
+            snpBPositions = [[snpBSpots.xCenter]', [snpBSpots.yCenter]', [snpBSpots.zPlane]'];
             
             if size(guidePositions, 2) < 3
                 guidePositions = zeros(0,3);
             end
+            
+%             disp(['p is: ', p])
+%             disp(['p.zAllow is: ', p.zAllow])
             
             [pairsA, shiftsA] = colocalizePositions(p, guidePositions,snpAPositions);
             [pairsB, shiftsB] = colocalizePositions(p, guidePositions,snpBPositions);
@@ -165,7 +174,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             labelsB = nominal();
             labelsB = addlevels(labelsB, levelsB);
             
-            guidePositions(:,3) = guidePositions(:,3) * 1/p.zDeform;
+%             guidePositions(:,3) = guidePositions(:,3) * 1/p.zDeform;
+%             guidePositions(:,3) = guidePositions(:,3) * 1/zTransform;
             p.data.(p.snpMap.channels{1}).ID = [1:numGuide]';
             p.data.(p.snpMap.channels{1}).position =  guidePositions;
             p.data.(p.snpMap.channels{1}).amplitude = [guideSpots.amplitude]';
@@ -173,14 +183,16 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             p.data.(p.snpMap.channels{1}).labels = vertcat(labels, nominal(Labels));
             
             p.data.(p.snpMap.channels{1}).snpA_ID = idx_coGuideSnpA;
-            positions_coGuideSnpA(:,3 ) = positions_coGuideSnpA(:,3) * 1/p.zDeform;
+%             positions_coGuideSnpA(:,3 ) = positions_coGuideSnpA(:,3) * 1/p.zDeform;
+%             positions_coGuideSnpA(:,3 ) = positions_coGuideSnpA(:,3) * 1/zTransform;
             p.data.(p.snpMap.channels{1}).snpA_positions = positions_coGuideSnpA;
             p.data.(p.snpMap.channels{1}).snpA_amplitude = amplitude_coGuideSnpA;
             p.data.(p.snpMap.channels{1}).snpA_sigma = sigma_coGuideSnpA;
             
           
             p.data.(p.snpMap.channels{1}).snpB_ID = idx_coGuideSnpB;
-            positions_coGuideSnpB(:,3 ) = positions_coGuideSnpB(:,3) * 1/p.zDeform;
+%             positions_coGuideSnpB(:,3 ) = positions_coGuideSnpB(:,3) * 1/p.zDeform;
+%             positions_coGuideSnpB(:,3 ) = positions_coGuideSnpB(:,3) * 1/zTransform;
             p.data.(p.snpMap.channels{1}).snpB_positions = positions_coGuideSnpB;
             p.data.(p.snpMap.channels{1}).snpB_amplitude = amplitude_coGuideSnpB;
             p.data.(p.snpMap.channels{1}).snpB_sigma = sigma_coGuideSnpB;
@@ -198,14 +210,16 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             end
 
             p.data.(p.snpMap.channels{2}).ID = [1:numsnpA]';
-            snpAPositions(:,3) = snpAPositions(:,3) * 1/p.zDeform;
+%             snpAPositions(:,3) = snpAPositions(:,3) * 1/p.zDeform;
+%             snpAPositions(:,3) = snpAPositions(:,3) * 1/zTransform;
             p.data.(p.snpMap.channels{2}).position = snpAPositions;
             p.data.(p.snpMap.channels{2}).amplitude = [snpASpots.amplitude]';
             p.data.(p.snpMap.channels{2}).sigma = [snpASpots.sigma]';
             p.data.(p.snpMap.channels{2}).labels = vertcat(labelsA, nominal(LabelsA));
             
             p.data.(p.snpMap.channels{3}).ID = [1:numsnpB]';
-            snpBPositions(:,3) = snpBPositions(:,3) * 1/p.zDeform; 
+%             snpBPositions(:,3) = snpBPositions(:,3) * 1/p.zDeform; 
+%             snpBPositions(:,3) = snpBPositions(:,3) * 1/zTransform;
             p.data.(p.snpMap.channels{3}).position = snpBPositions;
             p.data.(p.snpMap.channels{3}).amplitude = [snpBSpots.amplitude]';
             p.data.(p.snpMap.channels{3}).sigma = [snpBSpots.sigma]';
@@ -217,7 +231,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
         function [pairs,  shifts] = colocalizePositions(p, guidePositions, snpPositions)
             
             if and(~isempty(guidePositions), ~isempty(snpPositions))
-            pairwiseDist = pdist2(guidePositions, snpPositions);
+%             pairwiseDist = pdist2(guidePositions, snpPositions);
+              pairwiseDist = colocDist(guidePositions, snpPositions, p.zAllow);
             
             sizeTest = size(pairwiseDist);
             
@@ -240,7 +255,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             
             
             snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
-            pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+%             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+            pairwiseDist = colocDist(guidePositions, snpPositions_shifted, p.zAllow);
             
             guideID = 1:size(guidePositions, 1);
             snpPosID = 1:size(snpPositions_shifted, 1);
@@ -271,7 +287,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             
             pairs = [];
             
-            pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+%             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+            pairwiseDist = colocDist(guidePositions, snpPositions_shifted, p.zAllow);
             [minGuideDistances, minSnpIndex] = min(pairwiseDist', [], 1);
             
             guide_colocalized_Index = find(minGuideDistances < finalDist)';
@@ -338,6 +355,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             parser.addOptional('xyPixelDistance',0.13,@isnumeric);
             parser.addOptional('zStepSize',0.35,@isnumeric);
             parser.addOptional('pixelShift', 0, @isnumeric);
+            parser.addOptional('zAllow', 5, @isnumeric);
             
             parser.parse(varargin{:});
             
@@ -348,6 +366,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             p.pixelShift = parser.Results.pixelShift;
             p.xyPixelDistance = parser.Results.xyPixelDistance;
             p.zStepSize = parser.Results.zStepSize; 
+            p.zAllow = parser.Results.zAllow;
             
         end
         
