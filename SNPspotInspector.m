@@ -1,4 +1,4 @@
-function out = SNPspotInspector_IAMedit(objectHandle,currentZ,snpNode) %,guideChannel,snpChannel1,snpChannel2)
+function out = SNPspotInspector(objectHandle,currentZ,snpNode) %,guideChannel,snpChannel1,snpChannel2)
 
 fig = figure;
 
