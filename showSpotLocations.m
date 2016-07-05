@@ -4,7 +4,8 @@ function showSpotLocations(spots, z, zDeform, zStepSize, xyPixelDistance, colMar
 %imslice = max(imslice,[],3);
 
 % zcoords = spots(:,3)/zDeform;
-zcoords = spots(:,3) / (zStepSize/xyPixelDistance);
+% zcoords = spots(:,3) / (zStepSize/xyPixelDistance);
+zcoords = spots(:,3);
 
 brightspots = spots(find(zcoords == z),:);
 dimspots    = spots(find(zcoords == (z-1) | zcoords == (z+1)),:);
