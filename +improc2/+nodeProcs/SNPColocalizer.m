@@ -286,9 +286,15 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
                 snpPositions_shifted, finalDist, guideID, snpPosID)
             
             pairs = [];
-            
+%             disp(['size(guidePositions): ', num2str(size(guidePositions))])
+%             disp(['size(snpPositions_shifted): ', num2str(size(snpPositions_shifted))])
 %             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+%             if size(snpPositions_shifted, 1) == 0
+%                 pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+%                 disp(['pdist2 output for 0 snpPositions: ', num2str(size(pairwiseDist))])
+%             end
             pairwiseDist = colocDist(guidePositions, snpPositions_shifted, p.zAllow);
+%             disp(['colocDist output size: ', num2str(size(pairwiseDist))])
             [minGuideDistances, minSnpIndex] = min(pairwiseDist', [], 1);
             
             guide_colocalized_Index = find(minGuideDistances < finalDist)';
