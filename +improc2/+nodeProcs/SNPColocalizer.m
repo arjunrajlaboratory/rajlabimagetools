@@ -94,6 +94,11 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
                 guidePositions = zeros(0,3);
             end
             
+            if isempty(p.zAllow)
+                p.zAllow = 5;
+                disp(['Empty zAllow. Set to default value = ', num2str(p.zAllow)])
+            end
+            
 %             disp(['p is: ', p])
 %             disp(['p.zAllow is: ', p.zAllow])
             
