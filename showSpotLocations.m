@@ -1,4 +1,4 @@
-function showSpotLocations(spots, z, zDeform, zStepSize, xyPixelDistance, colMarker)
+function showSpotLocations(spots, z, colMarker)
 
 % imslice = im(:,:,z);
 %imslice = max(imslice,[],3);
