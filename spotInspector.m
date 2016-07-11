@@ -5,7 +5,7 @@ img = readmm(objectHandle.getImageFileName(channel));
 
 imStack = rectcropmulti(img.imagedata,R);
 
-results = objectHandle.getData(channel);
+results = objectHandle.getData([channel ':Spots']);
 [x,y,z] = results.getSpotCoordinates;
 
 spots = [y x z];
