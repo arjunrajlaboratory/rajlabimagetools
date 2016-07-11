@@ -124,9 +124,9 @@ if ~alldata.firstshowing
     set(gca, 'YLim', ylim);
 end
 hold on
-showSpotLocations(guideSpots,currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'wo')
-showSpotLocations(SNP1Spots(SNP1guideindex,:),currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'ro')
-showSpotLocations(SNP2Spots(SNP2guideindex,:),currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'co')
+showSpotLocations(guideSpots,currentZ,'wo')
+showSpotLocations(SNP1Spots(SNP1guideindex,:), currentZ,'ro')
+showSpotLocations(SNP2Spots(SNP2guideindex,:), currentZ,'co')
 hold off
 title(['z = ' num2str(currentZ)]);
 ax1 = gca;
@@ -143,8 +143,8 @@ if ~alldata.firstshowing
     set(gca, 'YLim', ylim);
 end
 hold on
-showSpotLocations(SNP1Spots,currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'ro')
-showSpotLocations(guideSpots(guideSNP1index,:),currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'wo')
+showSpotLocations(SNP1Spots,currentZ,'ro')
+showSpotLocations(guideSpots(guideSNP1index,:),currentZ,'wo')
 hold off
 title([alldata.snp1channel, ' label: ', alldata.snp1name]);
 ax2 = gca;
@@ -161,8 +161,8 @@ if ~alldata.firstshowing
     set(gca, 'YLim', ylim);
 end
 hold on
-showSpotLocations(SNP2Spots,currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'co')
-showSpotLocations(guideSpots(guideSNP2index,:),currentZ,results.zDeform,results.zStepSize, results.xyPixelDistance,'wo')
+showSpotLocations(SNP2Spots,currentZ,'co')
+showSpotLocations(guideSpots(guideSNP2index,:),currentZ,'wo')
 hold off
 title([alldata.snp2channel, ' label: ', alldata.snp2name]);
 ax3 = gca;
