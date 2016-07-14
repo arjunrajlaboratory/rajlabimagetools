@@ -69,6 +69,28 @@ alldata.firstshowing = true;
 
 ButtonUpZ=uicontrol('Parent',fig,'Style','pushbutton','String','Up Z','Units','normalized','Position',[0.1 0.9 0.075 0.075],'Visible','on','Callback',@increaseZcallback);
 ButtonDnZ=uicontrol('Parent',fig,'Style','pushbutton','String','Down Z','Units','normalized','Position',[0.0 0.9 0.075 0.075],'Visible','on','Callback',@decreaseZcallback);
+
+% Add scaling radio button
+bg = uibuttongroup('Visible','on',...
+    'Position',[0 0 0.5 .08],...
+    'SelectionChangedFcn',@contrastSelection);
+
+% Create two radio buttons in the button group.
+r1 = uicontrol(bg,'Style',...
+    'radiobutton',...
+    'String','Scale individual planes',...
+    'Position',[5 5 150 20],...
+    'HandleVisibility','on');
+
+r2 = uicontrol(bg,'Style','radiobutton',...
+    'String','Scale entire stack',...
+    'Position',[150 5 150 20],...
+    'HandleVisibility','on');
+bg.Visible = 'on';
+
+alldata.bg = bg;
+
+
 showSpots(alldata);
 
 alldata.firstshowing = false;
@@ -89,6 +111,11 @@ function decreaseZcallback(hObject,eventdata)
 alldata = getappdata(hObject.Parent,'alldata');
 alldata.currentZ = max(alldata.currentZ - 1,1);
 setappdata(hObject.Parent,'alldata',alldata);
+showSpots(alldata);
+end
+
+function contrastSelection(hObject,callbackdata)
+alldata = getappdata(hObject.Parent,'alldata');
 showSpots(alldata);
 end
 
@@ -118,7 +145,14 @@ if ~alldata.firstshowing
     ylim = get(gca,'YLim');
 end
 subplot(1,3,2);
-imshow(al1stack(:,:,currentZ),[]);
+
+if strcmp(alldata.bg.SelectedObject.String,'Scale individual planes')
+    imshow(al1stack(:,:,currentZ),[]);
+else
+    imshow(al1stack(:,:,currentZ),[min(al1stack(:)) max(al1stack(:))]);
+end
+
+% imshow(al1stack(:,:,currentZ),[]);
 if ~alldata.firstshowing
     set(gca, 'XLim', xlim);
     set(gca, 'YLim', ylim);
@@ -137,7 +171,14 @@ if ~alldata.firstshowing
     ylim = get(gca,'YLim');
 end
 subplot(1,3,1);
-imshow(tm1stack(:,:,currentZ),[]);
+
+if strcmp(alldata.bg.SelectedObject.String,'Scale individual planes')
+    imshow(tm1stack(:,:,currentZ),[]);
+else
+    imshow(tm1stack(:,:,currentZ),[min(tm1stack(:)) max(tm1stack(:))]);
+end
+
+% imshow(tm1stack(:,:,currentZ),[]);
 if ~alldata.firstshowing
     set(gca, 'XLim', xlim);
     set(gca, 'YLim', ylim);
@@ -155,7 +196,14 @@ if ~alldata.firstshowing
     ylim = get(gca,'YLim');
 end
 subplot(1,3,3);
-imshow(cy1stack(:,:,currentZ),[]);
+
+if strcmp(alldata.bg.SelectedObject.String,'Scale individual planes')
+    imshow(cy1stack(:,:,currentZ),[]);
+else
+    imshow(cy1stack(:,:,currentZ),[min(cy1stack(:)) max(cy1stack(:))]);
+end
+
+% imshow(cy1stack(:,:,currentZ),[]);
 if ~alldata.firstshowing
     set(gca, 'XLim', xlim);
     set(gca, 'YLim', ylim);
