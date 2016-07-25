@@ -39,7 +39,10 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
     
     methods
         function zMerge = get.zMerge(pData)
-            zMerge = pData.storedZMerge;
+            if isempty(pData.excludedSlices)
+                zMerge = pData.storedZMerge;
+            else
+                
         end
         function pData = set.zMerge(pData, zMerge)
             pData.storedZMerge = zMerge;
