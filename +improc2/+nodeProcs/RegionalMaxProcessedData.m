@@ -43,17 +43,26 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
                 zMerge = pData.storedZMerge;
             else
                 % temporary
+%                 channel = thresholdGUIControls.rnaChannelSwitch.getChannelName;
+                
                 % find raw cropped image stack
+                channelStkContainer = pData.dependencyClassNames{1};
+                disp(channelStkContainer)
+                moreinfo(channelStkContainer)
+                disp(channelStkContainer.channelName)
                 img = channelStkContainer.croppedImage;
                 
                 % filter image
                 filteredImg = pData.imageFilterFunc(img, pData.filterParams);
                 
                 % get range without excluded slices
-                range = ;
+                nPlanes = size(filteredImg, 3);
+                exSlices = pData.excludedSlices;
+                
+                filteredImg2 = filteredImg(:,:,~ismember(1:nPlanes, exSlices));
                 
                 % generate zMerge with excluded slices
-                zMerge = max(filteredImg(:,:,range),[],3);
+                zMerge = max(filteredImg2,[],3);
             end
         end
         function pData = set.zMerge(pData, zMerge)
@@ -214,7 +223,8 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
         function [img, minAndMaxInUnscaledImg] = getImage(p,maxIntensity)
             % auto contrast or adjust maximum intensity for increasing contrast
             % for the hot pixel case, or decreasing contrast for no spots case
-            img = p.storedZMerge;
+%             img = p.storedZMerge;
+            img = p.zMerge;
             minVal = double(min(img(:)));
             maxVal = double(max(img(:)));
             minAndMaxInUnscaledImg = [minVal, maxVal];
