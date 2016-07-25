@@ -42,7 +42,19 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
             if isempty(pData.excludedSlices)
                 zMerge = pData.storedZMerge;
             else
+                % temporary
+                % find raw cropped image stack
+                img = channelStkContainer.croppedImage;
                 
+                % filter image
+                filteredImg = pData.imageFilterFunc(img, pData.filterParams);
+                
+                % get range without excluded slices
+                range = ;
+                
+                % generate zMerge with excluded slices
+                zMerge = max(filteredImg(:,:,range),[],3);
+            end
         end
         function pData = set.zMerge(pData, zMerge)
             pData.storedZMerge = zMerge;
