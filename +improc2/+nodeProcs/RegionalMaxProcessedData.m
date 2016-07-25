@@ -35,25 +35,42 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
         storedRegionalMaxValues
         storedRegionalMaxIndices
         storedExcludedSlices = [];
+        imgFileName
+        imgDirPath
+        imgChannelName
+        imgCroppedMask
     end
     
     methods
         function zMerge = get.zMerge(pData)
+            disp(pData.imgFileName)
+            disp(pData.imgDirPath)
+            disp(pData.imgChannelName)
+            disp(pData.imgCroppedMask)
+            
             if isempty(pData.excludedSlices)
+                
                 zMerge = pData.storedZMerge;
+         
             else
                 % temporary
 %                 channel = thresholdGUIControls.rnaChannelSwitch.getChannelName;
                 
                 % find raw cropped image stack
-                channelStkContainer = pData.dependencyClassNames{1};
-                disp(channelStkContainer)
-                moreinfo(channelStkContainer)
-                disp(channelStkContainer.channelName)
-                img = channelStkContainer.croppedImage;
+                chk = isempty(pData.imgFileName);
+                disp(['Is there imgFileName? ', num2str(~chk)])
+                
+                disp(['pData.imgFileName: ', pData.imgFileName])
+                disp(['pData.imgDirPath', pData.imgDirPath])
+                disp(['pData.imgChannelName', pData.imgChannelName])
+                
+                R = pData.imgCroppedMask;
+                img = readmm(pData.imgFileName);
+                
+                imStack = rectcropmulti(img.imagedata, R);
                 
                 % filter image
-                filteredImg = pData.imageFilterFunc(img, pData.filterParams);
+                filteredImg = pData.imageFilterFunc(imStack, pData.filterParams);
                 
                 % get range without excluded slices
                 nPlanes = size(filteredImg, 3);
@@ -116,6 +133,12 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
         
         function pDataAfterProcessing = run(pData, channelStkContainer)
             
+            pData.imgChannelName = channelStkContainer.channelName;
+            pData.imgFileName = channelStkContainer.fileName;
+            pData.imgDirPath = channelStkContainer.dirPath;
+            pData.imgCroppedMask = channelStkContainer.croppedMask;
+            
+            disp(size(pData.imgCroppedMask))
             img = channelStkContainer.croppedImage;
             imgObjMask = channelStkContainer.croppedMask;
             
@@ -147,6 +170,7 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
             if isempty(threshold)
                 threshold = max(regionalMaxValues)+1; % beyond max, no spots
             end
+            
             
             pData.storedZMerge = max(filteredImg,[],3);
             pData.storedRegionalMaxValues = regionalMaxValues;
