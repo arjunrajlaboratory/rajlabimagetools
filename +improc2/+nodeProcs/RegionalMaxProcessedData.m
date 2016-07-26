@@ -43,44 +43,44 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
     
     methods
         function zMerge = get.zMerge(pData)
-            disp(pData.imgFileName)
-            disp(pData.imgDirPath)
-            disp(pData.imgChannelName)
-            disp(pData.imgCroppedMask)
-            
-            if isempty(pData.excludedSlices)
+%             disp(pData.imgFileName)
+%             disp(pData.imgDirPath)
+%             disp(pData.imgChannelName)
+%             disp(pData.imgCroppedMask)
+%             
+%             if isempty(pData.excludedSlices)
                 
                 zMerge = pData.storedZMerge;
          
-            else
-                % temporary
-%                 channel = thresholdGUIControls.rnaChannelSwitch.getChannelName;
-                
-                % find raw cropped image stack
-                chk = isempty(pData.imgFileName);
-                disp(['Is there imgFileName? ', num2str(~chk)])
-                
-                disp(['pData.imgFileName: ', pData.imgFileName])
-                disp(['pData.imgDirPath', pData.imgDirPath])
-                disp(['pData.imgChannelName', pData.imgChannelName])
-                
-                R = pData.imgCroppedMask;
-                img = readmm(pData.imgFileName);
-                
-                imStack = rectcropmulti(img.imagedata, R);
-                
-                % filter image
-                filteredImg = pData.imageFilterFunc(imStack, pData.filterParams);
-                
-                % get range without excluded slices
-                nPlanes = size(filteredImg, 3);
-                exSlices = pData.excludedSlices;
-                
-                filteredImg2 = filteredImg(:,:,~ismember(1:nPlanes, exSlices));
-                
-                % generate zMerge with excluded slices
-                zMerge = max(filteredImg2,[],3);
-            end
+%             else
+%                 % temporary
+% %                 channel = thresholdGUIControls.rnaChannelSwitch.getChannelName;
+%                 
+%                 % find raw cropped image stack
+%                 chk = isempty(pData.imgFileName);
+%                 disp(['Is there imgFileName? ', num2str(~chk)])
+%                 
+%                 disp(['pData.imgFileName: ', pData.imgFileName])
+%                 disp(['pData.imgDirPath', pData.imgDirPath])
+%                 disp(['pData.imgChannelName', pData.imgChannelName])
+%                 
+%                 R = pData.imgCroppedMask;
+%                 img = readmm(pData.imgFileName);
+%                 
+%                 imStack = rectcropmulti(img.imagedata, R);
+%                 
+%                 % filter image
+%                 filteredImg = pData.imageFilterFunc(imStack, pData.filterParams);
+%                 
+%                 % get range without excluded slices
+%                 nPlanes = size(filteredImg, 3);
+%                 exSlices = pData.excludedSlices;
+%                 
+%                 filteredImg2 = filteredImg(:,:,~ismember(1:nPlanes, exSlices));
+%                 
+%                 % generate zMerge with excluded slices
+%                 zMerge = max(filteredImg2,[],3);
+%             end
         end
         function pData = set.zMerge(pData, zMerge)
             pData.storedZMerge = zMerge;
