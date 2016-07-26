@@ -26,6 +26,13 @@ classdef ProcessorDataHolder < handle
                 handleToObject, funcToRunOnIt);
         end
         
+        function channelName = getChannelName(p)
+            % This function is used to get the channel name of the current
+            % channel in Threshold GUI. Useful for recalculating zMerges
+            % after excluding slices.
+            channelName = p.channelHolder.getChannelName();
+        end
+        
         function procData = get.processorData(p)
             procData = p.objectHandle.getData(...
                 p.channelHolder.getChannelName(), p.processorFetchingParams{:});

@@ -13,6 +13,20 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
     end
     
     methods
+        function dependencyData = fillAnyStackContainersRohitEdit(p, dependencyData, ...
+                imageProviderChannelArray)
+            for i = 1:length(dependencyData)
+                data = dependencyData{i};
+                if isa(data, 'improc2.dataNodes.ChannelStackContainer')
+                    imageProvider = ...
+                        imageProviderChannelArray.getByChannelName(data.channelName);
+                    data.croppedImage = imageProvider.getImage(p, data.channelName);
+                    data.croppedMask = p.getCroppedMask();
+                    dependencyData{i} = data;
+                end
+            end
+        end
+        
         function p = HandleToGraphBasedImageObject(objHolder)
             p.objHolder = objHolder;
         end
@@ -150,6 +164,12 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
                     nodeLabel, @(node) isa(node.data, dataClassName));
                 boolean = ~isempty(foundNodes);
             end
+        end
+        
+        function dependencyData = getDependencyDataRohitEdit(p, nodeLabel, imageProviderChannelArray)
+            [~, labels] = p.getData(nodeLabel);
+            dependencyData = p.getDataFromDependencies(labels);
+            dependencyData = p.fillAnyStackContainers(dependencyData, imageProviderChannelArray);
         end
         
         function runProcessor(p, imageProviderChannelArray, nodeLabel, dataClassName)
