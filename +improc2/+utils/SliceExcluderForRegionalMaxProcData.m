@@ -25,6 +25,8 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             sliceRangeToExclude = 1 : min(sliceNumber, p.numSlices);
             p.processorDataHolder.processorData.excludedSlices = ...
                 sliceRangeToExclude;
+            % updateZmerge(channelStkContainer, slices)
+
         end
         function clearExclusionsAndExcludeSlicesStartingFrom(p, sliceNumber)
             if sliceNumber > p.numSlices;
@@ -43,6 +45,26 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
         end 
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p);
+        end
+        function p = updateZmergeAfterSliceExclusion(p)
+            % get channelStkContainer
+            
+            
+            % get range of included slices
+            exSlices = p.processorDataHolder.processorData.excludedSlices;
+            totalRange = 1:size(channelStkContainer.croppedImg, 3);
+            incSlices = ~ismember(exSlices, totalRange);
+            
+            % filter the stack and exclude slices
+            img = channelStkContainer.croppedImage;
+            
+            filteredImg = p.processorDataHolder.imageFilterFunc(img, p.processorDataHolder.filterParams);
+            
+            filteredImg = filteredImg(:,:,incSlices);
+            
+            % set zMerge
+            p = p.set.zMerge(max(filteredImg,[],3));
+            
         end
     end
     
