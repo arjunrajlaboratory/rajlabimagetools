@@ -25,6 +25,7 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             sliceRangeToExclude = 1 : min(sliceNumber, p.numSlices);
             p.processorDataHolder.processorData.excludedSlices = ...
                 sliceRangeToExclude;
+            channelName = p.processorDataHoldergetChannelName();
         end
         function clearExclusionsAndExcludeSlicesStartingFrom(p, sliceNumber)
             if sliceNumber > p.numSlices;
@@ -33,6 +34,7 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             sliceRangeToExclude = max(sliceNumber, 1) : p.numSlices;
             p.processorDataHolder.processorData.excludedSlices = ...
                 sliceRangeToExclude;
+            p.processorDataHolder.processorData.needsUpdate = 1;
         end
         function clearExclusionsAndIncludeOnlyBetween(p, firstIncludedSlice, lastIncludedSlice)
             assert(lastIncludedSlice >= firstIncludedSlice, 'last must be greater than first')
@@ -40,6 +42,7 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             slicesToExcludeAtTop = max(lastIncludedSlice + 1, 1) : p.numSlices;
             p.processorDataHolder.processorData.excludedSlices = ...
                 [slicesToExcludeAtBottom, slicesToExcludeAtTop];
+            p.processorDataHolder.processorData.needsUpdate = 1;
         end 
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p);
