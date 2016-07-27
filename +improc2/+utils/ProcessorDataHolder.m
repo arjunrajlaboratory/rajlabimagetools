@@ -30,7 +30,7 @@ classdef ProcessorDataHolder < handle
             % This function is used to get the channel name of the current
             % channel in Threshold GUI. Useful for recalculating zMerges
             % after excluding slices.
-            channelName = p.channelHolder.getChannelName();
+            channelName = strcat(p.channelHolder.getChannelName(),':Spots');
         end
         
         function procData = get.processorData(p)

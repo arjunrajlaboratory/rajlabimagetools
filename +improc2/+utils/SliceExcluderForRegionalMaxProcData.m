@@ -25,7 +25,8 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             sliceRangeToExclude = 1 : min(sliceNumber, p.numSlices);
             p.processorDataHolder.processorData.excludedSlices = ...
                 sliceRangeToExclude;
-            channelName = p.processorDataHoldergetChannelName();
+%             channelName = p.processorDataHolder.getChannelName();
+            p.updateZmergeAfterSliceExclusion();
         end
         function clearExclusionsAndExcludeSlicesStartingFrom(p, sliceNumber)
             if sliceNumber > p.numSlices;
@@ -34,7 +35,8 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             sliceRangeToExclude = max(sliceNumber, 1) : p.numSlices;
             p.processorDataHolder.processorData.excludedSlices = ...
                 sliceRangeToExclude;
-            p.processorDataHolder.processorData.needsUpdate = 1;
+%             p.processorDataHolder.processorData.needsUpdate = 1;
+            p.updateZmergeAfterSliceExclusion();
         end
         function clearExclusionsAndIncludeOnlyBetween(p, firstIncludedSlice, lastIncludedSlice)
             assert(lastIncludedSlice >= firstIncludedSlice, 'last must be greater than first')
@@ -42,11 +44,43 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             slicesToExcludeAtTop = max(lastIncludedSlice + 1, 1) : p.numSlices;
             p.processorDataHolder.processorData.excludedSlices = ...
                 [slicesToExcludeAtBottom, slicesToExcludeAtTop];
-            p.processorDataHolder.processorData.needsUpdate = 1;
+%             p.processorDataHolder.processorData.needsUpdate = 1;
+            p.updateZmergeAfterSliceExclusion();
         end 
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p);
         end
+        function updateZmergeAfterSliceExclusion(p)
+            % get channelStkContainer
+            tools = improc2.launchImageObjectTools;
+            nodeLabel = {p.processorDataHolder.getChannelName()};
+            imageProviderChannelArray = dentist.utils.makeFilledChannelArray(...
+                tools.objectHandle.channelNames, ...
+                @(channelName) improc2.ImageObjectCroppedStkProvider(pwd));
+            dependencyData = tools.objectHandle.getDependencyDataRohitEdit(nodeLabel, imageProviderChannelArray);
+            dependencyData = tools.objectHandle.fillAnyStackContainersRohitEdit(dependencyData, imageProviderChannelArray);
+            channelStkContainer = dependencyData{1};            
+            
+            % get range of included slices
+            exSlices = p.processorDataHolder.processorData.excludedSlices;
+            totalRange = 1:size(channelStkContainer.croppedImage, 3);
+            incSlices = ~ismember(totalRange, exSlices');
+            
+            % filter the stack and exclude slices
+            img = channelStkContainer.croppedImage;
+            
+            filteredImg = p.processorDataHolder.processorData.imageFilterFunc(img, p.processorDataHolder.processorData.filterParams);
+            
+            filteredImg = filteredImg(:,:,incSlices);
+            
+            % calculate zMerge
+            merge = max(filteredImg,[],3);
+            
+            % set zMerge
+            p.processorDataHolder.processorData.zMerge = merge;
+            
+        end
+
     end
     
 end
