@@ -17,6 +17,7 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
         end
         function clearExclusions(p)
             p.processorDataHolder.processorData.excludedSlices = [];
+            p.updateZmergeAfterSliceExclusion();
         end
         function clearExclusionsAndExcludeSlicesUpTo(p, sliceNumber)
             if sliceNumber < 1;
