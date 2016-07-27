@@ -12,6 +12,9 @@ classdef ProcessorDataHolder < handle
     end
     
     methods
+        function oHandle = getObjectHandle(p)
+            oHandle = p.objectHandle;
+        end
         function p = ProcessorDataHolder(...
                 objectHandle, channelHandle, varargin)
             p.channelHolder = channelHandle;

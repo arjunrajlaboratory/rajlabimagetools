@@ -52,13 +52,13 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
         end
         function updateZmergeAfterSliceExclusion(p)
             % get channelStkContainer
-            tools = improc2.launchImageObjectTools;
+            objectHandle = p.processorDataHolder.getObjectHandle;
             nodeLabel = {p.processorDataHolder.getChannelName()};
             imageProviderChannelArray = dentist.utils.makeFilledChannelArray(...
-                tools.objectHandle.channelNames, ...
+                objectHandle.channelNames, ...
                 @(channelName) improc2.ImageObjectCroppedStkProvider(pwd));
-            dependencyData = tools.objectHandle.getDependencyDataRohitEdit(nodeLabel, imageProviderChannelArray);
-            dependencyData = tools.objectHandle.fillAnyStackContainersRohitEdit(dependencyData, imageProviderChannelArray);
+            dependencyData = objectHandle.getDependencyDataRohitEdit(nodeLabel, imageProviderChannelArray);
+            dependencyData = objectHandle.fillAnyStackContainersRohitEdit(dependencyData, imageProviderChannelArray);
             channelStkContainer = dependencyData{1};            
             
             % get range of included slices
