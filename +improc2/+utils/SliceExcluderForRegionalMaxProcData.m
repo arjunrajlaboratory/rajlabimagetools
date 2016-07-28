@@ -58,8 +58,8 @@ classdef SliceExcluderForRegionalMaxProcData < improc2.interfaces.SliceExcluder
             imageProviderChannelArray = dentist.utils.makeFilledChannelArray(...
                 objectHandle.channelNames, ...
                 @(channelName) improc2.ImageObjectCroppedStkProvider(pwd));
-            dependencyData = objectHandle.getDependencyDataRohitEdit(nodeLabel, imageProviderChannelArray);
-            dependencyData = objectHandle.fillAnyStackContainersRohitEdit(dependencyData, imageProviderChannelArray);
+            dependencyData = objectHandle.getDependencyData(nodeLabel, imageProviderChannelArray);
+            dependencyData = objectHandle.fillStackContainers(dependencyData, imageProviderChannelArray);
             channelStkContainer = dependencyData{1};            
             
             % get range of included slices
