@@ -13,18 +13,12 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
     end
     
     methods
-        function dependencyData = fillAnyStackContainersRohitEdit(p, dependencyData, ...
+        function dependencyData = fillStackContainers(p, dependencyData, ...
                 imageProviderChannelArray)
-            for i = 1:length(dependencyData)
-                data = dependencyData{i};
-                if isa(data, 'improc2.dataNodes.ChannelStackContainer')
-                    imageProvider = ...
-                        imageProviderChannelArray.getByChannelName(data.channelName);
-                    data.croppedImage = imageProvider.getImage(p, data.channelName);
-                    data.croppedMask = p.getCroppedMask();
-                    dependencyData{i} = data;
-                end
-            end
+            % Written to access the function "fillAnyStackContainers"
+            % outside of this class
+            dependencyData = fillAnyStackContainers(p, dependencyData,...
+                imageProviderChannelArray);
         end
         
         function p = HandleToGraphBasedImageObject(objHolder)
@@ -166,7 +160,9 @@ classdef HandleToGraphBasedImageObject < improc2.interfaces.ImageObjectHandle
             end
         end
         
-        function dependencyData = getDependencyDataRohitEdit(p, nodeLabel, imageProviderChannelArray)
+        function dependencyData = getDependencyData(p, nodeLabel, imageProviderChannelArray)
+            % This function is used to get the dependency data used to
+            % recalculate the zMerge after excluding slices
             [~, labels] = p.getData(nodeLabel);
             dependencyData = p.getDataFromDependencies(labels);
             dependencyData = p.fillAnyStackContainers(dependencyData, imageProviderChannelArray);
