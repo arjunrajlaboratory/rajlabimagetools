@@ -1,11 +1,13 @@
 function processImageObjects(varargin)
     
      ip = inputParser;
-     ip.addOptional('sparseTissue', false); % Change input name RohitEdit
+     ip.addOptional('sparseTissue', false);
      ip.addOptional('dirPathOrAnArrayCollection', pwd);
      ip.addOptional('channelsToProcess', {});
      ip.addParameter('filterParams', struct('sigma',0.5,'numLevels',3));
      ip.parse(varargin{:});
+     
+     sparseTissue = ip.Results.sparseTissue;
 
     dirPathOrAnArrayCollection = ip.Results.dirPathOrAnArrayCollection;
     
@@ -26,7 +28,7 @@ function processImageObjects(varargin)
     fprintf('** Adding unprocessed data templates ...')
     for i = 1:length(channelsToProcess)
         channelName = channelsToProcess{i};
-        [processorData, nodeLabel] = chooseProcessorDataForChannel(channelName, filterParams);
+        [processorData, nodeLabel] = chooseProcessorDataForChannel(channelName, filterParams, sparseTissue);
         dataAdder.addDataToObject(processorData, channelName, nodeLabel)
         if isa(processorData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData')
             qcData = improc2.nodeProcs.ThresholdQCData();
@@ -41,14 +43,18 @@ function processImageObjects(varargin)
     improc2.processing.updateAll(dirPathOrAnArrayCollection);
 end
 
-function [processorData, label] = chooseProcessorDataForChannel(channelName, filterParams)
+function [processorData, label] = chooseProcessorDataForChannel(channelName, filterParams, sparseTissue)
     switch channelName
-        case 'alexa' % RohitEdit
+        case 'alexa'
             % Assign Arjun's new processor to the alexa channel if the
             % sparseTissue option is set to true. Otherwise continue with
             % normal processing
             if sparseTissue
                 processorData = improc2.nodeProcs.SparseTissueRegionalMaxProcessedData('filterParams', filterParams);
+                label = 'alexaSparseProc';
+            else
+                processorData = improc2.nodeProcs.aTrousRegionalMaxProcessedData('filterParams', filterParams);
+                label = [channelName, ':Spots'];
             end
         case 'trans'
             processorData = improc2.nodeProcs.TransProcessedData();

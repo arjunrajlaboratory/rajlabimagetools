@@ -28,7 +28,7 @@ classdef RegionalMaxProcessedData < improc2.interfaces.ProcessedData & ...
         zMerge
     end
     
-    properties (Access = private)
+    properties (Access = protected)
         storedZMerge
         storedImageSize
         storedThreshold
