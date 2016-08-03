@@ -1,6 +1,7 @@
 function processImageObjects(varargin)
     
      ip = inputParser;
+     ip.addOptional('sparseTissue', false); % Change input name RohitEdit
      ip.addOptional('dirPathOrAnArrayCollection', pwd);
      ip.addOptional('channelsToProcess', {});
      ip.addParameter('filterParams', struct('sigma',0.5,'numLevels',3));
@@ -42,6 +43,13 @@ end
 
 function [processorData, label] = chooseProcessorDataForChannel(channelName, filterParams)
     switch channelName
+        case 'alexa' % RohitEdit
+            % Assign Arjun's new processor to the alexa channel if the
+            % sparseTissue option is set to true. Otherwise continue with
+            % normal processing
+            if sparseTissue
+                processorData = improc2.nodeProcs.SparseTissueRegionalMaxProcessedData('filterParams', filterParams);
+            end
         case 'trans'
             processorData = improc2.nodeProcs.TransProcessedData();
             label = 'transProc';
