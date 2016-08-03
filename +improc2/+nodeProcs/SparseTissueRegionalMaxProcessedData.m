@@ -23,7 +23,7 @@ classdef SparseTissueRegionalMaxProcessedData < improc2.nodeProcs.RegionalMaxPro
             pData.storedImageSize = size(img);
             filteredImg = pData.imageFilterFunc(img, pData.filterParams);
             
-            medianStack = medianfilter(filteredIm);
+            medianStack = medianfilter(filteredImg);
             medianStack = imgaussfilt3(medianStack,1);
             
             bw = imregionalmax(medianStack);
