@@ -30,7 +30,7 @@ function processImageObjects(varargin)
         channelName = channelsToProcess{i};
         [processorData, nodeLabel] = chooseProcessorDataForChannel(channelName, filterParams, sparseTissue);
         dataAdder.addDataToObject(processorData, channelName, nodeLabel)
-        if isa(processorData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData')
+        if isa(processorData, 'improc2.nodeProcs.aTrousRegionalMaxProcessedData') || isa(processorData, 'improc2.nodeProcs.SparseTissueRegionalMaxProcessedData')
             qcData = improc2.nodeProcs.ThresholdQCData();
             qcLabel = [channelName, ':threshQC'];
             dataAdder.addDataToObject(qcData, channelName, qcLabel)
@@ -46,9 +46,9 @@ end
 function [processorData, label] = chooseProcessorDataForChannel(channelName, filterParams, sparseTissue)
     switch channelName
         case 'alexa'
-            % Assign Arjun's new processor to the alexa channel if the
-            % sparseTissue option is set to true. Otherwise continue with
-            % normal processing
+            % In case sparseTissue is set to true, assign the
+            % "SparseTissueRegionalMaxProcessedData processor to the
+            % "alexa" channel to reduce doubly called spots
             if sparseTissue
                 processorData = improc2.nodeProcs.SparseTissueRegionalMaxProcessedData('filterParams', filterParams);
                 label = 'alexaSparseProc';
