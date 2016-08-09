@@ -1,17 +1,20 @@
-classdef SliceInspectorGUIManager < handle
+classdef SegmentInspectorGUIManager < handle
     
     properties (Access = private)
         buildResources = struct();
-        sliceBrowser
+        segmentViewer
         figH
         keyboardInterpreter
     end
     
     methods
-        function p = SliceInspectorGUIManager(buildResources)
+        function p = SegmentInspectorGUIManager(buildResources)
+            % Needs to be updated with whatever items are required to build
+            % this.
+            % Probably need to get a ChannelStkContainer.
             p.buildResources.channelSwitcher = buildResources.channelSwitcher;
-            p.buildResources.viewportHolder = buildResources.viewportHolder;
-            p.buildResources.objectHandle = buildResources.objectHandle;
+            p.buildResources.viewportHolder = buildResources.viewportHolder; % Probably okay. Need to figure out how this works, though.
+            p.buildResources.objectHandle = buildResources.objectHandle; % Not sure where this gets used.
             p.keyboardInterpreter = buildResources.keyboardInterpreter;
         end
         function launchGUI(p)
@@ -24,29 +27,50 @@ classdef SliceInspectorGUIManager < handle
                     @keyboardInterpreter.keyPressCallBackFunc)
             end
         end
-        function TF = isActive(p)
-            TF = ~isempty(p.sliceBrowser) && isvalid(p.sliceBrowser);
+        function TF = isActive(p) % Can I leave this alone?
+            TF = ~isempty(p.segmentViewer) && isvalid(p.segmentViewer);
         end
-        function updateIfActive(p)
+        
+        function updateIfActive(p) % Probably can leave this alone. Just tells it to draw itself.
             if p.isActive()
-                p.sliceBrowser.draw()
+                p.segmentViewer.draw()
             end
         end
-        function goUpOneSlice(p)
+        
+        function goUpOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
             if p.isActive()
-                p.sliceBrowser.goUpOneSlice()
+                p.segmentViewer.goUpOneSlice()
             end
         end
-        function goDownOneSlice(p)
+        function goDownOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
             if p.isActive()
-                p.sliceBrowser.goDownOneSlice()
+                p.segmentViewer.goDownOneSlice()
+            end
+        end
+        
+        % Design choice: can either make a monolithic "update" that stores
+        % the current array choice and thus decides whether to make a major
+        % or minor update accordingly. Or can make a small and big update
+        % that listen to object and array change events. Hmm. I think the
+        % latter might "fit" a bit better with the rest of the design
+        % philosophy, and would avoid some potential awkwardness with
+        % storing the current array and comparing it.
+        
+        % major update
+        function updateWithNewArray(p) % This can update based on a new array. Hook for adding this in as a callback.
+        end
+        
+        % minor update
+        function updateWithNewObject(p) % This can update based on a new object. Hook for adding this in as a callback.
+            if p.isActive() % What is this "active" thing about?
+                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
             end
         end
     end
     
     methods (Access = private)
-        function figureCloseRequest(p, varargin)
-            delete(p.sliceBrowser)
+        function figureCloseRequest(p, varargin) % Pretty sure this can just remain as is.
+            delete(p.segmentViewer)
             delete(p.figH)
         end
         
@@ -69,15 +93,15 @@ classdef SliceInspectorGUIManager < handle
             
             p.buildResources.axH = axH;
             
-            sliceBrowser = improc2.thresholdGUI.ImageSliceBrowser(p.buildResources);
-            sliceBrowser.draw();
+            segmentViewer = improc2.thresholdGUI.SegmentViewer(p.buildResources);
+            segmentViewer.draw();
             
-            sliceInspectorZoomInterpreter = ...
+            segmentInspectorZoomInterpreter = ...
                 dentist.utils.ImageZoomingMouseInterpreter(p.buildResources.viewportHolder);
-            sliceInspectorZoomInterpreter.wireToFigureAndAxes(figH, axH);
+            segmentInspectorZoomInterpreter.wireToFigureAndAxes(figH, axH);
             
             set(figH, 'CloseRequestFcn', @(varargin) p.figureCloseRequest())
-            p.sliceBrowser = sliceBrowser;
+            p.segmentViewer = segmentViewer;
             p.figH = figH;
         end
     end
