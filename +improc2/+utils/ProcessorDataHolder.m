@@ -37,14 +37,25 @@ classdef ProcessorDataHolder < handle
         end
         
         function procData = get.processorData(p)
-            procData = p.objectHandle.getData(...
-                p.channelHolder.getChannelName(), p.processorFetchingParams{:});
+            if isa(p.processorFetchingParams{1}, 'char')
+                procData = p.objectHandle.getData(...
+                    p.channelHolder.getChannelName(), p.processorFetchingParams{:});
+            elseif isa(p.processorFetchingParams{1}, 'containers.Map')
+                procData = p.objectHandle.getData(...
+                    p.channelHolder.getChannelName(), p.processorFetchingParams{1}(p.channelHolder.getChannelName()));
+            end
         end
         
         function set.processorData(p, procData)
-            p.objectHandle.setData(...
-                procData, p.channelHolder.getChannelName(), p.processorFetchingParams{:});
-            p.actionsAfterSetProcessor.runDependencies();
+            if isa(p.processorFetchingParams{1}, 'char')
+                p.objectHandle.setData(...
+                    procData, p.channelHolder.getChannelName(), p.processorFetchingParams{:});
+                p.actionsAfterSetProcessor.runDependencies();
+            elseif isa(p.processorFetchingParams{1}, 'containers.Map')
+                p.objectHandle.setData(...
+                    procData, p.channelHolder.getChannelName(), p.processorFetchingParams{1}(p.channelHolder.getChannelName()));
+                p.actionsAfterSetProcessor.runDependencies();
+            end
         end
         
         function disp(p)
