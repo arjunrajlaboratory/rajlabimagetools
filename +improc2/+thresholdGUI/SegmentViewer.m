@@ -65,6 +65,7 @@ classdef SegmentViewer < handle
             localTools.navigator.tryToGoToArray(p.currentArray);
             testObjectHandle = localTools.objectHandle;
             
+            p.objectMasks = {};
             p.objectCentroids = zeros(0,2); % Get masks and centroids
             for i = 1:localTools.navigator.numberOfObjectsInCurrentArray
                 localTools.navigator.tryToGoToObj(i);

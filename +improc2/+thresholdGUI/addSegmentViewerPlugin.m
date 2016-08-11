@@ -22,7 +22,8 @@ function augmentedControls = addSegmentViewerPlugin(thresholdGUIControls)
 %     resources.keyboardInterpreter = thresholdGUIControls.keyboardInterpreter;
 
     SegmentInspectorGUIManager = improc2.thresholdGUI.SegmentInspectorGUIManager(resources);
-    
+
+    %***** This needs to be fixed. Needs to pass along the thresholdGUIControls to launchGUI
     thresholdGUIControls.upperExtensibleButtonGroup.makeNewButton('String', 'View segments', ...
         'Callback', @(varargin) SegmentInspectorGUIManager.launchGUI());
     
