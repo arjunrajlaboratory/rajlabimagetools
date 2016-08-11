@@ -9,15 +9,22 @@ classdef SegmentInspectorGUIManager < handle
     
     methods
         function p = SegmentInspectorGUIManager(buildResources)
+            
+            p.buildResources.browsingTools = buildResources.browsingTools;
+            
+            
+            
+            % OLD below
             % Needs to be updated with whatever items are required to build
             % this.
             % Probably need to get a ChannelStkContainer.
-            p.buildResources.channelSwitcher = buildResources.channelSwitcher;
-            p.buildResources.viewportHolder = buildResources.viewportHolder; % Probably okay. Need to figure out how this works, though.
-            p.buildResources.objectHandle = buildResources.objectHandle; % Not sure where this gets used.
-            p.keyboardInterpreter = buildResources.keyboardInterpreter;
+%             p.buildResources.channelSwitcher = buildResources.channelSwitcher;
+%             p.buildResources.viewportHolder = buildResources.viewportHolder; % Probably okay. Need to figure out how this works, though.
+%             p.buildResources.objectHandle = buildResources.objectHandle; % Not sure where this gets used.
+%             p.keyboardInterpreter = buildResources.keyboardInterpreter;
         end
-        function launchGUI(p)
+        
+        function launchGUI(p) % This will need an argument of thresholdGUI controls or the navigator.
             if p.isActive()
                 figure(p.figH)
             else
@@ -27,6 +34,7 @@ classdef SegmentInspectorGUIManager < handle
                     @keyboardInterpreter.keyPressCallBackFunc)
             end
         end
+        
         function TF = isActive(p) % Can I leave this alone?
             TF = ~isempty(p.segmentViewer) && isvalid(p.segmentViewer);
         end
@@ -37,16 +45,16 @@ classdef SegmentInspectorGUIManager < handle
             end
         end
         
-        function goUpOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
-            if p.isActive()
-                p.segmentViewer.goUpOneSlice()
-            end
-        end
-        function goDownOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
-            if p.isActive()
-                p.segmentViewer.goDownOneSlice()
-            end
-        end
+%         function goUpOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
+%             if p.isActive()
+%                 p.segmentViewer.goUpOneSlice()
+%             end
+%         end
+%         function goDownOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
+%             if p.isActive()
+%                 p.segmentViewer.goDownOneSlice()
+%             end
+%         end
         
         % Design choice: can either make a monolithic "update" that stores
         % the current array choice and thus decides whether to make a major
@@ -58,19 +66,34 @@ classdef SegmentInspectorGUIManager < handle
         
         % major update
         function updateWithNewArray(p) % This can update based on a new array. Hook for adding this in as a callback.
+            % This is "glue code"
+            if p.isActive() % What is this "active" thing about?
+                p.segmentViewer.currentObject = p.buildResources.browsingTools.navigator.currentObjNum;
+                p.segmentViewer.currentArray  = p.buildResources.browsingTools.navigator.currentArrayNum;
+                
+                p.segmentViewer.arrayUpdate;
+                p.segmentViewer.draw();
+                %                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
+            end
+
         end
         
         % minor update
         function updateWithNewObject(p) % This can update based on a new object. Hook for adding this in as a callback.
+            % This is "glue code"
             if p.isActive() % What is this "active" thing about?
-                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
+                p.segmentViewer.currentObject = p.buildResources.browsingTools.navigator.currentObjNum;
+                p.segmentViewer.currentArray  = p.buildResources.browsingTools.navigator.currentArrayNum;
+                
+                p.segmentViewer.draw();
+%                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
             end
         end
     end
     
     methods (Access = private)
         function figureCloseRequest(p, varargin) % Pretty sure this can just remain as is.
-            delete(p.segmentViewer)
+            delete(p.segmentViewer) % Do we need a destructor for any local stuff in segmentViewer?
             delete(p.figH)
         end
         
@@ -92,16 +115,22 @@ classdef SegmentInspectorGUIManager < handle
             axis(axH, 'equal')
             
             p.buildResources.axH = axH;
+            p.buildResources.currentObject = p.buildResources.browsingTools.navigator.currentObjNum;
+            p.buildResources.currentArray  = p.buildResources.browsingTools.navigator.currentArrayNum;
+            % p.buildResources.tools = 
             
-            segmentViewer = improc2.thresholdGUI.SegmentViewer(p.buildResources);
-            segmentViewer.draw();
+            % Somehow need to use the navigator to set the 
             
-            segmentInspectorZoomInterpreter = ...
-                dentist.utils.ImageZoomingMouseInterpreter(p.buildResources.viewportHolder);
-            segmentInspectorZoomInterpreter.wireToFigureAndAxes(figH, axH);
+            p.segmentViewer = improc2.thresholdGUI.SegmentViewer(p.buildResources);
+                        
+            p.segmentViewer.draw();
+            
+%             segmentInspectorZoomInterpreter = ...
+%                 dentist.utils.ImageZoomingMouseInterpreter(p.buildResources.viewportHolder);
+%             segmentInspectorZoomInterpreter.wireToFigureAndAxes(figH, axH);
             
             set(figH, 'CloseRequestFcn', @(varargin) p.figureCloseRequest())
-            p.segmentViewer = segmentViewer;
+            %p.segmentViewer = segmentViewer;
             p.figH = figH;
         end
     end
