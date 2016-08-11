@@ -1,12 +1,5 @@
 classdef SegmentViewer < handle
-    
-    properties (SetAccess = private)
-        displayer
-        %zSlicer
-        %imageStackDepth
         
-    end
-    
     properties (SetAccess = public) % Should probably use get, set routines for this to check for bounds.
         currentObject % These can be set in the controller, taken from controls.browsingTools.
         currentArray
@@ -26,15 +19,7 @@ classdef SegmentViewer < handle
         objectCentroids % centers of the object masks.
         
         objectMasks % cell array of the masks
-        
-        %localTools % local navigator
-        
-        % Do we need this? Should probably be in the controller
-        %globalTools % Tools from the thresholdGUI, which tells us which object, etc.
-        
-%         currentObject % These can be set in the controller, taken from controls.browsingTools.
-%         currentArray
-        
+
         axH
         
         
@@ -105,75 +90,15 @@ classdef SegmentViewer < handle
             p.mergedImageNoObjects = cat(3,p.transImage*0.5 + p.dapiImage*0.2,p.transImage*0.5,p.transImage*0.5 + p.dapiImage*0.7);
             
         end
-%                 
-%         function goUpOneSlice(p)  % Probably don't really need this.
-%             currentSlice = p.zSlicer.sliceToTake;
-%             newSlice = min(currentSlice + 1, p.imageStackDepth);
-%             p.zSlicer.setSliceToTake(newSlice);
-%             p.draw()
-%         end
-%         
-%         function goDownOneSlice(p)  % Probably don't really need this either.
-%             currentSlice = p.zSlicer.sliceToTake;
-%             newSlice = max(currentSlice - 1, 1);
-%             p.zSlicer.setSliceToTake(newSlice);
-%             p.draw();
-%         end
-        
-%         function keyPressCallBack(p, src, event)  % Will want to rejigger this based on what we want keys to do.
-%             key = event.Key;
-%             if strcmp(key, 'uparrow')
-%                 p.goUpOneSlice()
-%             elseif strcmp(key, 'downarrow')
-%                 p.goDownOneSlice()
-%             end
-%         end
+
     end
     
     methods (Access = private)
         
         function build(p, resources)
-            
-            % One thing that build should do is unpack the navigator or
-            % instantiate it if required. Like an "isvalid" on the
-            % navigator property. Probably need a destructor to free this
-            % object as well.
-            
-      %      p.localTools = improc2.launchImageObjectTools; % Probably
-            % only need this locally in the "majorUpdate" part, so can just
-            % load there? Then again, that way, it will disappear every
-            % time. I think we should do that, actually, since it's only
-            % required during a major update.
-            
             p.currentObject = resources.currentObject;
             p.currentArray  = resources.currentArray;
             p.axH = resources.axH;
-            
-            
-            %channelSwitcher = resources.channelSwitcher; % Maybe we can
-            %use this for changing the channel for viewing. Prolly a good
-            %feature.
-            
-            %viewportHolder = resources.viewportHolder; % Not sure what the viewportHolder is all about exactly.
-            %objectHandle = resources.objectHandle; % Ok, this at least makes sense.
-            %axH = resources.axH; % Fig axis?
-            
-%             croppedStkProvider = improc2.ImageObjectCroppedStkProvider();
-%             zSlicer = improc2.utils.ZSlicer();
-%             zSlicer.setSliceToTake(1);
-%             
-%             typicalImage = croppedStkProvider.getImage(objectHandle, ...
-%                 channelSwitcher.getChannelName);
-%             imageStackDepth = size(typicalImage, 3);
-%             
-%             imgSliceHolder = improc2.utils.ImageObjectScaledImageSliceHolder(...
-%                 objectHandle, channelSwitcher, croppedStkProvider, zSlicer);
-%             sliceDisplayer = improc2.utils.ImageDisplayer(axH, ...
-%                 imgSliceHolder, viewportHolder);
-%             
-%             p.displayer = sliceDisplayer;
-%             p.zSlicer = zSlicer;
-%             p.imageStackDepth = imageStackDepth;
         end
     end
 end

@@ -4,23 +4,14 @@ classdef SegmentInspectorGUIManager < handle
         buildResources = struct();
         segmentViewer
         figH
-        keyboardInterpreter
+%         keyboardInterpreter
     end
     
     methods
         function p = SegmentInspectorGUIManager(buildResources)
             
             p.buildResources.browsingTools = buildResources.browsingTools;
-            
-            
-            
-            % OLD below
-            % Needs to be updated with whatever items are required to build
-            % this.
-            % Probably need to get a ChannelStkContainer.
-%             p.buildResources.channelSwitcher = buildResources.channelSwitcher;
-%             p.buildResources.viewportHolder = buildResources.viewportHolder; % Probably okay. Need to figure out how this works, though.
-%             p.buildResources.objectHandle = buildResources.objectHandle; % Not sure where this gets used.
+
 %             p.keyboardInterpreter = buildResources.keyboardInterpreter;
         end
         
@@ -29,9 +20,9 @@ classdef SegmentInspectorGUIManager < handle
                 figure(p.figH)
             else
                 p.buildGUI()
-                keyboardInterpreter = p.keyboardInterpreter;
-                set(p.figH, 'WindowKeyPressFcn', ...
-                    @keyboardInterpreter.keyPressCallBackFunc)
+%                 keyboardInterpreter = p.keyboardInterpreter;
+%                 set(p.figH, 'WindowKeyPressFcn', ...
+%                     @keyboardInterpreter.keyPressCallBackFunc)
             end
         end
         
@@ -45,25 +36,6 @@ classdef SegmentInspectorGUIManager < handle
             end
         end
         
-%         function goUpOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
-%             if p.isActive()
-%                 p.segmentViewer.goUpOneSlice()
-%             end
-%         end
-%         function goDownOneSlice(p)  % These can probably be removed. Can probably be transformed into "changeCurrObject" methods
-%             if p.isActive()
-%                 p.segmentViewer.goDownOneSlice()
-%             end
-%         end
-        
-        % Design choice: can either make a monolithic "update" that stores
-        % the current array choice and thus decides whether to make a major
-        % or minor update accordingly. Or can make a small and big update
-        % that listen to object and array change events. Hmm. I think the
-        % latter might "fit" a bit better with the rest of the design
-        % philosophy, and would avoid some potential awkwardness with
-        % storing the current array and comparing it.
-        
         % major update
         function updateWithNewArray(p) % This can update based on a new array. Hook for adding this in as a callback.
             % This is "glue code"
@@ -73,7 +45,6 @@ classdef SegmentInspectorGUIManager < handle
                 
                 p.segmentViewer.arrayUpdate;
                 p.segmentViewer.draw();
-                %                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
             end
 
         end
@@ -86,7 +57,6 @@ classdef SegmentInspectorGUIManager < handle
                 p.segmentViewer.currentArray  = p.buildResources.browsingTools.navigator.currentArrayNum;
                 
                 p.segmentViewer.draw();
-%                p.segmentViewer.changeCurrentObject() % Prolly need to send along the object number somehow.
             end
         end
     end
@@ -99,39 +69,31 @@ classdef SegmentInspectorGUIManager < handle
         
         function buildGUI(p)
             figH = figure('NumberTitle','off',...
-                'Name','Up, Down arrows. Drag, left/right/double click',...
+                'Name','Segmented cells',...
                 'Resize','on',...
                 'Toolbar','none',...
                 'MenuBar','none',...
                 'HandleVisibility', 'callback', ...
-                'Position', [200, 150, 450, 450], ...
+                'Position', [900, 150, 450, 450], ...
                 'Color',[0.247 0.247 0.247], ...
                 'Colormap', bone(32));
             
             axH = axes('Parent', figH, ...
                 'Units', 'normalized', ...
-                'Position', [0.01 0.01 0.98 0.98], ...
+                'Position', [0.00 0.00 1 1], ...
                 'XTick',[],'YTick',[]);
             axis(axH, 'equal')
             
             p.buildResources.axH = axH;
             p.buildResources.currentObject = p.buildResources.browsingTools.navigator.currentObjNum;
             p.buildResources.currentArray  = p.buildResources.browsingTools.navigator.currentArrayNum;
-            % p.buildResources.tools = 
-            
-            % Somehow need to use the navigator to set the 
             
             p.segmentViewer = improc2.thresholdGUI.SegmentViewer(p.buildResources);
             
             p.segmentViewer.arrayUpdate;            
             p.segmentViewer.draw();
             
-%             segmentInspectorZoomInterpreter = ...
-%                 dentist.utils.ImageZoomingMouseInterpreter(p.buildResources.viewportHolder);
-%             segmentInspectorZoomInterpreter.wireToFigureAndAxes(figH, axH);
-            
             set(figH, 'CloseRequestFcn', @(varargin) p.figureCloseRequest())
-            %p.segmentViewer = segmentViewer;
             p.figH = figH;
         end
     end
