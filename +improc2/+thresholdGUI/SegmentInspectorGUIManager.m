@@ -122,7 +122,8 @@ classdef SegmentInspectorGUIManager < handle
             % Somehow need to use the navigator to set the 
             
             p.segmentViewer = improc2.thresholdGUI.SegmentViewer(p.buildResources);
-                        
+            
+            p.segmentViewer.arrayUpdate;            
             p.segmentViewer.draw();
             
 %             segmentInspectorZoomInterpreter = ...
