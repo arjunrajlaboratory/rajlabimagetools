@@ -89,7 +89,9 @@ if ~alldata.firstshowing
     set(gca, 'YLim', ylim);
 end
 hold on
-showSpotLocations(spots,currentZ,'wo')
+if ~isempty(spots)
+    showSpotLocations(spots,currentZ,'wo')
+end
 hold off
 title(['z = ' num2str(currentZ)]);
 end
