@@ -1,4 +1,8 @@
 function rawStackInspector(rawstack,spots)
+% Call if you have spots:
+% rawStackInspector(stk,spots); % stk is e.g. 1024x1024x23, spots is 42x3
+% If you don't have spots:
+% rawStackInspector(stk,[]);
 
 imStack = rawstack;
 
@@ -89,7 +93,9 @@ if ~alldata.firstshowing
     set(gca, 'YLim', ylim);
 end
 hold on
-showSpotLocations(spots,currentZ,'wo')
+if ~isempty(spots)
+    showSpotLocations(spots,currentZ,'wo')
+end
 hold off
 title(['z = ' num2str(currentZ)]);
 end
