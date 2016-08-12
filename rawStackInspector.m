@@ -1,4 +1,8 @@
 function rawStackInspector(rawstack,spots)
+% Call if you have spots:
+% rawStackInspector(stk,spots); % stk is e.g. 1024x1024x23, spots is 42x3
+% If you don't have spots:
+% rawStackInspector(stk,[]);
 
 imStack = rawstack;
 
