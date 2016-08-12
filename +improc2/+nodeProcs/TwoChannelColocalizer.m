@@ -215,17 +215,18 @@ classdef TwoChannelColocalizer < improc2.interfaces.ProcessedData
               pairwiseDist = colocDist(chan1Positions, chan2Positions, p.zAllow);
             
             sizeTest = size(pairwiseDist);
-            
-            [minGuideDistances, minSnpIndex] = min(pairwiseDist', [], 1);
+%             disp('TwoChannelColocalizer pairwiseDist:')
+%             pairwiseDist
+            [minChan1Distances, minChan2Index] = min(pairwiseDist', [], 1);
                       
             % find guides and SNPs that have snp within < initialDistance
-            chan1_colocalized_Index = find(minGuideDistances < p.initialDistance)';
-            chan2_colocalized_Index = minSnpIndex(chan1_colocalized_Index)';
+            chan1_colocalized_Index = find(minChan1Distances < p.initialDistance)';
+            chan2_colocalized_Index = minChan2Index(chan1_colocalized_Index)';
             
             % chromatic shift for each one of these
             totalShift = chan1Positions(chan1_colocalized_Index,:) ...
                 - chan2Positions(chan2_colocalized_Index,:);
-            medianShift = median(totalShift);
+            medianShift = median(totalShift, 1);
             
             
             chan2Positions_shifted = bsxfun(@plus, chan2Positions, medianShift);
@@ -239,11 +240,11 @@ classdef TwoChannelColocalizer < improc2.interfaces.ProcessedData
                 p.finalDistance, chan1ID, chan2PosID);
 
             if ~isempty(pairs)
-            shifts = zeros(length(chan1Positions), 3);
-            chan1_FINALcolocalized_Idx = ismember(chan1ID, pairs(:,1));
-            chan2_FINALcolocalized_Idx = ismember(chan2PosID, pairs(:,2));
-            shifts(chan1_FINALcolocalized_Idx,:) = chan1Positions(chan1_FINALcolocalized_Idx,:) ...
-                - chan2Positions(chan2_FINALcolocalized_Idx,:);
+                shifts = zeros(length(chan1Positions), 3);
+                chan1_FINALcolocalized_Idx = ismember(chan1ID, pairs(:,1));
+                chan2_FINALcolocalized_Idx = ismember(chan2PosID, pairs(:,2));
+                shifts(chan1_FINALcolocalized_Idx,:) = chan1Positions(chan1_FINALcolocalized_Idx,:) ...
+                    - chan2Positions(chan2_FINALcolocalized_Idx,:);
             else
                 pairs = [];
                 shifts = [];
