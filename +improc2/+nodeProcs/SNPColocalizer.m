@@ -240,7 +240,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
               pairwiseDist = colocDist(guidePositions, snpPositions, p.zAllow);
             
             sizeTest = size(pairwiseDist);
-            
+%             disp('SNPColocalizer pairwiseDist:')
+%             pairwiseDist
             [minGuideDistances, minSnpIndex] = min(pairwiseDist', [], 1);
           
 %                         
@@ -256,7 +257,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             % chromatic shift for each one of these
             totalShift = guidePositions(guide_colocalized_Index,:) ...
                 - snpPositions(snp_colocalized_Index,:);
-            medianShift = median(totalShift);
+            medianShift = median(totalShift, 1);
             
             
             snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
@@ -366,7 +367,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             parser.addOptional('xyPixelDistance',0.13,@isnumeric);
             parser.addOptional('zStepSize',0.35,@isnumeric);
             parser.addOptional('pixelShift', 0, @isnumeric);
-            parser.addOptional('zAllow', 5, @isnumeric);
+            parser.addOptional('zAllow', 3, @isnumeric);
             
             parser.parse(varargin{:});
             
