@@ -3,7 +3,7 @@ classdef ImageObjectArrayCollectionNavigator < handle
     properties (SetAccess = private, GetAccess = private)
         actionsAfterPuttingObjOnObjHolder
         actionsBeforeStoringObjFromObjHolder % untested
-        actionsAfterMoveAttemptToNewArray % untested
+        actionsAfterMoveAttemptToNewArray % untested (Gautham) UPDATE 8/11/2016: AR moved this *before* running object dependencies
         imageObjectArrayCollection
         objects
         needsSave = false;
@@ -43,7 +43,6 @@ classdef ImageObjectArrayCollectionNavigator < handle
             num = length(p.objects);
         end
         
-        % untested
         function addActionAfterMovingToNewArray(p, handleToObject, funcToRunOnIt)
             p.actionsAfterMoveAttemptToNewArray.registerDependency(...
                 handleToObject, funcToRunOnIt);
@@ -72,10 +71,12 @@ classdef ImageObjectArrayCollectionNavigator < handle
                 p.tryToGoToNextNonEmptyArray();
                 triedToGoToNewArray = true;
             end
-            p.putCurrentObjOnObjHolder()
+            
             if triedToGoToNewArray
                 p.actionsAfterMoveAttemptToNewArray.runDependencies();
             end
+            
+            p.putCurrentObjOnObjHolder()
         end
         
         function tryToGoToPrevObj(p)
@@ -91,10 +92,12 @@ classdef ImageObjectArrayCollectionNavigator < handle
                     p.currentObjNum = length(p.objects);
                 end
             end
-            p.putCurrentObjOnObjHolder()
-            if triedToGoToNewArray
+            
+            if triedToGoToNewArray % First, run move array dependencies, THEN do objects.
                 p.actionsAfterMoveAttemptToNewArray.runDependencies();
             end
+            
+            p.putCurrentObjOnObjHolder() % Note: this runs the object dependencies. Should be *after* running array dependencies
         end
         
         function tryToGoToArray(p, requestedArrayNum)
@@ -111,8 +114,8 @@ classdef ImageObjectArrayCollectionNavigator < handle
                 p.tryToGoToNextNonEmptyArray() || ...
                 p.tryToGoToPrevNonEmptyArray();
             p.currentObjNum = 1;
-            p.putCurrentObjOnObjHolder()
             p.actionsAfterMoveAttemptToNewArray.runDependencies();
+            p.putCurrentObjOnObjHolder()
         end
         
         function tryToGoToObj(p, requestedObj)
