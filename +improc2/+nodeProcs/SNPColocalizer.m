@@ -95,7 +95,7 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             end
             
             if isempty(p.zAllow)
-                p.zAllow = 5;
+                p.zAllow = 3;
                 disp(['Empty zAllow. Set to default value = ', num2str(p.zAllow)])
             end
             
@@ -253,6 +253,8 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             % find guides and SNPs that have snp within < initialDistance
             guide_colocalized_Index = find(minGuideDistances < p.initialDistance)';
             snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
+            
+            % introduce logical check HERE
             
             % chromatic shift for each one of these
             totalShift = guidePositions(guide_colocalized_Index,:) ...
