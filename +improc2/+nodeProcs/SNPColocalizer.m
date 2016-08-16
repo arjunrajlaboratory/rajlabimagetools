@@ -262,7 +262,9 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
                 if minGuideDistances(guide_colocalized_Index) < p.finalDistance
                     
                     pairs = [guide_colocalized_Index, snp_colocalized_Index];
-                
+                    guideID = 1:size(guidePositions, 1);
+                    snpPosID = 1:size(snpPositions, 1);
+                    
                 else % if it's not, toss
                 
                     pairs = [];
