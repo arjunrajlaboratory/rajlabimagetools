@@ -254,30 +254,47 @@ classdef SNPColocalizer < improc2.interfaces.ProcessedData
             guide_colocalized_Index = find(minGuideDistances < p.initialDistance)';
             snp_colocalized_Index = minSnpIndex(guide_colocalized_Index)';
             
-            % introduce logical check HERE
+            % introduce singleton logical check HERE
+            if sum(minGuideDistances < p.initialDistance) == 1
+                
+                % check if singleton coloc event is within finalDistance                
+                % if it is, save guide and snp indices and note 
+                if minGuideDistances(guide_colocalized_Index) < p.finalDistance
+                    
+                    pairs = [guide_colocalized_Index, snp_colocalized_Index];
+                
+                else % if it's not, toss
+                
+                    pairs = [];
+                
+                end
+                
+            else
+                
+                % chromatic shift for each one of these
+                totalShift = guidePositions(guide_colocalized_Index,:) ...
+                    - snpPositions(snp_colocalized_Index,:);
+                medianShift = median(totalShift, 1);
+                
+                
+                snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
+                %             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+                pairwiseDist = colocDist(guidePositions, snpPositions_shifted, p.zAllow);
+                
+                guideID = 1:size(guidePositions, 1);
+                snpPosID = 1:size(snpPositions_shifted, 1);
+                
+                pairs  = colocalizePosRecursive(p, guidePositions, snpPositions_shifted, ...
+                    p.finalDistance, guideID, snpPosID);
+                
+            end
             
-            % chromatic shift for each one of these
-            totalShift = guidePositions(guide_colocalized_Index,:) ...
-                - snpPositions(snp_colocalized_Index,:);
-            medianShift = median(totalShift, 1);
-            
-            
-            snpPositions_shifted = bsxfun(@plus, snpPositions, medianShift);
-%             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
-            pairwiseDist = colocDist(guidePositions, snpPositions_shifted, p.zAllow);
-            
-            guideID = 1:size(guidePositions, 1);
-            snpPosID = 1:size(snpPositions_shifted, 1);
-            
-            pairs  = colocalizePosRecursive(p, guidePositions, snpPositions_shifted, ...
-                p.finalDistance, guideID, snpPosID);
-
             if ~isempty(pairs)
-            shifts = zeros(length(guidePositions), 3);
-            guide_FINALcolocalized_Idx = ismember(guideID, pairs(:,1));
-            snp_FINALcolocalized_Idx = ismember(snpPosID, pairs(:,2));
-            shifts(guide_FINALcolocalized_Idx,:) = guidePositions(guide_FINALcolocalized_Idx,:) ...
-                - snpPositions(snp_FINALcolocalized_Idx,:);
+                shifts = zeros(length(guidePositions), 3);
+                guide_FINALcolocalized_Idx = ismember(guideID, pairs(:,1));
+                snp_FINALcolocalized_Idx = ismember(snpPosID, pairs(:,2));
+                shifts(guide_FINALcolocalized_Idx,:) = guidePositions(guide_FINALcolocalized_Idx,:) ...
+                    - snpPositions(snp_FINALcolocalized_Idx,:);
             else
                 pairs = [];
                 shifts = [];
