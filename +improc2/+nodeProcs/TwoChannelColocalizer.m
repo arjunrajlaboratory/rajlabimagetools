@@ -223,22 +223,40 @@ classdef TwoChannelColocalizer < improc2.interfaces.ProcessedData
             chan1_colocalized_Index = find(minChan1Distances < p.initialDistance)';
             chan2_colocalized_Index = minChan2Index(chan1_colocalized_Index)';
             
-            % chromatic shift for each one of these
-            totalShift = chan1Positions(chan1_colocalized_Index,:) ...
-                - chan2Positions(chan2_colocalized_Index,:);
-            medianShift = median(totalShift, 1);
+            if sum(minChan1Distances < p.initialDistance) == 1
+                
+                if minChan1Distances(chan1_colocalized_Index) < p.finalDistance
+                    
+                    pairs = [chan1_colocalized_Index, chan2_colocalized_Index];
+                    chan1ID = 1:size(chan1Positions, 1);
+                    chan2PosID = 1:size(chan2Positions, 1);
+                    
+                else
+                    
+                    pairs = [];
+                    
+                end
+                
+            else
             
+                % chromatic shift for each one of these
+                totalShift = chan1Positions(chan1_colocalized_Index,:) ...
+                    - chan2Positions(chan2_colocalized_Index,:);
+                medianShift = median(totalShift, 1);
+                
+                
+                chan2Positions_shifted = bsxfun(@plus, chan2Positions, medianShift);
+                %             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
+                pairwiseDist = colocDist(chan1Positions, chan2Positions_shifted, p.zAllow);
+                
+                chan1ID = 1:size(chan1Positions, 1);
+                chan2PosID = 1:size(chan2Positions_shifted, 1);
+                
+                pairs  = colocalizePosRecursive(p, chan1Positions, chan2Positions_shifted, ...
+                    p.finalDistance, chan1ID, chan2PosID);
+                
+            end
             
-            chan2Positions_shifted = bsxfun(@plus, chan2Positions, medianShift);
-%             pairwiseDist = pdist2(guidePositions, snpPositions_shifted);
-            pairwiseDist = colocDist(chan1Positions, chan2Positions_shifted, p.zAllow);
-            
-            chan1ID = 1:size(chan1Positions, 1);
-            chan2PosID = 1:size(chan2Positions_shifted, 1);
-            
-            pairs  = colocalizePosRecursive(p, chan1Positions, chan2Positions_shifted, ...
-                p.finalDistance, chan1ID, chan2PosID);
-
             if ~isempty(pairs)
                 shifts = zeros(length(chan1Positions), 3);
                 chan1_FINALcolocalized_Idx = ismember(chan1ID, pairs(:,1));
