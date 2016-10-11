@@ -89,6 +89,24 @@ classdef IntronExonTranscriptionSitesCollection < ...
             Ys = data.ExonYs;
         end
         
+        function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
+            % This function is used to get data other than txn sites that
+            % needs to be displayed on GUI initialization. We need to mark
+            % the called introns for IntronExon txn sites so this function
+            % returns the coordinates of all the called introns. Edit if
+            % some other data needs to be displayed on init.
+            IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
+            Xs = [];
+            Ys = [];
+            %there may be not intron spots so check
+            if (numel(IntronSpotData) > 0)
+                for i = 1:numel(IntronSpotData)
+                    Xs = [Xs, IntronSpotData(i).xCenter];
+                    Ys = [Ys, IntronSpotData(i).yCenter];
+                end
+            end
+        end
+        
         function [Xs, Ys] = getIntronXYCoords(p)
             IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
             Xs = [];

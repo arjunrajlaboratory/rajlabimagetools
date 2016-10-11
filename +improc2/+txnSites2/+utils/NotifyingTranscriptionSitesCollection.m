@@ -23,6 +23,10 @@ classdef NotifyingTranscriptionSitesCollection < ...
             [Xs, Ys] =  p.transcriptionSitesCollection.getTranscriptionSiteXYCoords();
         end
         
+        function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
+            [Xs, Ys] =  p.transcriptionSitesCollection.getOtherCoordsToDisplayOnInit();
+        end
+        
         function Ints = getTranscriptionSiteInts(p)
             Ints = p.transcriptionSitesCollection.getTranscriptionSiteInts();
         end
