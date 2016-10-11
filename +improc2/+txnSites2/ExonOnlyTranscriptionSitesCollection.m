@@ -41,6 +41,17 @@ classdef ExonOnlyTranscriptionSitesCollection < ...
             Ys = data.Ys;
         end
         
+        function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
+            % This function is used to get data other than the
+            % transcription sites that needs to be displayed on GUI
+            % initialization. For ExonOnly Txn sites, we do not display any
+            % other data. So this function is blank. Add code here if data
+            % other than txn sites needs to be displayed. Output needs to
+            % be X and Y coordinates
+            Xs = [];
+            Ys = [];
+        end
+        
         function Ints = getTranscriptionSiteInts(p)
             data = p.objectHandle.getData(p.dapaNodeLabel);
             Ints = data.Ints;

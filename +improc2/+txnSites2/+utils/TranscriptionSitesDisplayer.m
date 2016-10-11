@@ -13,21 +13,15 @@ properties (Access = private)
         function p = TranscriptionSitesDisplayer(axH, transcriptionSitesCollection, intronExonTxnSitesCollection)
             p.axH = axH;
             p.transcriptionSitesCollection = transcriptionSitesCollection;
-            p.intronExonTxnSitesCollection = intronExonTxnSitesCollection;
+            if nargin > 2
+                p.intronExonTxnSitesCollection = intronExonTxnSitesCollection;
+            end
         end
         
         function draw(p)
             p.clearGraphics()
-            IntronSpotData = p.intronExonTxnSitesCollection.objectHandle.getData(p.intronExonTxnSitesCollection.parentNodeLabels{2}).getFittedSpots;
-            Xs = [];
-            Ys = [];
-            %there may be not intron spots so check
-            if (numel(IntronSpotData) > 0)
-                for i = 1:numel(IntronSpotData)
-                    Xs = [Xs, IntronSpotData(i).xCenter];
-                    Ys = [Ys, IntronSpotData(i).yCenter];
-                end
-            end
+            
+            [Xs, Ys] = p.transcriptionSitesCollection.getOtherCoordsToDisplayOnInit();
             p.lineHandle = line(Xs, Ys, ...
                 'LineStyle', 'none', ...
                 'Marker','o', 'MarkerEdgeColor', 'r', ...
