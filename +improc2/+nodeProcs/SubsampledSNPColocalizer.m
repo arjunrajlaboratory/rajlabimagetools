@@ -82,9 +82,20 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             snpASpots = getFittedSpots(snpAFittedSpotsHolder);
             snpBSpots = getFittedSpots(snpBFittedSpotsHolder);
             
-            numGuide = numel(guideSpots);
+            guideDist = p.guideDist;
+            nDist = numel(guideDist);
+                                    
+            nGuide = numel(guideSpots);
             numsnpA = numel(snpASpots);
             numsnpB = numel(snpBSpots);
+            
+            % subsample guides deterministically
+            % deterministically needed to allow appropriate pixel-shifts
+            GAB = nGuide * numsnpA * numsnpB;
+            el = mod(GAB, nDist);
+            numGuide = guideDist(el);
+            
+            guideSpots = guideSpots(1:numGuide);
             
 % No longer calculating Euclidian distance with Z-dimension            
 %             zTransform = p.zStepSize/p.xyPixelDistance * p.zDeform;
