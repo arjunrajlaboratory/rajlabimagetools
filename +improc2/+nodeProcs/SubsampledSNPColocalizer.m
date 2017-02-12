@@ -4,8 +4,15 @@
 %
 % It requires a guide channel as well as two corresponding SNP channels.
 
-% Colocalization is performed along an ellipsoid with the z-deformation
-% used to demphasize the effect of z-distance as data comes in z-stacks.
+% Further, it accepts a distribution of counts for subsampling the number
+% of guide spots to use in colocalization. This distribution is intended to
+% be from a control experiment FISHing a transcript of lower expression
+% of interest. If no distribution is provided by the user, the default is a
+% poisson distribution with lambda = 2.
+
+% Colocalization is performed along a cylinder with xy radii defined by 
+% initialDistance and finalDistance (pre- and post-chromatic shift), and 
+% z-axis allowance of zAllow planes in either direction.
 
 % Colocalization is performed in two stages to correct for chromatic
 % abberation in dye properties. 
@@ -37,6 +44,8 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
                                 % the z position information is relatively bad
                                 % (especially compared with x and y).
         zAllow;              % Maximum number of z-planes difference allowed for SNP colocalization with a guide spot
+        
+        guideDist; % Distribution of potential guide counts per cell.
         
         shiftFlag; %true if performing a shift correction 
         
@@ -390,6 +399,9 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             parser.addOptional('zStepSize',0.35,@isnumeric);
             parser.addOptional('pixelShift', 0, @isnumeric);
             parser.addOptional('zAllow', 3, @isnumeric);
+            
+            temp = poissrnd(2,1,20);
+            parser.addOptional('guideDist', temp, @isnumeric);
             
             parser.parse(varargin{:});
             
