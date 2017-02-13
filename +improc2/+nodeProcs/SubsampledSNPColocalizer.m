@@ -97,6 +97,8 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             
             if numGuide <= nGuide
                 guideSpots = guideSpots(1:numGuide);
+            else
+                numGuide = nGuide;
             end
             
 % No longer calculating Euclidian distance with Z-dimension            
