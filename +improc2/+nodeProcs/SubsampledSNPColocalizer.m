@@ -82,8 +82,8 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             snpASpots = getFittedSpots(snpAFittedSpotsHolder);
             snpBSpots = getFittedSpots(snpBFittedSpotsHolder);
             
-            guideDist = p.guideDist;
-            nDist = numel(guideDist);
+            guideDistr = p.guideDist;
+            nDist = numel(guideDistr);
                                     
             nGuide = numel(guideSpots);
             numsnpA = numel(snpASpots);
@@ -92,10 +92,12 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             % subsample guides deterministically
             % deterministically needed to allow appropriate pixel-shifts
             GAB = nGuide * numsnpA * numsnpB;
-            el = mod(GAB, nDist);
-            numGuide = guideDist(el);
+            el = mod(GAB, nDist) + 1;
+            numGuide = guideDistr(el);
             
-            guideSpots = guideSpots(1:numGuide);
+            if numGuide <= nGuide
+                guideSpots = guideSpots(1:numGuide);
+            end
             
 % No longer calculating Euclidian distance with Z-dimension            
 %             zTransform = p.zStepSize/p.xyPixelDistance * p.zDeform;
@@ -389,7 +391,7 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
         end
             
             
-        function p = SNPColocalizer(snpMap, varargin)
+        function p = SubsampledSNPColocalizer(snpMap, varargin)
             p.snpMap = snpMap;
             parser = inputParser;
             
@@ -424,6 +426,7 @@ classdef SubsampledSNPColocalizer < improc2.interfaces.ProcessedData
             p.xyPixelDistance = parser.Results.xyPixelDistance;
             p.zStepSize = parser.Results.zStepSize; 
             p.zAllow = parser.Results.zAllow;
+            p.guideDist = parser.Results.guideDist;
             
         end
         
