@@ -13,6 +13,7 @@ classdef ManualExonIntronTxnSites < improc2.interfaces.NodeData
         needsUpdate = true %Update flag
         IntronXs %holds the X positions of the fitted intron spot closest to manualy selected TxnSites
         IntronYs %holds the X positions of the fitted intron spot closest to manualy selected TxnSites
+        IntronIntensity %holds amplitude of the fitted intron spot closest to manually selected TxnSites
         ColocXs %For each exon spot, check if an intron spot colocalizes and if so add exonX position here
         ColocYs %For each exon spot, check if an intron spot colocalizes and if so add exonY position here
         ColocIntensity % the amplitude of the exon spot for each colocalized spot
