@@ -42,16 +42,19 @@ classdef IntronExonTranscriptionSitesCollection < ...
             IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
             IntronfittedXs = [];
             IntronfittedYs = [];
+            AllIntronIntensities = [];
             %there may be not intron spots so check
             if (numel(IntronSpotData) > 0)
                 for i = 1:numel(IntronSpotData)
                     IntronfittedXs = [IntronfittedXs, IntronSpotData(i).xCenter];
                     IntronfittedYs = [IntronfittedYs, IntronSpotData(i).yCenter];
+                    AllIntronIntensities = [AllIntronIntensities, IntronSpotData(i).amplitude];
                 end
                 %Find closest intron spot if there are any
                 mm = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]);
                 data.IntronXs = [data.IntronXs; IntronfittedXs(mm)];
                 data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
+                data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
                 %Find the pairwise distance between each exon and intron
                 distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
                 [minDistances, minIndex] = min(distance');
@@ -151,9 +154,11 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 if length(data.IntronXs) < 2
                     data.IntronXs = [];
                     data.IntronYs = [];
+                    data.IntronIntensity = [];
                 else
                     data.IntronXs = data.IntronXs(1:(end-1));
                     data.IntronYs = data.IntronYs(1:(end-1));
+                    data.IntronIntensity = data.IntronIntensity(1:(end-1));
                 end
                 if length(data.ExonXs) < 2
                     data.ExonXs = [];
@@ -190,6 +195,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data.ExonYs = [];
             data.IntronXs = [];
             data.IntronYs = [];
+            data.IntronIntensity = [];
             data.Intensity = [];
             data.ColocXs =  [];
             data.ColocYs =  [];

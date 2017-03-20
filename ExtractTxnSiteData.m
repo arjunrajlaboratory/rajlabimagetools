@@ -69,14 +69,14 @@ arrayNumber = [];
 numExonSpots = [];
 exonXs = [];
 exonYs = [];
-exonFittedIntensities = [];
 exonIntensities = [];
+exonFittedIntensities = [];
 %Intron stuff
 numIntronSpots = [];
 intronXs = [];
 intronYs = [];
-intronFittedIntensities = [];
 intronIntensities = [];
+intronFittedIntensities = [];
 %Txn sites coloc stuff
 numTxnSites = [];
 txnSitesIntensities = [];
@@ -97,7 +97,7 @@ if strcmp(outputMethod, 'molten')
             
             % Extract exon mRNA intensities
             lengthIntensities = numel(tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted')));
-            exonIntensities = [exonIntensities, [ones(1, lengthIntensities)*arrayNumber; ...
+            exonFittedIntensities = [exonFittedIntensities, [ones(1, lengthIntensities)*arrayNumber; ...
                                                  ones(1, lengthIntensities)*objectNumber; ...
                                                  tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted'))]];
             
@@ -125,7 +125,7 @@ if strcmp(outputMethod, 'molten')
 
             % Extract Exon mRNA intensity
             exonMrnaIntensities = tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted'));
-            exonIntensities = [exonIntensities, ...
+            exonFittedIntensities = [exonFittedIntensities, ...
                 [ones(1, numel(exonMrnaIntensities))*arrayNumber; ...
                  ones(1, numel(exonMrnaIntensities))*objectNumber; ...
                  exonMrnaIntensities]];
@@ -145,7 +145,7 @@ if strcmp(outputMethod, 'molten')
 
             % Extract intron mRNA intensities
             lengthIntronIntensities = numel(tools.objectHandle.getMoltenFittedIntensities(strcat(intronChannel, ':Fitted')));
-            intronIntensities = [intronIntensities, ...
+            intronFittedIntensities = [intronFittedIntensities, ...
                                      [ones(1, lengthIntronIntensities)*arrayNumber; ...
                                       ones(1, lengthIntronIntensities)*objectNumber;
                                       tools.objectHandle.getMoltenFittedIntensities(strcat(intronChannel, ':Fitted'))]];
@@ -158,6 +158,9 @@ if strcmp(outputMethod, 'molten')
             intronYs = [intronYs, [ones(1, lengthCoords)*arrayNumber; ...
                                    ones(1, lengthCoords)*objectNumber; ...
                                    tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronYs']];
+            intronIntensities = [intronIntensities, [ones(1, lengthCoords)*arrayNumber; ...
+                                   ones(1, lengthCoords)*objectNumber; ...
+                                   tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronIntensity']];
 
             % Extract number coloc txn sites
             numTxnSites = [numTxnSites, ...
@@ -180,17 +183,18 @@ if strcmp(outputMethod, 'molten')
     numExonSpots = num2cell(numExonSpots'); numExonSpots(1:end, 4) = {'numExonSpots'};
     exonXs = num2cell(exonXs'); exonXs(1:end, 4) = {'exonXs'};
     exonYs = num2cell(exonYs'); exonYs(1:end, 4) = {'exonYs'};
-    exonIntensities = num2cell(exonIntensities'); exonIntensities(1:end, 4) = {'exonIntensities'};
+    exonFittedIntensities = num2cell(exonFittedIntensities'); exonFittedIntensities(1:end, 4) = {'exonIntensities'};
     numIntronSpots = num2cell(numIntronSpots'); numIntronSpots(1:end, 4) = {'numIntronSpots'};
     intronXs = num2cell(intronXs'); intronXs(1:end, 4) = {'intronXs'};
     intronYs = num2cell(intronYs'); intronYs(1:end, 4) = {'intronYs'};
-    intronIntensities = num2cell(intronIntensities'); intronIntensities(1:end, 4) = {'intronIntensities'};
+    intronFittedIntensities = num2cell(intronFittedIntensities'); intronFittedIntensities(1:end, 4) = {'intronIntensities'};
+    intronIntensities = num2cell(intronIntensities'); intronIntensities(1:end, 4) = {'txnSitesIntronIntensities'};
     numTxnSites = num2cell(numTxnSites'); numTxnSites(1:end, 4) = {'numTxnSites'};
-    txnSitesIntensities = num2cell(txnSitesIntensities'); txnSitesIntensities(1:end, 4) = {'txnSitesIntensities'};
+    txnSitesIntensities = num2cell(txnSitesIntensities'); txnSitesIntensities(1:end, 4) = {'txnSitesExonIntensities'};
     
     fprintf('Making value data\n')
-    ValueData = [numExonSpots; exonXs; exonYs; exonIntensities; numIntronSpots; intronXs; intronYs; ...
-        intronIntensities; numTxnSites; txnSitesIntensities];
+    ValueData = [numExonSpots; exonXs; exonYs; exonFittedIntensities; numIntronSpots; intronXs; intronYs; ...
+        intronFittedIntensities; intronIntensities; numTxnSites; txnSitesIntensities];
     fprintf('Making Table\n')
     BigTable = cell2table(ValueData);
     fprintf('Writing Table\n')
@@ -211,7 +215,7 @@ elseif strcmp(outputMethod, 'solid')
             numExonSpots = [numExonSpots; tools.objectHandle.getOverThreshSpots(strcat(exonChannel, ':Spots'))];
             
             % Extract exon mRNA intensities
-            exonIntensities = [exonIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted')))];
+            exonFittedIntensities = [exonFittedIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted')))];
             
             % Extract exon only txn site coordinates
 %             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Xs);
@@ -233,7 +237,7 @@ elseif strcmp(outputMethod, 'solid')
 
             % Extract Exon mRNA intensity
             exonMrnaIntensities = tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted'));
-            exonIntensities = [exonIntensities; mean(exonMrnaIntensities)];
+            exonFittedIntensities = [exonFittedIntensities; mean(exonMrnaIntensities)];
 
             % Extract coloc txn site exon coordinates
 %             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).ExonXs);
@@ -248,7 +252,7 @@ elseif strcmp(outputMethod, 'solid')
             numIntronSpots = [numIntronSpots; tools.objectHandle.getOverThreshSpots(strcat(intronChannel, ':Spots'))];
 
             % Extract intron mRNA intensities
-            intronIntensities = [intronIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(intronChannel, ':Fitted')))];
+            intronFittedIntensities = [intronFittedIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(intronChannel, ':Fitted')))];
 
             % Extract coloc txn site intron coordinates
 %             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronXs);
@@ -278,17 +282,17 @@ elseif strcmp(outputMethod, 'solid')
     numExonSpots = num2cell(numExonSpots); numExonSpots(end+1) = {'numExonSpots'};
 %     exonXs = num2cell(exonXs); exonXs(end+1) = {'exonXs'};
 %     exonYs = num2cell(exonYs); exonYs(end+1) = {'exonYs'};
-    exonIntensities = num2cell(exonIntensities); exonIntensities(end+1) = {'meanExonIntensities'};
+    exonFittedIntensities = num2cell(exonFittedIntensities); exonFittedIntensities(end+1) = {'meanExonIntensities'};
     numIntronSpots = num2cell(numIntronSpots); numIntronSpots(end+1) = {'numIntronSpots'};
 %     intronXs = num2cell(intronXs); intronXs(end+1) = {'intronXs'};
 %     intronYs = num2cell(intronYs); intronYs(end+1) = {'intronYs'};
-    intronIntensities = num2cell(intronIntensities); intronIntensities(end+1) = {'meanIntronIntensities'};
+    intronFittedIntensities = num2cell(intronFittedIntensities); intronFittedIntensities(end+1) = {'meanIntronIntensities'};
     numTxnSites = num2cell(numTxnSites); numTxnSites(end+1) = {'numTxnSites'};
     txnSitesIntensities = num2cell(txnSitesIntensities); txnSitesIntensities(end+1) = {'meanTxnSitesIntensities'};
     
     fprintf('Making value data\n')
-    ValueData = [arrayNumber, objectNumber, numExonSpots, exonIntensities, numIntronSpots, ...
-        intronIntensities, numTxnSites, txnSitesIntensities];
+    ValueData = [arrayNumber, objectNumber, numExonSpots, exonFittedIntensities, numIntronSpots, ...
+        intronFittedIntensities, numTxnSites, txnSitesIntensities];
     fprintf('Making Table\n')
     BigTable = cell2table(ValueData);
     fprintf('Writing Table\n')
