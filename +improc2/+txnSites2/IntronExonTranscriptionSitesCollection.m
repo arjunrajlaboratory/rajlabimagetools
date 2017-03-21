@@ -92,6 +92,13 @@ classdef IntronExonTranscriptionSitesCollection < ...
             Ys = data.ExonYs;
         end
         
+        %return the intron X and Ys
+        function [Xs, Ys] = getTranscriptionSiteIntronXYCoords(p)
+            data = p.objectHandle.getData(p.dataNodeLabel);
+            Xs = data.IntronXs;
+            Ys = data.IntronYs;
+        end
+        
         function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
             % This function is used to get data other than txn sites that
             % needs to be displayed on GUI initialization. We need to mark
