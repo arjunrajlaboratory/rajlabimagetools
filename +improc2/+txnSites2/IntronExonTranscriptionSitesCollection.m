@@ -56,8 +56,9 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
                 data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
                 %Find the pairwise distance between each exon and intron
-                data.ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-                [minDistances, minIndex] = min(data.ColocDistances');
+                ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
+                data.ColocDistances = diag(ColocDistances);
+                [minDistances, minIndex] = min(ColocDistances');
                 %if the distance is fewer than 3 pixels, they
                 %colocalized. This may need editing especially without a
                 %chromatic shift
@@ -211,6 +212,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data.ColocXs =  [];
             data.ColocYs =  [];
             data.ColocIntensity = [];
+            data.ColocDistances = [];
             p.objectHandle.setData(data, p.dataNodeLabel);
         end
         
