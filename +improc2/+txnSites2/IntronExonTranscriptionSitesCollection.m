@@ -56,8 +56,8 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
                 data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
                 %Find the pairwise distance between each exon and intron
-                distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-                [minDistances, minIndex] = min(distance');
+                data.ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
+                [minDistances, minIndex] = min(data.ColocDistances');
                 %if the distance is fewer than 3 pixels, they
                 %colocalized. This may need editing especially without a
                 %chromatic shift
@@ -149,12 +149,14 @@ classdef IntronExonTranscriptionSitesCollection < ...
                     data.ClickedXs = [];
                     data.ClickedYs = [];
                     data.Intensity = [];
+                    data.ColocDistances = [];
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
                     data.ClickedXs = data.ClickedXs(1:(end-1));
                     data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
+                    data.ColocDistances = data.ColocDistances(1:(end-1));
                 end
                 
             else
@@ -173,12 +175,14 @@ classdef IntronExonTranscriptionSitesCollection < ...
                     data.ClickedXs = [];
                     data.ClickedYs = [];
                     data.Intensity = [];
+                    data.ColocDistances = [];
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
                     data.ClickedXs = data.ClickedXs(1:(end-1));
                     data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
+                    data.ColocDistances = data.ColocDistances(1:(end-1));
                 end
                 %The index for Colocalzed spots has no reference to the
                 %uncolocized spot, so to properly adjust, recalculate
