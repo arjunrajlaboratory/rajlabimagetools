@@ -17,6 +17,7 @@ classdef ManualExonIntronTxnSites < improc2.interfaces.NodeData
         ColocXs %For each exon spot, check if an intron spot colocalizes and if so add exonX position here
         ColocYs %For each exon spot, check if an intron spot colocalizes and if so add exonY position here
         ColocIntensity % the amplitude of the exon spot for each colocalized spot
+        ColocDistances %holds the pdist2 values for all the exons and introns near the clicked points
     end
 
     properties (Constant = true)
