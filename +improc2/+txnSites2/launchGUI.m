@@ -82,9 +82,7 @@ imageHolders.dapi = ...
     'improc2.nodeProcs.DapiProcessedData');
 
 %Launch the proper GuiCore (depending on if introns are present)
-if (IntronFlag && ExonFlag && (ip.Results.intronorexontxnsites || ip.Results.exonorintrontxnsites))
-    improc2.txnSites2.IntronOrExonTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders)
-elseif (IntronFlag && ExonFlag)
+if (IntronFlag && ExonFlag)
     improc2.txnSites2.IntronExonTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders)
 else
     if(ExonFlag)
