@@ -106,6 +106,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ColocXs =  data.ExonXs;
                 data.ColocYs =  data.ExonYs;
                 data.ColocIntensity = data.Intensity;
+                data.TypeTxnSite{end+1} = 'intronexon';
                 
                 %Check to see if the Exon and Intron identified during the
                 %last click colocalize
@@ -116,36 +117,38 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 else
                     fprintf('Intron and Exon colocalized! And have been added as a txn site.\n')
                 end
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added\n']));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('%s', sprintf([num2str(numel(data.ColocXs(colocalized_Index))) ' out of ' num2str(sum(~isnan(data.ColocXs))) ' IntronExon txnsites Colocalized\n']));
                 fprintf('-----\n')
             elseif (thereIsAnExon && ~thereIsAnIntron)
                 fprintf('%s', sprintf('This is an Exon only txn site.\n'))
                 data.IntronXs = [data.IntronXs; nan];
                 data.IntronYs = [data.IntronYs; nan];
-                data.IntronIntensity = [data.IntronIntensity; nan];
+                data.IntronIntensity = [data.IntronIntensity, nan];
                 data.ColocXs = [data.ColocXs; nan];
                 data.ColocYs = [data.ColocYs; nan];
                 data.ColocIntensity = [data.ColocIntensity; nan];
                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
+                data.TypeTxnSite{end+1} = 'exononly';
                 
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added\n']));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
             elseif (~thereIsAnExon && thereIsAnIntron)
                 fprintf('%s', sprintf('This is an Intron only txn site.\n'))
                 data.ExonXs = [data.ExonXs; nan];
                 data.ExonYs = [data.ExonYs; nan];
-                data.Intensity = [data.Intensity; nan];
+                data.Intensity = [data.Intensity, nan];
                 data.ColocXs = [data.ColocXs; nan];
                 data.ColocYs = [data.ColocYs; nan];
                 data.ColocIntensity = [data.ColocIntensity; nan];
                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
+                data.TypeTxnSite{end+1} = 'intrononly';
                 
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added\n']));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
             else
-                fprintf('%s', sprintf('No fitted spots in object!\n'))
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added\n']));
+                fprintf('%s', sprintf('No fitted spots within %d pixels of click!\n', distanceToCheckFromClick))
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
             end
             p.objectHandle.setData(data, p.dataNodeLabel);
@@ -203,66 +206,44 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
         %Delete the most recently added transcription site
         function deleteLastTranscriptionSite(p)
             data = p.objectHandle.getData(p.dataNodeLabel);
-            if (length(data.ExonXs) ~= length(data.IntronXs))
-                fprintf('%s', sprintf(['There was a mismatch between number of'...
-                    ' Exon and Intron spots. \nThis happens when the intron '...
-                    'thershold produces no intron spots. \nThe last Exon '...
-                    'spot will be deleted, but consider clearing all '...
-                    'spots and repicking\n']))
-                if length(data.ExonXs) < 2
-                    data.ExonXs = [];
-                    data.ExonYs = [];
-                    data.ClickedXs = [];
-                    data.ClickedYs = [];
-                    data.Intensity = [];
-                    data.ColocDistances = [];
-                else
-                    data.ExonXs = data.ExonXs(1:(end-1));
-                    data.ExonYs = data.ExonYs(1:(end-1));
-                    data.ClickedXs = data.ClickedXs(1:(end-1));
-                    data.ClickedYs = data.ClickedYs(1:(end-1));
-                    data.Intensity = data.Intensity(1:(end-1));
-                    data.ColocDistances = data.ColocDistances(1:(end-1));
-                end
-                
+            if length(data.IntronXs) < 2
+                data.IntronXs = [];
+                data.IntronYs = [];
+                data.IntronIntensity = [];
             else
-                if length(data.IntronXs) < 2
-                    data.IntronXs = [];
-                    data.IntronYs = [];
-                    data.IntronIntensity = [];
-                else
-                    data.IntronXs = data.IntronXs(1:(end-1));
-                    data.IntronYs = data.IntronYs(1:(end-1));
-                    data.IntronIntensity = data.IntronIntensity(1:(end-1));
-                end
-                if length(data.ExonXs) < 2
-                    data.ExonXs = [];
-                    data.ExonYs = [];
-                    data.ClickedXs = [];
-                    data.ClickedYs = [];
-                    data.Intensity = [];
-                    data.ColocDistances = [];
-                else
-                    data.ExonXs = data.ExonXs(1:(end-1));
-                    data.ExonYs = data.ExonYs(1:(end-1));
-                    data.ClickedXs = data.ClickedXs(1:(end-1));
-                    data.ClickedYs = data.ClickedYs(1:(end-1));
-                    data.Intensity = data.Intensity(1:(end-1));
-                    data.ColocDistances = data.ColocDistances(1:(end-1));
-                end
-                %The index for Colocalzed spots has no reference to the
-                %uncolocized spot, so to properly adjust, recalculate
-                %colocalization
-                distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-                [minDistances, minIndex] = min(distance');
-                colocalized_Index = find(minDistances < 3);
-                data.ColocXs =  data.ExonXs;
-                data.ColocYs =  data.ExonYs;
-                data.ColocIntensity = data.Intensity;
-                fprintf('%s', sprintf('The last txn site has been deleted.\n'))
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added so far.\n']));
-                fprintf('-----\n')
+                data.IntronXs = data.IntronXs(1:(end-1));
+                data.IntronYs = data.IntronYs(1:(end-1));
+                data.IntronIntensity = data.IntronIntensity(1:(end-1));
             end
+            if length(data.ExonXs) < 2
+                data.ExonXs = [];
+                data.ExonYs = [];
+                data.ClickedXs = [];
+                data.ClickedYs = [];
+                data.Intensity = [];
+                data.ColocDistances = [];
+                data.TypeTxnSite = {};
+            else
+                data.ExonXs = data.ExonXs(1:(end-1));
+                data.ExonYs = data.ExonYs(1:(end-1));
+                data.ClickedXs = data.ClickedXs(1:(end-1));
+                data.ClickedYs = data.ClickedYs(1:(end-1));
+                data.Intensity = data.Intensity(1:(end-1));
+                data.ColocDistances = data.ColocDistances(1:(end-1));
+                data.TypeTxnSite = data.TypeTxnSite{1:end-1};
+            end
+            %The index for Colocalzed spots has no reference to the
+            %uncolocized spot, so to properly adjust, recalculate
+            %colocalization
+            distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
+            [minDistances, minIndex] = min(distance');
+            colocalized_Index = find(minDistances < 3);
+            data.ColocXs =  data.ExonXs;
+            data.ColocYs =  data.ExonYs;
+            data.ColocIntensity = data.Intensity;
+            fprintf('%s', sprintf('The last txn site has been deleted.\n'))
+            fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added so far.\n']));
+            fprintf('-----\n')
             
             p.objectHandle.setData(data, p.dataNodeLabel);
         end
