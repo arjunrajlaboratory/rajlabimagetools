@@ -105,8 +105,8 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 colocalized_Index = minDistances < 3;
                 data.ColocXs =  data.ExonXs;
                 data.ColocYs =  data.ExonYs;
-                data.ColocIntensity = data.Intensity;
-                data.TypeTxnSite{end+1} = 'intronexon';
+                data.ColocIntensity = data.Intensity';
+                data.TypeTxnSite{end+1} = {'intronexon'};
                 
                 %Check to see if the Exon and Intron identified during the
                 %last click colocalize
@@ -129,7 +129,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ColocYs = [data.ColocYs; nan];
                 data.ColocIntensity = [data.ColocIntensity; nan];
                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
-                data.TypeTxnSite{end+1} = 'exononly';
+                data.TypeTxnSite{end+1} = {'exononly'};
                 
                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
@@ -142,7 +142,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ColocYs = [data.ColocYs; nan];
                 data.ColocIntensity = [data.ColocIntensity; nan];
                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
-                data.TypeTxnSite{end+1} = 'intrononly';
+                data.TypeTxnSite{end+1} = {'intrononly'};
                 
                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
@@ -230,7 +230,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ClickedYs = data.ClickedYs(1:(end-1));
                 data.Intensity = data.Intensity(1:(end-1));
                 data.ColocDistances = data.ColocDistances(1:(end-1));
-                data.TypeTxnSite = data.TypeTxnSite{1:end-1};
+                data.TypeTxnSite = data.TypeTxnSite(1:end-1);
             end
             %The index for Colocalzed spots has no reference to the
             %uncolocized spot, so to properly adjust, recalculate
@@ -260,6 +260,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
             data.ColocYs =  [];
             data.ColocIntensity = [];
             data.ColocDistances = [];
+            data.TypeTxnSite = {};
             p.objectHandle.setData(data, p.dataNodeLabel);
             fprintf('%s', sprintf('All the txn sites for this object have been successfully deleted!\n'))
             fprintf('-----\n')
