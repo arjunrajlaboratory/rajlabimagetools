@@ -221,6 +221,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ClickedXs = [];
                 data.ClickedYs = [];
                 data.Intensity = [];
+                data.ColocIntensity = [];
                 data.ColocDistances = [];
                 data.TypeTxnSite = {};
             else
@@ -229,6 +230,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                 data.ClickedXs = data.ClickedXs(1:(end-1));
                 data.ClickedYs = data.ClickedYs(1:(end-1));
                 data.Intensity = data.Intensity(1:(end-1));
+                data.ColocIntensity = data.ColocIntensity(1:(end-1));
                 data.ColocDistances = data.ColocDistances(1:(end-1));
                 data.TypeTxnSite = data.TypeTxnSite(1:end-1);
             end
@@ -240,7 +242,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
             colocalized_Index = find(minDistances < 3);
             data.ColocXs =  data.ExonXs;
             data.ColocYs =  data.ExonYs;
-            data.ColocIntensity = data.Intensity;
+            data.ColocIntensity = data.Intensity';
             fprintf('%s', sprintf('The last txn site has been deleted.\n'))
             fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added so far.\n']));
             fprintf('-----\n')
