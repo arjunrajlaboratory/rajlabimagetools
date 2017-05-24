@@ -21,123 +21,10 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
         %the intensity value of the exon spot
         
         function addTranscriptionSite(p, x, y)
-            % Initiate housekeeping variables.
+            % Initiate housekeeping variables
             thereIsAnExonNearClick = false;
             thereIsAnIntronNearClick = false;
-            distanceToCheckFromClick = 3; %This is the euclidian distance from the click within which we check for the presence of fitted exon and intron spots
-            distanceForColoc = 3; %This is the maximum euclidian distance at which two spots are said to be colocalized
             data = p.objectHandle.getData(p.dataNodeLabel);
-            
-            % Save the data for the clicked point
-            data.ClickedXs = [data.ClickedXs; x];
-            data.ClickedYs = [data.ClickedYs; y];
-            
-            % Check if there is a spot (intron or exon) within 3 pixels of
-            % the clicked point
-            % Begin with Exon spots
-            ExonSpotData = p.objectHandle.getData(p.parentNodeLabels{1}).getFittedSpots;
-            ExonfittedXs = [];
-            ExonfittedYs = [];
-            intensities = [];
-            if numel(ExonSpotData) > 0 %If there are called exons in the image,
-                for i = 1:numel(ExonSpotData) %Cycle through all the called spots above threshold,
-                    ExonfittedXs = [ExonfittedXs, ExonSpotData(i).xCenter]; %And create a variable with their Xs, Ys, and intensities
-                    ExonfittedYs = [ExonfittedYs, ExonSpotData(i).yCenter];
-                    intensities = [intensities, ExonSpotData(i).amplitude];
-                end
-                [nearestExonSpot, distanceToNearestExonSpot] = knnsearch([ExonfittedXs', ExonfittedYs'], [x,y]); %Find closest exon spot to where the user clicked
-                if distanceToNearestExonSpot <= distanceToCheckFromClick %If the spot is within the desired distance from click,
-                    data.ExonXs = [data.ExonXs; ExonfittedXs(nearestExonSpot)]; %Save its X, Y, and intensity to the txn sites data
-                    data.ExonYs = [data.ExonYs; ExonfittedYs(nearestExonSpot)];
-                    data.Intensity = [data.Intensity, intensities(nearestExonSpot)];
-                    thereIsAnExonNearClick = true;
-                else 
-                    fprintf('%s', sprintf('No exon spots within %d pixels of click\n', distanceToCheckFromClick))
-                end
-            else
-                fprintf('%s', sprintf('No exon spots in object\n'))
-            end
-            
-            % Now search for intron spots
-            IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
-            IntronfittedXs = [];
-            IntronfittedYs = [];
-            AllIntronIntensities = [];
-            if (numel(IntronSpotData) > 0) %If there are called introns in the image,
-                for i = 1:numel(IntronSpotData) %Cycle through all the called spots above threshold,
-                    IntronfittedXs = [IntronfittedXs, IntronSpotData(i).xCenter]; %And save their Xs, Ys, and intensities
-                    IntronfittedYs = [IntronfittedYs, IntronSpotData(i).yCenter];
-                    AllIntronIntensities = [AllIntronIntensities, IntronSpotData(i).amplitude];
-                end
-                [nearestIntronSpot, distanceToNearestIntronSpot] = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]); %Find closest intron spot to where the user clicked
-                if distanceToNearestIntronSpot <= distanceToCheckFromClick %If the spot is within the specified distance from click,
-                    data.IntronXs = [data.IntronXs; IntronfittedXs(nearestIntronSpot)]; %Save its X, Y, and intensity to the txn sites data
-                    data.IntronYs = [data.IntronYs; IntronfittedYs(nearestIntronSpot)];
-                    data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(nearestIntronSpot)];
-                    thereIsAnIntronNearClick = true;
-                else 
-                    fprintf('%s', sprintf('No intron spots within %d pixels of click\n', distanceToCheckFromClick))
-                end
-            else 
-                fprintf('%s', sprintf('No intron spots in object\n'))
-            end
-            
-            % If there is an intron AND an exon, call an intronexon txn
-            % site.
-            % If there is only one spot, check whether its an intron or
-            % exon. In case of intron, check if it colocalizes with an exon
-            % and vice versa.
-            % If there is no colocalization, call an intron/exon only txn
-            % site. If there is colocalization call a intronexon txn site.
-            if (thereIsAnExonNearClick && thereIsAnIntronNearClick)
-                fprintf('%s', sprintf('This is an IntronExon txn site.\n'))
-                data.TypeTxnSite{end+1} = {'intronexon'};
-                
-                %Check to see if the Exon and Intron identified during the
-                %last click colocalize
-                isClickColoc = pdist2([ExonfittedXs(nearestExonSpot), ExonfittedYs(nearestExonSpot)], [IntronfittedXs(nearestIntronSpot), IntronfittedYs(nearestIntronSpot)]) < distanceForColoc;
-                
-                ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-                data.ColocDistances = diag(ColocDistances);
-                [minDistances, minIndex] = min(ColocDistances');
-                %if the distance is fewer than 3 pixels, they
-                %colocalized. This may need editing especially without a
-                %chromatic shift
-                colocalized_Index = minDistances < 3;
-                
-                if ~isClickColoc
-                    fprintf(2, 'Intron and Exon not colocalized! But have been added as a txn site.\n')
-                else
-                    fprintf('Intron and Exon colocalized! And have been added as a txn site.\n')
-                end
-                fprintf('A total of %s', sprintf([num2str(numel(data.ExonXs)) ' txn sites added in this object\n']));
-                fprintf('%s', sprintf([num2str(numel(data.ExonXs(colocalized_Index))) ' out of ' num2str(sum(~isnan(data.ColocXs))) ' IntronExon txnsites Colocalized\n']));
-                fprintf('-----\n')
-            elseif (~thereIsAnExonNearClick && thereIsAnIntronNearClick)
-            elseif (thereIsAnExonNearClick && ~thereIsAnIntronNearClick)
-            end
-        end
-        
-        function addTranscriptionSite(p, x, y)
-            thereIsAnExon = false;
-            thereIsAnIntron = false;
-            
-            distanceToCheckFromClick = 3; %This is the euclidian distance
-            %from the click within which we check for the presence of
-            %fitted exon and intron spots
-            distanceForColoc = 3;
-            
-            data = p.objectHandle.getData(p.dataNodeLabel);
-            
-            % Find the closest intron and exon spot to the clicked point
-            % and within a radius of 3 pixels. Store the X, Y and intensity
-            % of the spot(s).
-            % Depending on whether there is an intron, exon, or both,
-            % assign the kind of txn site. 
-            % If it is an intronexon txn site, check for colocalization, 
-            % calculate and add the coloc distances and coloc x, y and
-            % intensity (this part needs to be taken out? It duplicates the
-            % exon x and y).
             
             %Store the coordinates of the clicked point
             data.ClickedXs = [data.ClickedXs; x];
@@ -146,7 +33,7 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
             ExonfittedXs = [];
             ExonfittedYs = [];
             intensities = [];
-            %there may not be exon spots so check
+            
             if numel(ExonSpotData) > 0
                 for i = 1:numel(ExonSpotData)
                     ExonfittedXs = [ExonfittedXs, ExonSpotData(i).xCenter];
@@ -154,15 +41,11 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                     intensities = [intensities, ExonSpotData(i).amplitude];
                 end
                 %Find closest exon spot the where the user clicked
-                [nn, ndist] = knnsearch([ExonfittedXs', ExonfittedYs'], [x,y]);
-                if ndist <= distanceToCheckFromClick
-                    data.ExonXs = [data.ExonXs; ExonfittedXs(nn)];
-                    data.ExonYs = [data.ExonYs; ExonfittedYs(nn)];
-                    data.Intensity = [data.Intensity, intensities(nn)];
-                    thereIsAnExon = true;
-                else 
-                    fprintf('%s', sprintf('No exon spots within %d pixels of click\n', distanceToCheckFromClick))
-                end
+                [closestExonToClick, exonDistanceToClick] = knnsearch([ExonfittedXs', ExonfittedYs'], [x,y]);
+                data.ExonXs = [data.ExonXs; ExonfittedXs(closestExonToClick)];
+                data.ExonYs = [data.ExonYs; ExonfittedYs(closestExonToClick)];
+                data.Intensity = [data.Intensity, intensities(closestExonToClick)];
+                thereIsAnExonNearClick = true;
             else
                 fprintf('%s', sprintf('No exon spots in object\n'))
             end
@@ -179,80 +62,188 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
                     AllIntronIntensities = [AllIntronIntensities, IntronSpotData(i).amplitude];
                 end
                 %Find closest intron spot if there are any
-                [mm, mdist] = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]);
-                if mdist <= distanceToCheckFromClick
-                    data.IntronXs = [data.IntronXs; IntronfittedXs(mm)];
-                    data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
-                    data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
-                    thereIsAnIntron = true;
-                else 
-                    fprintf('%s', sprintf('No intron spots within %d pixels of click\n', distanceToCheckFromClick))
-                end
+                [closestIntronToClick, intronDistanceToClick] = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]);
+                data.IntronXs = [data.IntronXs; IntronfittedXs(closestIntronToClick)];
+                data.IntronYs = [data.IntronYs; IntronfittedYs(closestIntronToClick)];
+                data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(closestIntronToClick)];
+                thereIsAnIntronNearClick = true;
             else 
                 fprintf('%s', sprintf('No intron spots in object\n'))
             end
-                
-            if (thereIsAnExon && thereIsAnIntron)
-                fprintf('%s', sprintf('This is an IntronExon txn site.\n'))
-                
-                %Find the pairwise distance between each exon and intron
-                ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-                data.ColocDistances = diag(ColocDistances);
-                [minDistances, minIndex] = min(ColocDistances');
-                %if the distance is fewer than 3 pixels, they
-                %colocalized. This may need editing especially without a
-                %chromatic shift
-                colocalized_Index = minDistances < 3;
-                data.ColocXs =  data.ExonXs;
-                data.ColocYs =  data.ExonYs;
-                data.ColocIntensity = data.Intensity';
-                data.TypeTxnSite{end+1} = {'intronexon'};
-                
-                %Check to see if the Exon and Intron identified during the
-                %last click colocalize
-                isClickColoc = pdist2([ExonfittedXs(nn), ExonfittedYs(nn)], [IntronfittedXs(mm), IntronfittedYs(mm)]) < distanceForColoc;
-                
-                if ~isClickColoc
-                    fprintf(2, 'Intron and Exon not colocalized! But have been added as a txn site.\n')
+            
+            if thereIsAnExonNearClick && thereIsAnIntronNearClick
+                distanceBetweenPoints = pdist2([data.ExonXs(end), data.ExonYs(end)], [data.IntronXs(end), data.IntronYs(end)]);
+                if distanceBetweenPoints < 3
+                    data.ColocDistances = [data.ColocDistances, distanceBetweenPoints];
+                    
+                    colocalized_Index = data.ColocDistances <= 3;
+                    fprintf('%s', sprintf('The Exon and Intron closest to clicked point colocalize, And have been added as a Txn Site!\n'));
+                    fprintf('A total of %s', sprintf([num2str(numel(data.ColocDistances)) ' txn sites added in this object\n']));
+                    fprintf('%s', sprintf([num2str(sum(colocalized_Index)) ' out of ' num2str(sum(~isnan(data.ColocDistances))) ' IntronExon txnsites Colocalized\n']));
+                    fprintf('-----\n')
                 else
-                    fprintf('Intron and Exon colocalized! And have been added as a txn site.\n')
+                    data.ColocDistances = [data.ColocDistances, distanceBetweenPoints];
+                    
+                    colocalized_Index = data.ColocDistances <= 3;
+                    fprintf(2, sprintf('The Exon and Intron closest to clicked point do not colocalize, but have been added as Txn Sites!\n'));
+                    fprintf('A total of %s', sprintf([num2str(numel(data.ColocDistances)) ' txn sites added in this object\n']));
+                    fprintf('%s', sprintf([num2str(sum(colocalized_Index)) ' out of ' num2str(sum(~isnan(data.ColocDistances))) ' IntronExon txnsites Colocalized\n']));
+                    fprintf('-----\n')
                 end
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
-                fprintf('%s', sprintf([num2str(numel(data.ColocXs(colocalized_Index))) ' out of ' num2str(sum(~isnan(data.ColocXs))) ' IntronExon txnsites Colocalized\n']));
+            elseif ~thereIsAnExonNearClick && ~thereIsAnIntronNearClick
+                fprintf(2 , sprintf('There are no spots in this image!\n'));
                 fprintf('-----\n')
-            elseif (thereIsAnExon && ~thereIsAnIntron)
-                fprintf('%s', sprintf('This is an Exon only txn site.\n'))
-                data.IntronXs = [data.IntronXs; nan];
-                data.IntronYs = [data.IntronYs; nan];
-                data.IntronIntensity = [data.IntronIntensity, nan];
-                data.ColocXs = [data.ColocXs; nan];
-                data.ColocYs = [data.ColocYs; nan];
-                data.ColocIntensity = [data.ColocIntensity; nan];
-                data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
-                data.TypeTxnSite{end+1} = {'exononly'};                
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
-                fprintf('-----\n')
-            elseif (~thereIsAnExon && thereIsAnIntron)
-                fprintf('%s', sprintf('This is an Intron only txn site.\n'))
-                data.ExonXs = [data.ExonXs; nan];
-                data.ExonYs = [data.ExonYs; nan];
-                data.Intensity = [data.Intensity, nan];
-                data.ColocXs = [data.ColocXs; nan];
-                data.ColocYs = [data.ColocYs; nan];
-                data.ColocIntensity = [data.ColocIntensity; nan];
-                data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
-                data.TypeTxnSite{end+1} = {'intrononly'};
+            elseif ~thereIsAnExonNearClick && thereIsAnIntronNearClick
+                data.ColocDistances = [data.ColocDistances, nan];
                 
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+                fprintf('%s', sprintf('There are no Exons in this image. The Intron closest to the clicked point has been added as a txn site.\n'));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocDistances)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
-            else
-                fprintf('%s', sprintf('No fitted spots within %d pixels of click!\n', distanceToCheckFromClick))
-                fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+            elseif thereIsAnExonNearClick && ~thereIsAnIntronNearClick
+                data.ColocDistances = [data.ColocDistances, nan];
+                
+                fprintf('%s', sprintf('There are no Introns in this image. The Exon closest to the clicked point has been added as a txn site.\n'));
+                fprintf('A total of %s', sprintf([num2str(numel(data.ColocDistances)) ' txn sites added in this object\n']));
                 fprintf('-----\n')
             end
             p.objectHandle.setData(data, p.dataNodeLabel);
-            
         end
+        
+%         function addTranscriptionSite(p, x, y)
+%             thereIsAnExon = false;
+%             thereIsAnIntron = false;
+%             
+%             distanceToCheckFromClick = 3; %This is the euclidian distance
+%             %from the click within which we check for the presence of
+%             %fitted exon and intron spots
+%             distanceForColoc = 3;
+%             
+%             data = p.objectHandle.getData(p.dataNodeLabel);
+%             
+%             % Find the closest intron and exon spot to the clicked point
+%             % and within a radius of 3 pixels. Store the X, Y and intensity
+%             % of the spot(s).
+%             % Depending on whether there is an intron, exon, or both,
+%             % assign the kind of txn site. 
+%             % If it is an intronexon txn site, check for colocalization, 
+%             % calculate and add the coloc distances and coloc x, y and
+%             % intensity (this part needs to be taken out? It duplicates the
+%             % exon x and y).
+%             
+%             %Store the coordinates of the clicked point
+%             data.ClickedXs = [data.ClickedXs; x];
+%             data.ClickedYs = [data.ClickedYs; y];
+%             ExonSpotData = p.objectHandle.getData(p.parentNodeLabels{1}).getFittedSpots;
+%             ExonfittedXs = [];
+%             ExonfittedYs = [];
+%             intensities = [];
+%             %there may not be exon spots so check
+%             if numel(ExonSpotData) > 0
+%                 for i = 1:numel(ExonSpotData)
+%                     ExonfittedXs = [ExonfittedXs, ExonSpotData(i).xCenter];
+%                     ExonfittedYs = [ExonfittedYs, ExonSpotData(i).yCenter];
+%                     intensities = [intensities, ExonSpotData(i).amplitude];
+%                 end
+%                 %Find closest exon spot the where the user clicked
+%                 [nn, ndist] = knnsearch([ExonfittedXs', ExonfittedYs'], [x,y]);
+%                 if ndist <= distanceToCheckFromClick
+%                     data.ExonXs = [data.ExonXs; ExonfittedXs(nn)];
+%                     data.ExonYs = [data.ExonYs; ExonfittedYs(nn)];
+%                     data.Intensity = [data.Intensity, intensities(nn)];
+%                     thereIsAnExon = true;
+%                 else 
+%                     fprintf('%s', sprintf('No exon spots within %d pixels of click\n', distanceToCheckFromClick))
+%                 end
+%             else
+%                 fprintf('%s', sprintf('No exon spots in object\n'))
+%             end
+%             
+%             IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
+%             IntronfittedXs = [];
+%             IntronfittedYs = [];
+%             AllIntronIntensities = [];
+%             %there may be not intron spots so check
+%             if (numel(IntronSpotData) > 0)
+%                 for i = 1:numel(IntronSpotData)
+%                     IntronfittedXs = [IntronfittedXs, IntronSpotData(i).xCenter];
+%                     IntronfittedYs = [IntronfittedYs, IntronSpotData(i).yCenter];
+%                     AllIntronIntensities = [AllIntronIntensities, IntronSpotData(i).amplitude];
+%                 end
+%                 %Find closest intron spot if there are any
+%                 [mm, mdist] = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]);
+%                 if mdist <= distanceToCheckFromClick
+%                     data.IntronXs = [data.IntronXs; IntronfittedXs(mm)];
+%                     data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
+%                     data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
+%                     thereIsAnIntron = true;
+%                 else 
+%                     fprintf('%s', sprintf('No intron spots within %d pixels of click\n', distanceToCheckFromClick))
+%                 end
+%             else 
+%                 fprintf('%s', sprintf('No intron spots in object\n'))
+%             end
+%                 
+%             if (thereIsAnExon && thereIsAnIntron)
+%                 fprintf('%s', sprintf('This is an IntronExon txn site.\n'))
+%                 
+%                 %Find the pairwise distance between each exon and intron
+%                 ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
+%                 data.ColocDistances = diag(ColocDistances);
+%                 [minDistances, minIndex] = min(ColocDistances');
+%                 %if the distance is fewer than 3 pixels, they
+%                 %colocalized. This may need editing especially without a
+%                 %chromatic shift
+%                 colocalized_Index = minDistances < 3;
+%                 data.ColocXs =  data.ExonXs;
+%                 data.ColocYs =  data.ExonYs;
+%                 data.ColocIntensity = data.Intensity';
+%                 data.TypeTxnSite{end+1} = {'intronexon'};
+%                 
+%                 %Check to see if the Exon and Intron identified during the
+%                 %last click colocalize
+%                 isClickColoc = pdist2([ExonfittedXs(nn), ExonfittedYs(nn)], [IntronfittedXs(mm), IntronfittedYs(mm)]) < distanceForColoc;
+%                 
+%                 if ~isClickColoc
+%                     fprintf(2, 'Intron and Exon not colocalized! But have been added as a txn site.\n')
+%                 else
+%                     fprintf('Intron and Exon colocalized! And have been added as a txn site.\n')
+%                 end
+%                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+%                 fprintf('%s', sprintf([num2str(numel(data.ColocXs(colocalized_Index))) ' out of ' num2str(sum(~isnan(data.ColocXs))) ' IntronExon txnsites Colocalized\n']));
+%                 fprintf('-----\n')
+%             elseif (thereIsAnExon && ~thereIsAnIntron)
+%                 fprintf('%s', sprintf('This is an Exon only txn site.\n'))
+%                 data.IntronXs = [data.IntronXs; nan];
+%                 data.IntronYs = [data.IntronYs; nan];
+%                 data.IntronIntensity = [data.IntronIntensity, nan];
+%                 data.ColocXs = [data.ColocXs; nan];
+%                 data.ColocYs = [data.ColocYs; nan];
+%                 data.ColocIntensity = [data.ColocIntensity; nan];
+%                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
+%                 data.TypeTxnSite{end+1} = {'exononly'};                
+%                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+%                 fprintf('-----\n')
+%             elseif (~thereIsAnExon && thereIsAnIntron)
+%                 fprintf('%s', sprintf('This is an Intron only txn site.\n'))
+%                 data.ExonXs = [data.ExonXs; nan];
+%                 data.ExonYs = [data.ExonYs; nan];
+%                 data.Intensity = [data.Intensity, nan];
+%                 data.ColocXs = [data.ColocXs; nan];
+%                 data.ColocYs = [data.ColocYs; nan];
+%                 data.ColocIntensity = [data.ColocIntensity; nan];
+%                 data.ColocDistances = diag(pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]));
+%                 data.TypeTxnSite{end+1} = {'intrononly'};
+%                 
+%                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+%                 fprintf('-----\n')
+%             else
+%                 fprintf('%s', sprintf('No fitted spots within %d pixels of click!\n', distanceToCheckFromClick))
+%                 fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added in this object\n']));
+%                 fprintf('-----\n')
+%             end
+%             p.objectHandle.setData(data, p.dataNodeLabel);
+%             
+%         end
         %return the exon X and Ys
         function [Xs, Ys] = getTranscriptionSiteXYCoords(p)
             data = p.objectHandle.getData(p.dataNodeLabel);
