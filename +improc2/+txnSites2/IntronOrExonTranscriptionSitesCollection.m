@@ -327,14 +327,14 @@ classdef IntronOrExonTranscriptionSitesCollection < ...
             %The index for Colocalzed spots has no reference to the
             %uncolocized spot, so to properly adjust, recalculate
             %colocalization
-            distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
-            [minDistances, minIndex] = min(distance');
-            colocalized_Index = find(minDistances < 3);
-            data.ColocXs =  data.ExonXs;
-            data.ColocYs =  data.ExonYs;
-            data.ColocIntensity = data.Intensity';
+%             distance = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
+%             [minDistances, minIndex] = min(distance');
+%             colocalized_Index = find(minDistances < 3);
+%             data.ColocXs =  data.ExonXs;
+%             data.ColocYs =  data.ExonYs;
+%             data.ColocIntensity = data.Intensity';
             fprintf('%s', sprintf('The last txn site has been deleted.\n'))
-            fprintf('A total of %s', sprintf([num2str(numel(data.ColocXs)) ' txn sites added so far.\n']));
+            fprintf('A total of %s', sprintf([num2str(numel(data.ExonXs)) ' txn sites added so far.\n']));
             fprintf('-----\n')
             
             p.objectHandle.setData(data, p.dataNodeLabel);
