@@ -43,7 +43,7 @@ validateattributes(varargin{1}, {'char'}, {'nonempty'})
 validateattributes(outputMethod, {'char'}, {'nonempty'})
 validateattributes(typeTxnSite, {'char'}, {'nonempty'})
 
-if strcmp(typeTxnSite, 'exonintron')
+if sum(strcmp(typeTxnSite, {'exonintron', 'intronexon', 'intronorexon', 'exonorintron', 'eitheror'}))
     exonChannel = varargin{1};
     intronChannel = varargin{2};
     validateattributes(intronChannel, {'char'}, {'nonempty'})
