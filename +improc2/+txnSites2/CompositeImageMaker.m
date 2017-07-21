@@ -23,7 +23,7 @@ classdef CompositeImageMaker < handle
         end
         
         function img = getImage(p)
-            if(strcmp(p.stringFlag, 'Both'))
+            if(strcmp(p.stringFlag, 'Introns & Exons'))
                 exonImg = p.exonImageHolder.getImage();
                 exonImg = exonImg * p.paramsForComposite.getValue('exonMultiplier');
                 exonImg = min(exonImg, 1);
