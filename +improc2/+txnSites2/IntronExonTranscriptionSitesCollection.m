@@ -27,33 +27,39 @@ classdef IntronExonTranscriptionSitesCollection < ...
             ExonSpotData = p.objectHandle.getData(p.parentNodeLabels{1}).getFittedSpots;
             ExonfittedXs = [];
             ExonfittedYs = [];
+            ExonfittedZs = [];
             intensities = [];
             for i = 1:numel(ExonSpotData)
                 ExonfittedXs = [ExonfittedXs, ExonSpotData(i).xCenter];
                 ExonfittedYs = [ExonfittedYs, ExonSpotData(i).yCenter];
+                ExonfittedZs = [ExonfittedZs, ExonSpotData(i).zPlane];
                 intensities = [intensities, ExonSpotData(i).amplitude];
             end
             %Find closest exon spot the where the user clicked
             nn = knnsearch([ExonfittedXs', ExonfittedYs'], [x,y]);
             data.ExonXs = [data.ExonXs; ExonfittedXs(nn)];
             data.ExonYs = [data.ExonYs; ExonfittedYs(nn)];
+            data.ExonZs = [data.ExonZs; ExonfittedZs(nn)];
             data.Intensity = [data.Intensity, intensities(nn)];
             
             IntronSpotData = p.objectHandle.getData(p.parentNodeLabels{2}).getFittedSpots;
             IntronfittedXs = [];
             IntronfittedYs = [];
+            IntronfittedZs = [];
             AllIntronIntensities = [];
             %there may be not intron spots so check
             if (numel(IntronSpotData) > 0)
                 for i = 1:numel(IntronSpotData)
                     IntronfittedXs = [IntronfittedXs, IntronSpotData(i).xCenter];
                     IntronfittedYs = [IntronfittedYs, IntronSpotData(i).yCenter];
+                    IntronfittedZs = [IntronfittedZs, IntronSpotData(i).zPlane];
                     AllIntronIntensities = [AllIntronIntensities, IntronSpotData(i).amplitude];
                 end
                 %Find closest intron spot if there are any
                 mm = knnsearch([IntronfittedXs', IntronfittedYs'], [x,y]);
                 data.IntronXs = [data.IntronXs; IntronfittedXs(mm)];
                 data.IntronYs = [data.IntronYs; IntronfittedYs(mm)];
+                data.IntronZs = [data.IntronZs; IntronfittedZs(mm)];
                 data.IntronIntensity = [data.IntronIntensity, AllIntronIntensities(mm)];
                 %Find the pairwise distance between each exon and intron
                 ColocDistances = pdist2([data.ExonXs, data.ExonYs], [data.IntronXs, data.IntronYs]);
@@ -98,6 +104,13 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data = p.objectHandle.getData(p.dataNodeLabel);
             Xs = data.IntronXs;
             Ys = data.IntronYs;
+        end
+        
+        %return the txn site (exon and intron) Z planes
+        function [ExonZs, IntronZs] = getTranscriptionSiteZPlanes(p)
+            data = p.objectHandle.getData(p.dataNodeLabel);
+            ExonZs = data.ExonZs;
+            IntronZs = data.IntronZs;
         end
         
         function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
@@ -147,6 +160,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 if length(data.ExonXs) < 2
                     data.ExonXs = [];
                     data.ExonYs = [];
+                    data.ExonZs = [];
                     data.ClickedXs = [];
                     data.ClickedYs = [];
                     data.Intensity = [];
@@ -154,6 +168,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
+                    data.ExonZs = data.ExonZs(1:(end-1));
                     data.ClickedXs = data.ClickedXs(1:(end-1));
                     data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
@@ -164,15 +179,18 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 if length(data.IntronXs) < 2
                     data.IntronXs = [];
                     data.IntronYs = [];
+                    data.IntronZs = [];
                     data.IntronIntensity = [];
                 else
                     data.IntronXs = data.IntronXs(1:(end-1));
                     data.IntronYs = data.IntronYs(1:(end-1));
+                    data.IntronZs = data.IntronZs(1:(end-1));
                     data.IntronIntensity = data.IntronIntensity(1:(end-1));
                 end
                 if length(data.ExonXs) < 2
                     data.ExonXs = [];
                     data.ExonYs = [];
+                    data.ExonZs = [];
                     data.ClickedXs = [];
                     data.ClickedYs = [];
                     data.Intensity = [];
@@ -180,6 +198,7 @@ classdef IntronExonTranscriptionSitesCollection < ...
                 else
                     data.ExonXs = data.ExonXs(1:(end-1));
                     data.ExonYs = data.ExonYs(1:(end-1));
+                    data.ExonZs = data.ExonZs(1:(end-1));
                     data.ClickedXs = data.ClickedXs(1:(end-1));
                     data.ClickedYs = data.ClickedYs(1:(end-1));
                     data.Intensity = data.Intensity(1:(end-1));
@@ -205,8 +224,10 @@ classdef IntronExonTranscriptionSitesCollection < ...
             data = p.objectHandle.getData(p.dataNodeLabel);
             data.ExonXs = [];
             data.ExonYs = [];
+            data.ExonZs = [];
             data.IntronXs = [];
             data.IntronYs = [];
+            data.IntronZs = [];
             data.IntronIntensity = [];
             data.Intensity = [];
             data.ColocXs =  [];

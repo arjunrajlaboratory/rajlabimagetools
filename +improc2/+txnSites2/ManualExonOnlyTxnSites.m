@@ -7,6 +7,7 @@ classdef ManualExonOnlyTxnSites < improc2.interfaces.NodeData
         ClickedYs
         Xs %holds the X positions of the fitted exon spot closest to manualy selected TxnSites
         Ys %holds the Y positions of the fitted exon spot closest to manualy selected TxnSites
+        Zs
         Intensity %The amplitude of the Guassian that is fit to the spot located at (Xs, Ys)
         needsUpdate = true
     end

@@ -9,10 +9,12 @@ classdef ManualExonIntronTxnSites < improc2.interfaces.NodeData
         ClickedYs %holds the y positions of the actual spot clicked by the user
         ExonXs %holds the X positions of the fitted exon spot closest to manualy selected TxnSites
         ExonYs %holds the Y positions of the fitted exon spot closest to manualy selected TxnSites
+        ExonZs
         Intensity %The amplitude of the Guassian that is fit to the spot located at (ExonXs, ExonYs)
         needsUpdate = true %Update flag
         IntronXs %holds the X positions of the fitted intron spot closest to manualy selected TxnSites
         IntronYs %holds the X positions of the fitted intron spot closest to manualy selected TxnSites
+        IntronZs
         IntronIntensity %holds amplitude of the fitted intron spot closest to manually selected TxnSites
         ColocXs %For each exon spot, check if an intron spot colocalizes and if so add exonX position here
         ColocYs %For each exon spot, check if an intron spot colocalizes and if so add exonY position here
