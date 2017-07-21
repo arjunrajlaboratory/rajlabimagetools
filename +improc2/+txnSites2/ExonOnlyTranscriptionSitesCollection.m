@@ -22,15 +22,18 @@ classdef ExonOnlyTranscriptionSitesCollection < ...
             spotData = p.objectHandle.getData(p.parentNodeLabels).getFittedSpots;
             fittedXs = [];
             fittedYs = [];
+            fittedZs = [];
             intensities = [];
             for i = 1:numel(spotData)
                 fittedXs = [fittedXs, spotData(i).xCenter];
                 fittedYs = [fittedYs, spotData(i).yCenter];
+                fittedZs = [fittedZs, spotData(i).zPlane];
                 intensities = [intensities, spotData(i).amplitude];
             end
             nn = knnsearch([fittedXs', fittedYs'], [x,y]);
             data.Xs = [data.Xs; fittedXs(nn)];
             data.Ys = [data.Ys; fittedYs(nn)];
+            data.Zs = [data.Zs; fittedZs(nn)];
             data.Intensity = [data.Intensity, intensities(nn)];
             p.objectHandle.setData(data, p.dataNodeLabel);
         end
@@ -39,6 +42,13 @@ classdef ExonOnlyTranscriptionSitesCollection < ...
             data = p.objectHandle.getData(p.dataNodeLabel);
             Xs = data.Xs;
             Ys = data.Ys;
+        end
+        
+        function [Xs, Ys, Zs] = getTranscriptionSiteXYZCoords(p)
+            data = p.objectHandle.getData(p.dataNodeLabel);
+            Xs = data.Xs;
+            Ys = data.Ys;
+            Zs = data.Zs;
         end
         
         function [Xs, Ys] = getOtherCoordsToDisplayOnInit(p)
@@ -62,10 +72,12 @@ classdef ExonOnlyTranscriptionSitesCollection < ...
             if length(data.Xs) < 2
                 data.Xs = [];
                 data.Ys = [];
+                data.Zs = [];
                 data.Intensity = [];
             else
                 data.Xs = data.Xs(1:(end-1));
                 data.Ys = data.Ys(1:(end-1));
+                data.Zs = data.Zs(1:(end-1));
                 data.Intensity = data.Intensity(1:(end-1));
             end
             p.objectHandle.setData(data, p.dataNodeLabel);
@@ -75,6 +87,7 @@ classdef ExonOnlyTranscriptionSitesCollection < ...
             data = p.objectHandle.getData(p.dataNodeLabel);
             data.Xs = [];
             data.Ys = [];
+            data.Zs = [];
             data.Intensity = [];
             p.objectHandle.setData(data, p.dataNodeLabel);
         end
