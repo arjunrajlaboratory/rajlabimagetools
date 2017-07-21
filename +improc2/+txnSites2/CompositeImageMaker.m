@@ -6,17 +6,19 @@ classdef CompositeImageMaker < handle
         intronImageHolder
         exonImageHolder
         dapiImageHolder
+        additionalImageHolders
         paramsForComposite
         stringFlag
     end
     
     methods
         function p = CompositeImageMaker(exonImageHolder, ...
-                intronImageHolder, dapiImageHolder, paramsForComposite, stringFlag)
+                intronImageHolder, dapiImageHolder, additionalImageHolders, paramsForComposite, stringFlag)
             p.stringFlag = stringFlag;
             p.intronImageHolder = intronImageHolder;
             p.exonImageHolder = exonImageHolder;
             p.dapiImageHolder = dapiImageHolder;
+            p.additionalImageHolders = additionalImageHolders;
             p.paramsForComposite = paramsForComposite;
         end
         
@@ -29,18 +31,34 @@ classdef CompositeImageMaker < handle
                 intronImg = intronImg * p.paramsForComposite.getValue('intronMultiplier');
                 intronImg = min(intronImg, 1);
                 img = cat(3, intronImg, exonImg, p.dapiImageHolder.getImage()/2);
-            else
+            elseif(strcmp(p.stringFlag, 'Introns'))
                 %if it specifies only one channel, have the Exon image
                 %maker handle it, since it is already built to do one
                 %channel
-                if(strcmp(p.stringFlag, 'Introns'))
-                    IntronCompImMaker = improc2.txnSites2.CompositeExonImageMaker(p.intronImageHolder, ...
-                        p.dapiImageHolder, p.paramsForComposite);
-                    img = IntronCompImMaker.getImage();
+                IntronCompImMaker = improc2.txnSites2.CompositeExonImageMaker(p.intronImageHolder, ...
+                    p.dapiImageHolder, p.paramsForComposite);
+                img = IntronCompImMaker.getImage();
+            elseif(strcmp(p.stringFlag, 'Others'))
+
+            elseif(strcmp(p.stringFlag, 'Exons'))
+                ExonCompImMaker = improc2.txnSites2.CompositeExonImageMaker(p.exonImageHolder, ...
+                    p.dapiImageHolder, p.paramsForComposite);
+                img = ExonCompImMaker.getImage();
+            else
+                if (~isempty(p.additionalImageHolders))
+                    for i = 1:length(p.additionalImageHolders)
+                        if(strcmp(p.stringFlag, p.additionalImageHolders(i).channelName))
+                            additionalImCompMaker = improc2.txnSites2.CompositeExonImageMaker(...
+                                p.additionalImageHolders(i), p.dapiImageHolder, p.paramsForComposite);
+                            img = additionalImCompMaker.getImage();
+                            
+%                             additionalImgs(:, :, i) = p.additionalImageHolders(i).getImage();
+%                             additionalImgs(:, :, i) = min(additionalImgs(:, :, i), 1);
+                            break
+                        end
+                    end
                 else
-                    ExonCompImMaker = improc2.txnSites2.CompositeExonImageMaker(p.exonImageHolder, ...
-                        p.dapiImageHolder, p.paramsForComposite);
-                    img = ExonCompImMaker.getImage();
+                    error('There are no other channels specified in the launchGUI command.')
                 end
             end
         end

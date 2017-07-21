@@ -1,6 +1,6 @@
-function ExonOnlyTxnSiteGUIcore(navigator, baseTxnSitesCollection, imageHolders)
+function ExonOnlyTxnSiteGUIcore(navigator, baseTxnSitesCollection, imageHolders, additionalChannels)
 %GuiCore called when only the exon channel is passed
-gui = improc2.txnSites2.layOutGUI();
+gui = improc2.txnSites2.layOutGUI( additionalChannels);
 
 %Gui control handles. The handles referring to introns are not present, but
 %objects still exsist in the layout - they appear there but have no

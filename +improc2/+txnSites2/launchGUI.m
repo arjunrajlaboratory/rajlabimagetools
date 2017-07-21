@@ -22,6 +22,7 @@ ip = inputParser;
 ip.addOptional('intronorexontxnsites', false, @islogical);
 ip.addOptional('exonorintrontxnsites', false, @islogical);
 ip.addOptional('dir', pwd);
+ip.addOptional('additionalchannelstoshow', {}, @iscellstr);
 ip.parse(varargin{:});
 
 %Gaussian Fit the spot data and add the data to the fitted channel node
@@ -81,12 +82,29 @@ imageHolders.dapi = ...
     'dapi', ...
     'improc2.nodeProcs.DapiProcessedData');
 
+if(~isempty(ip.Results.additionalchannelstoshow))
+    imageHolders.otherChannels = ...
+        improc2.utils.ImageHolderFromImageObjectHandle(objectHandle, ...
+        ip.Results.additionalchannelstoshow{1}, ...
+        'improc2.nodeProcs.RegionalMaxProcessedData');
+    if length(ip.Results.additionalchannelstoshow) > 1
+        for i = 2:length(ip.Results.additionalchannelstoshow)
+            imageHolders.otherChannels(end+1) = ...
+                improc2.utils.ImageHolderFromImageObjectHandle(objectHandle, ...
+                ip.Results.additionalchannelstoshow{i}, ...
+                'improc2.nodeProcs.RegionalMaxProcessedData');
+        end
+    end
+else
+    imageHolders.otherChannels = [];
+end
+
 %Launch the proper GuiCore (depending on if introns are present)
 if (IntronFlag && ExonFlag)
-    improc2.txnSites2.IntronExonTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders)
+    improc2.txnSites2.IntronExonTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders, ip.Results.additionalchannelstoshow)
 else
     if(ExonFlag)
-        improc2.txnSites2.ExonOnlyTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders)
+        improc2.txnSites2.ExonOnlyTxnSiteGUIcore(navigator, nodeDataBasedtxnSites2Collection, imageHolders, ip.Results.additionalchannelstoshow)
     end
 end
 
