@@ -1,8 +1,11 @@
 classdef ImageHolderFromImageObjectHandle < handle
     
+    properties
+        channelName
+    end
+    
     properties (Access = private)
         imObHandle
-        channelName
         extraArgsForChoosingProcessor
     end
     

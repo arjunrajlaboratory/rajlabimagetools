@@ -1,6 +1,6 @@
-function IntronExonTxnSiteGUIcore(navigator, baseTxnSitesCollection, imageHolders)
+function IntronExonTxnSiteGUIcore(navigator, baseTxnSitesCollection, imageHolders, additionalChannels)
 %GuiCore called when passed both intron and exon channels
-gui = improc2.txnSites2.layOutGUI();
+gui = improc2.txnSites2.layOutGUI(additionalChannels);
 
 %Gui control handles
 imgAx = gui.imgAx;
@@ -20,6 +20,8 @@ intronImageHolder = imageHolders.intron;
 exonImageHolder = imageHolders.exon;
 
 dapiImageHolder = imageHolders.dapi;
+
+additionalImageHolders = imageHolders.otherChannels;
 
 %Gui allows user to specify relative contrast between exons and introns.
 %For example if the intron background is high, it might help to increase
@@ -42,7 +44,7 @@ Popitems = get(channelSelect ,'String');
 Popindex_selected = get(channelSelect,'Value');
 Popitem_selected = Popitems{Popindex_selected};
 compositeImageMaker = improc2.txnSites2.CompositeImageMaker(exonImageHolder, ...
-    intronImageHolder, dapiImageHolder, paramsForComposite, Popitem_selected);
+    intronImageHolder, dapiImageHolder, additionalImageHolders, paramsForComposite, Popitem_selected);
 sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(intronImageHolder);
 viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
 compositeImageDisplayer = improc2.utils.ImageDisplayer(imgAx, compositeImageMaker, viewportHolder);
@@ -132,7 +134,7 @@ items = get(hObject,'String');
 index_selected = get(hObject,'Value');
 item_selected = items{index_selected};
 compositeImageMaker = improc2.txnSites2.CompositeImageMaker(imageHolders.exon, ...
-    imageHolders.intron, imageHolders.dapi, paramsForComposite, ...
+    imageHolders.intron, imageHolders.dapi, imageHolders.otherChannels, paramsForComposite, ...
     item_selected);
 sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.intron);
 viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
