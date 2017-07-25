@@ -45,7 +45,7 @@ Popindex_selected = get(channelSelect,'Value');
 Popitem_selected = Popitems{Popindex_selected};
 compositeImageMaker = improc2.txnSites2.CompositeImageMaker(exonImageHolder, ...
     intronImageHolder, dapiImageHolder, additionalImageHolders, paramsForComposite, Popitem_selected);
-sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(intronImageHolder);
+sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.intron);
 viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
 compositeImageDisplayer = improc2.utils.ImageDisplayer(imgAx, compositeImageMaker, viewportHolder);
 txnSitesCollection = improc2.txnSites2.utils.NotifyingTranscriptionSitesCollection(...
@@ -69,10 +69,6 @@ panningInterpreter = dentist.utils.ImagePanningMouseInterpreter(viewportHolder);
 viewportHolder.addActionAfterViewportSetting(mainWindowDisplayer, @draw);
 
 txnSitesCollection.addActionAfterChangeOfNumTxnSites(txnSitesDisplayer, @draw);
-
-set(deleteLastButton, 'Callback', @(varargin) txnSitesCollection.deleteLastTranscriptionSite());
-set(clearAllButton, 'Callback', @(varargin) txnSitesCollection.clearAllTranscriptionSites());
-set(channelSelect, 'Callback', {@popupCallBack, imageHolders, paramsForComposite, imgAx, baseTxnSitesCollection});
 
 buttonStruct = struct(...
     'zoom', zoomButton, ...
@@ -100,6 +96,10 @@ zoomAddTwoWaySwitcher = improc2.txnSites2.utils.TwoWayActionAlternator(...
     @() zoomPanAddToggler.activateButton('zoom'));
 
 improc2.NavigatorGUI(navigator);
+
+set(deleteLastButton, 'Callback', @(varargin) txnSitesCollection.deleteLastTranscriptionSite());
+set(clearAllButton, 'Callback', @(varargin) txnSitesCollection.clearAllTranscriptionSites());
+set(channelSelect, 'Callback', {@popupCallBack, imageHolders, paramsForComposite, imgAx, baseTxnSitesCollection, buttonStruct, figH});
 
 nextImage = improc2.txnSites2.NextImageDisplayer(imageHolders, paramsForComposite, imgAx, baseTxnSitesCollection, channelSelect);
 navigator.addActionAfterMoveAttempt(nextImage, @nextImageDisplay)
@@ -129,15 +129,36 @@ keyboardCommandInterpreter.addKeyPressCommand({'w', 'W', 's', 'S'}, ...
 end
 
 %CallBack function for the popupmenu
-function popupCallBack(hObject, evn, imageHolders, paramsForComposite, imgAx, baseTxnSitesCollection)
+function popupCallBack(hObject, evn, imageHolders, paramsForComposite, imgAx, baseTxnSitesCollection, buttonStruct, figH)
 items = get(hObject,'String');
 index_selected = get(hObject,'Value');
 item_selected = items{index_selected};
 compositeImageMaker = improc2.txnSites2.CompositeImageMaker(imageHolders.exon, ...
     imageHolders.intron, imageHolders.dapi, imageHolders.otherChannels, paramsForComposite, ...
     item_selected);
-sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.intron);
-viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
+
+if(strcmp(item_selected, 'Introns & Exons'))
+    sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.intron);
+    viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
+elseif(strcmp(item_selected, 'Introns'))
+    sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.intron);
+    viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
+elseif(strcmp(item_selected, 'Exons'))
+    sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.exon);
+    viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
+else
+    if (~isempty(imageHolders.otherChannels))
+        for i = 1:length(imageHolders.otherChannels)
+            if(strcmp(item_selected, imageHolders.otherChannels(i).channelName))
+                sizeAdaptiveViewportHolder = improc2.utils.ImageSizeAdaptiveViewportHolder(imageHolders.otherChannels(i));
+                viewportHolder = improc2.utils.NotifyingViewportHolder(sizeAdaptiveViewportHolder);
+                break
+            end
+        end
+    else
+        error('There are no other channels specified in the launchGUI command.')
+    end
+end
 
 compositeImageDisplayer = improc2.utils.ImageDisplayer(imgAx, compositeImageMaker, viewportHolder);
 txnSitesCollection = improc2.txnSites2.utils.NotifyingTranscriptionSitesCollection(...
@@ -149,6 +170,34 @@ mainWindowDisplayer = dentist.utils.DisplayerSequence(...
     compositeImageDisplayer, txnSitesDisplayer);
 
 mainWindowDisplayer.draw();
+
+txnSiteAddingInterpreter = ...
+    improc2.txnSites2.utils.TranscriptionSiteAddingInterpreter(txnSitesCollection);
+
+zoomInterpreter = dentist.utils.ImageZoomingMouseInterpreter(viewportHolder);
+
+panningInterpreter = dentist.utils.ImagePanningMouseInterpreter(viewportHolder);
+
+viewportHolder.addActionAfterViewportSetting(mainWindowDisplayer, @draw);
+
+txnSitesCollection.addActionAfterChangeOfNumTxnSites(txnSitesDisplayer, @draw);
+
+actionOnSelect = struct(...
+    'zoom', @() zoomInterpreter.wireToFigureAndAxes(figH, imgAx), ...
+    'pan',  @() panningInterpreter.wireToFigureAndAxes(figH, imgAx), ...
+    'add', @() txnSiteAddingInterpreter.wireToFigureAndAxes(figH, imgAx) ...
+    );
+
+actionOnDeselect = struct(...
+    'zoom', @zoomInterpreter.unwire, ...
+    'pan',  @panningInterpreter.unwire, ...
+    'add', @txnSiteAddingInterpreter.unwire ...
+    );
+
+zoomPanAddToggler = dentist.utils.FunctionExecutingToggleGroup(...
+    buttonStruct, actionOnSelect, actionOnDeselect);
+
+zoomPanAddToggler.initialize('add');
 end
 
 
