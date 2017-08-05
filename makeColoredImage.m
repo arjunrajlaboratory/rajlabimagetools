@@ -4,6 +4,8 @@
 % for white: makeColoredImage(myIm, [1 1 1]);
 % for blue: makeColoredImage(myIm, [0 0 1]);
 % for purple: makeColoredImage(myIm, [1 0 1]);
+% for cyan: makeColoredImage(myIm, [0 0.6797 0.9336]);
+% for orange: makeColoredImage(myIm, [0.9648 0.5781 0.1172]);
 
 function outRGB = makeColoredImage(inImage,theColor)
 
