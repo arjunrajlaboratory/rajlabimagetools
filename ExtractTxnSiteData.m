@@ -1,4 +1,4 @@
-function ExtractTxnSiteData(outputMethod, typeTxnSite, varargin)
+function BigTable = ExtractTxnSiteData(outputMethod, typeTxnSite, varargin)
 
 % This is the Extractor for transcription site data from the TxnSites2 GUI.
 % This extractor should be used after the data has been processed using the
@@ -31,13 +31,24 @@ function ExtractTxnSiteData(outputMethod, typeTxnSite, varargin)
 %                   table. In the absense of this input, the extractor will
 %                   only output the coordinates of the closest exon
 %                   to the clicked point as identified by the processor.
+%               > Additionally, the path to the images can be provided by
+%                   specifying a parameter called 'readpath'. Default is
+%                   pwd.
+%               > The path to save the table can also be specified via a
+%                   parameter called 'savepath'. Default is pwd.
+%               > The name of the file can be changed using the parameter
+%                   called 'filename'. Default is 'BigTable'.
 % Example: 
-% - ExtractTxnSiteData('molten', 'exonintron', 'alexa', 'tmr',
-%   'getClickedPoints') will output a molten format table with the data from
-%   the alexatmr:TxnSites node, and the coordinates of the actual points that
-%   the user clicked.
+% - ExtractTxnSiteData('molten', 'exonintron', 'alexa', 'tmr', ...
+%       'getClickedPoints') will output a molten format table with the data
+%       from the alexatmr:TxnSites node, and the coordinates of the actual
+%       points that the user clicked.
 % - ExtractTxnSiteData('solid', 'exononly', 'alexa') will output a solid
-%   format table with data from the node alexa:TxnSites.
+%       format table with data from the node alexa:TxnSites.
+% - ExtractTxnSiteData('solid', 'exononly', 'alexa', 'readpath', ...
+%       '~/Desktop/experiment1', 'savepath', '~/Desktop/experiment1/analysis')
+%       will read the data files in ''~/Desktop/experiment1' and save the
+%       analysis table to '~/Desktop/experiment1/analysis'.
 
 validateattributes(varargin{1}, {'char'}, {'nonempty'})
 validateattributes(outputMethod, {'char'}, {'nonempty'})
@@ -47,14 +58,28 @@ if sum(strcmp(typeTxnSite, {'exonintron', 'intronexon', 'intronorexon', 'exonori
     exonChannel = varargin{1};
     intronChannel = varargin{2};
     validateattributes(intronChannel, {'char'}, {'nonempty'})
+    ip = inputParser;
+    ip.addParameter('readpath', pwd, @ischar);
+    ip.addParameter('savepath', pwd, @ischar);
+    ip.addParameter('filename', 'BigTable', @ischar);
+    ip.parse(varargin{3:end});
 elseif strcmp(typeTxnSite, 'exononly')
     exonChannel = varargin{1};
+    ip = inputParser;
+    ip.addParameter('readpath', pwd, @ischar);
+    ip.addParameter('savepath', pwd, @ischar);
+    ip.addParameter('filename', 'BigTable', @ischar);
+    ip.parse(varargin{2:end});
 else
     error('Invalid input. Second argument can either be "exonintron" or "exononly".')
 end
 
-contents = dir('data*');
-tools = improc2.launchImageObjectTools;
+readpath = ip.Results.readpath;
+savepath = ip.Results.savepath;
+filename = ip.Results.filename;
+
+contents = dir(fullfile(readpath, 'data*'));
+tools = improc2.launchImageObjectTools(readpath);
 iterator = tools.iterator;
 
 numberOfObjects = 0;
@@ -119,7 +144,7 @@ if strcmp(outputMethod, 'molten')
                                                     [ones(1, lengthIntensities)*arrayNumber; ...
                                                      ones(1, lengthIntensities)*objectNumber; ...
                                                      tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Intensity]];  
-        elseif strcmp(typeTxnSite, 'exonintron') && tools.objectHandle.hasData(strcat(exonChannel, intronChannel, ':TxnSites'))
+        elseif sum(strcmp(typeTxnSite, {'exonintron', 'intronexon', 'intronorexon', 'exonorintron', 'eitheror'})) && tools.objectHandle.hasData(strcat(exonChannel, intronChannel, ':TxnSites'))
             % Extract number exon spots
             numExonSpots = [numExonSpots, [arrayNumber; objectNumber; tools.objectHandle.getOverThreshSpots(strcat(exonChannel, ':Spots'))]];
 
@@ -198,7 +223,7 @@ if strcmp(outputMethod, 'molten')
     fprintf('Making Table\n')
     BigTable = cell2table(ValueData);
     fprintf('Writing Table\n')
-    writetable(BigTable, 'BigTable.txt')
+    writetable(BigTable, fullfile(savepath, sprintf('%s.txt', filename)))
     
 % Solid Format Table
 elseif strcmp(outputMethod, 'solid')
@@ -231,7 +256,7 @@ elseif strcmp(outputMethod, 'solid')
             
             % Extract exon only txn site intensities
             txnSitesIntensities = [txnSitesIntensities; mean(tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Intensity)];
-        elseif strcmp(typeTxnSite, 'exonintron') && tools.objectHandle.hasData(strcat(exonChannel, intronChannel, ':TxnSites'))
+        elseif sum(strcmp(typeTxnSite, {'exonintron', 'intronexon', 'intronorexon', 'exonorintron', 'eitheror'})) && tools.objectHandle.hasData(strcat(exonChannel, intronChannel, ':TxnSites'))
             % Extract number exon spots
             numExonSpots = [numExonSpots; tools.objectHandle.getOverThreshSpots(strcat(exonChannel, ':Spots'))];
 
@@ -296,6 +321,6 @@ elseif strcmp(outputMethod, 'solid')
     fprintf('Making Table\n')
     BigTable = cell2table(ValueData);
     fprintf('Writing Table\n')
-    writetable(BigTable, 'BigTable.txt')
+    writetable(BigTable, fullfile(savepath, sprintf('%s.txt', filename)))
 end
 end
