@@ -54,21 +54,18 @@ validateattributes(varargin{1}, {'char'}, {'nonempty'})
 validateattributes(outputMethod, {'char'}, {'nonempty'})
 validateattributes(typeTxnSite, {'char'}, {'nonempty'})
 
+ip = inputParser;
+ip.addParameter('readpath', pwd, @ischar);
+ip.addParameter('savepath', pwd, @ischar);
+ip.addParameter('filename', 'BigTable', @ischar);
+
 if sum(strcmp(typeTxnSite, {'exonintron', 'intronexon', 'intronorexon', 'exonorintron', 'eitheror'}))
     exonChannel = varargin{1};
     intronChannel = varargin{2};
     validateattributes(intronChannel, {'char'}, {'nonempty'})
-    ip = inputParser;
-    ip.addParameter('readpath', pwd, @ischar);
-    ip.addParameter('savepath', pwd, @ischar);
-    ip.addParameter('filename', 'BigTable', @ischar);
     ip.parse(varargin{3:end});
 elseif strcmp(typeTxnSite, 'exononly')
     exonChannel = varargin{1};
-    ip = inputParser;
-    ip.addParameter('readpath', pwd, @ischar);
-    ip.addParameter('savepath', pwd, @ischar);
-    ip.addParameter('filename', 'BigTable', @ischar);
     ip.parse(varargin{2:end});
 else
     error('Invalid input. Second argument can either be "exonintron" or "exononly".')
