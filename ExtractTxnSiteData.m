@@ -78,15 +78,8 @@ readpath = ip.Results.readpath;
 savepath = ip.Results.savepath;
 filename = ip.Results.filename;
 
-contents = dir(fullfile(readpath, 'data*'));
 tools = improc2.launchImageObjectTools(readpath);
 iterator = tools.iterator;
-
-numberOfObjects = 0;
-for i = 1:numel(contents)
-    load(contents(i).name);
-    numberOfObjects = numberOfObjects + numel(objects);
-end
 
 objectNumber = [];
 arrayNumber = [];
@@ -108,7 +101,7 @@ txnSitesIntensities = [];
 
 % Molten Format Table
 if strcmp(outputMethod, 'molten')
-    for i = 1:numberOfObjects
+    while iterator.continueIteration
         if(~tools.annotations.getValue('isGood'))
             iterator.goToNextObject;
             continue;
@@ -227,7 +220,8 @@ if strcmp(outputMethod, 'molten')
     
 % Solid Format Table
 elseif strcmp(outputMethod, 'solid')
-    for i = 1:numberOfObjects
+%     for i = 1:numberOfObjects
+    while iterator.continueIteration
         if(~tools.annotations.getValue('isGood'))
             iterator.goToNextObject;
             continue;
@@ -242,15 +236,6 @@ elseif strcmp(outputMethod, 'solid')
             % Extract exon mRNA intensities
             exonFittedIntensities = [exonFittedIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted')))];
             
-            % Extract exon only txn site coordinates
-%             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Xs);
-%             exonXs = [exonXs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                                ones(1, lengthCoords)*objectNumber; ...
-%                                                tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Xs']];
-%             exonYs = [exonYs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                                ones(1, lengthCoords)*objectNumber; ...
-%                                                tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Ys']];
-            
             % Extract number exon only txn site exon spots
             numTxnSites = [numTxnSites; numel(tools.objectHandle.getData(strcat(exonChannel, ':TxnSites')).Xs)];
             
@@ -264,29 +249,11 @@ elseif strcmp(outputMethod, 'solid')
             exonMrnaIntensities = tools.objectHandle.getMoltenFittedIntensities(strcat(exonChannel, ':Fitted'));
             exonFittedIntensities = [exonFittedIntensities; mean(exonMrnaIntensities)];
 
-            % Extract coloc txn site exon coordinates
-%             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).ExonXs);
-%             exonXs = [exonXs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                ones(1, lengthCoords)*objectNumber; ...
-%                                tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).ExonXs']];
-%             exonYs = [exonYs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                ones(1, lengthCoords)*objectNumber; ...
-%                                tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).ExonYs']];
-
             % Extract number intron spots
             numIntronSpots = [numIntronSpots; tools.objectHandle.getOverThreshSpots(strcat(intronChannel, ':Spots'))];
 
             % Extract intron mRNA intensities
             intronFittedIntensities = [intronFittedIntensities; mean(tools.objectHandle.getMoltenFittedIntensities(strcat(intronChannel, ':Fitted')))];
-
-            % Extract coloc txn site intron coordinates
-%             lengthCoords = numel(tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronXs);
-%             intronXs = [intronXs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                    ones(1, lengthCoords)*objectNumber; ...
-%                                    tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronXs']];
-%             intronYs = [intronYs, [ones(1, lengthCoords)*arrayNumber; ...
-%                                    ones(1, lengthCoords)*objectNumber; ...
-%                                    tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).IntronYs']];
 
             % Extract number coloc txn sites
             numTxnSites = [numTxnSites; numel(tools.objectHandle.getData(strcat(exonChannel, intronChannel, ':TxnSites')).ColocXs)];
@@ -305,12 +272,8 @@ elseif strcmp(outputMethod, 'solid')
     arrayNumber = num2cell(arrayNumber); arrayNumber(end+1) = {'arrayNumber'};
     objectNumber = num2cell(objectNumber); objectNumber(end+1) = {'objectNumber'};
     numExonSpots = num2cell(numExonSpots); numExonSpots(end+1) = {'numExonSpots'};
-%     exonXs = num2cell(exonXs); exonXs(end+1) = {'exonXs'};
-%     exonYs = num2cell(exonYs); exonYs(end+1) = {'exonYs'};
     exonFittedIntensities = num2cell(exonFittedIntensities); exonFittedIntensities(end+1) = {'meanExonIntensities'};
     numIntronSpots = num2cell(numIntronSpots); numIntronSpots(end+1) = {'numIntronSpots'};
-%     intronXs = num2cell(intronXs); intronXs(end+1) = {'intronXs'};
-%     intronYs = num2cell(intronYs); intronYs(end+1) = {'intronYs'};
     intronFittedIntensities = num2cell(intronFittedIntensities); intronFittedIntensities(end+1) = {'meanIntronIntensities'};
     numTxnSites = num2cell(numTxnSites); numTxnSites(end+1) = {'numTxnSites'};
     txnSitesIntensities = num2cell(txnSitesIntensities); txnSitesIntensities(end+1) = {'meanTxnSitesIntensities'};
