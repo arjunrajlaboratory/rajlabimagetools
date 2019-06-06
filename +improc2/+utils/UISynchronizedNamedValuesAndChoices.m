@@ -89,6 +89,8 @@ classdef UISynchronizedNamedValuesAndChoices < improc2.interfaces.NamedValuesAnd
                     newInteractive = improc2.InteractiveNumeric(itemName, p, uihandle);
                 case 'improc2.TypeCheckedString'
                     newInteractive = improc2.InteractiveString(itemName, p, uihandle);
+                case 'improc2.TypeCheckedNumericNonScalar'
+                    newInteractive = improc2.InteractiveNumericNonScalar(itemName, p, uihandle);
                 otherwise
                     error(['can only make interactive for type-checked ' ...
                         'logical, factor, numeric or string'])
