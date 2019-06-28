@@ -68,7 +68,7 @@ classdef CentroidListBoxController < handle
         
         function draw(p)
             p.prepareCentroidsList()
-            set(p.listBoxH, 'Value', 1);
+            %set(p.listBoxH, 'Value', 1);
             set(p.listBoxH, 'String', p.numSpotsForItem);
         end
         
@@ -81,7 +81,15 @@ classdef CentroidListBoxController < handle
     
     methods (Access = private)
         function prepareCentroidsList(p)
+            
+            if ~isempty(p.centroidIndexForItem)
+                prevCentroid = p.centroidIndexForItem(p.listBoxH.Value);
+            else
+                prevCentroid = [];
+            end
+            
             channelName = p.channelHolder.getChannelName();
+            
             
             numSpotsForCentroids = p.spotsAndCentroids.getNumSpotsForCentroids(channelName);
             if p.applyFilterFlag && ~isempty(p.centroidsFilter)
@@ -94,6 +102,12 @@ classdef CentroidListBoxController < handle
             reorderedCentroidIndices = centroidIndices(orderingPermutation);
             p.numSpotsForItem = numSpotsSorted;
             p.centroidIndexForItem = reorderedCentroidIndices;
+            
+            if ~isempty(prevCentroid)
+                p.listBoxH.Value = find(reorderedCentroidIndices==prevCentroid);
+            else
+                p.listBoxH.Value = 1;
+            end
         end
     end
     
