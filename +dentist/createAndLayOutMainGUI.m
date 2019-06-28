@@ -7,12 +7,18 @@ figH = figure('Position',[200 100 900 605],...
     'Toolbar','none',...
     'MenuBar','none',...
     'HandleVisibility', 'callback',...
-    'Color',[0.247 0.247 0.247],...
+    'Color',[0.247 0.247 0.247],... 
+    'KeyPressFcn',@KeyPressCallback,...
     'Visible','on',...
     'Renderer','zbuffer');
 
-Hs = struct();
+Hs = guihandles(figH);
 Hs.figH = figH;
+Hs = buildGUI(Hs,figH);
+guidata(figH, Hs);
+end
+
+function [Hs] = buildGUI(Hs, figH)
 
 Hs.imgAx = axes('Parent',figH,...
     'Units','normalized',...
@@ -66,7 +72,16 @@ Hs.centList = uicontrol('Parent',figH,...
     'BackgroundColor',[0.247 0.247 0.247]);
 Hs.centroidsCheck = makeCheckBox(figH, 'Centroids', [0.710 0.630 0.080 0.0375], 1);
 Hs.numSpotsCheck = makeCheckBox(figH, 'NumSpots', [0.790 0.630 0.080 0.0375]);
-Hs.spotsCheck = makeCheckBox(figH, 'Spots', [0.880 0.630 0.136 0.0375], 0);
+% Hs.spotsCheck = makeCheckBox(figH, 'Spots', [0.880 0.630 0.136 0.0375], 0);
+Hs.spotsCheck  = uicontrol('Parent',figH,... % add callback for integration with hotkey 's'
+    'Style','checkbox',...
+    'Callback',@spotsCheck_Callback,...
+    'Units','normalized',...
+    'Position',[0.880 0.630 0.136 0.0375],...
+    'String','Spots (S)','FontSize',10,...
+    'Value',1,'ForegroundColor',[1 1 1],...%    'KeyPressFcn',@spotsCheck_Callback,...
+    'BackgroundColor',[0.247 0.247 0.247]);
+
 Hs.filterButton = makeButton(figH, 'Filter', [0.850 0.680 0.068 0.0320]);
 set(Hs.filterButton, 'Value', 0)
 Hs.filterCheckBox = makeCheckBox(figH, 'On/Off', [0.919 0.680 0.067 0.0375], 0);
@@ -154,4 +169,51 @@ radioH = uicontrol('Parent',Parent,...
     'ForegroundColor',[1,1,1],...
     'String',String,...
     'Position',Position);
+end
+
+function KeyPressCallback(src,evnt)
+%KeyPressFcn automatically takes in two inputs.
+%Src is the object that was active when the keypress occurred.
+%Evnt stores the data for the key pressed
+Hs = guidata(src);
+%Brings in the handles structure in to the function.
+
+k = evnt.Key; %k is the key that is pressed.
+
+if strcmp(k,'s') %If alt was pressed.
+    pause(0.001) %Allows time to update.
+    %define hObject as the object of the callback that we are going to use
+    %in this case, we are mapping the enter key to the add_object_button
+    %therefore, we define hObject as the add pushbutton
+    
+%     Hs
+    hObject = Hs.spotsCheck;
+%     hObject
+%     Hs.spotsCheck.Value = ~Hs.spotsCheck.Value;
+    %call the spotsCheck callback function.
+    spotsCheck_Callback(hObject, []);
+    
+    %Do the same thing to map to all the other callbacks.
+    %     elseif strcmp(k,'backspace')
+    %         pause(0.001)
+    %         hObject=Hs.undoSegment;
+    %         undoSegment_Callback(hObject,[]);
+    %     elseif strcmp(k,'rightarrow')
+    %         pause(0.001)
+    %         hObject=Hs.nextFileB;
+    %         nextFileB_Callback(hObject,[]);
+    %     elseif strcmp(k,'leftarrow')
+    %         pause(0.001)
+    %         hObject=Hs.prevFileB;
+    %         prevFileB_Callback(hObject,[]);
+end
+end
+
+function spotsCheck_Callback(hObject,eventdata)
+% Checkbox to add/remove spot call circles on image in the overlay
+Hs = guidata(gcbo);
+set(Hs.spotsCheck, 'Value', ~Hs.spotsCheck.Value);
+% Hs.spotsCheck.Callback % for debugging
+Hs.spotsCheck.Callback()
+guidata(gcbo,Hs);
 end
