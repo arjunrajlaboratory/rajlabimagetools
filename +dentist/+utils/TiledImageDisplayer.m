@@ -22,11 +22,13 @@ classdef TiledImageDisplayer < dentist.utils.AbstractDisplayer
             viewport = p.viewportHolder.getViewport();
             channelName = p.channelHolder.getChannelName();
             
+%             manContrast = p.imageProvider.manualContrast;
+            
             [xCoords, yCoords] = getXDataAndYDataFromViewport(viewport);
             p.setAxesToFitCroppedImage(viewport);
             img = viewport.getCroppedImage(p.imageProvider, channelName);
             imgDapi = viewport.getCroppedImage(p.imageProvider,'dapi'); %syd edits!
-            rgbImg = p.makeIntoRGB(scale(imadjust(img,stretchlim(img,[0.00 0.995]))),scale(imgDapi));
+            rgbImg = p.makeIntoRGB(scale(imadjust(img,stretchlim(img,[0.00 0.995]))),scale(imgDapi)); %*manContrast
             
             p.deactivate();
             p.imageH = image('CData', rgbImg, 'XData', xCoords, 'YData', yCoords, ...
