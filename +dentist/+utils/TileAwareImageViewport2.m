@@ -57,8 +57,25 @@ classdef TileAwareImageViewport2 < dentist.utils.ImageViewport2
                     onFirstTile = false;
                 end
                 [tileCoords, viewCoords] = p.coordsOfOverlapWithTile(tile);
-                img(viewCoords(3):viewCoords(4), viewCoords(1):viewCoords(2)) = ...
-                    tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                
+                if size(viewCoords(3):viewCoords(4), 2) == size(tileCoords(3):tileCoords(4), 2) && size(viewCoords(1):viewCoords(2), 2) == size(tileCoords(1):tileCoords(2), 2)
+                    img(viewCoords(3):viewCoords(4), viewCoords(1):viewCoords(2)) = ...
+                        tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                elseif size(viewCoords(3):viewCoords(4), 2) ~= size(tileCoords(3):tileCoords(4), 2) && size(viewCoords(1):viewCoords(2), 2) ~= size(tileCoords(1):tileCoords(2), 2)
+                    tileSize.y = size(tileCoords(3):tileCoords(4), 2);
+                    tileSize.x = size(tileCoords(1):tileCoords(2), 2);
+                    img(viewCoords(3):(viewCoords(3) + tileSize.y - 1), viewCoords(1):(viewCoords(1) + tileSize.x - 1)) = ...
+                        tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                elseif size(viewCoords(3):viewCoords(4), 2) ~= size(tileCoords(3):tileCoords(4), 2) && size(viewCoords(1):viewCoords(2), 2) == size(tileCoords(1):tileCoords(2), 2)
+                    tileSize.y = size(tileCoords(3):tileCoords(4), 2);  
+                    img(viewCoords(3):(viewCoords(3) + tileSize.y - 1), viewCoords(1):viewCoords(2)) = ...
+                        tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                elseif size(viewCoords(3):viewCoords(4), 2) == size(tileCoords(3):tileCoords(4), 2) && size(viewCoords(1):viewCoords(2), 2) ~= size(tileCoords(1):tileCoords(2), 2)
+                    tileSize.x = size(tileCoords(1):tileCoords(2), 2);  
+                    img(viewCoords(3):viewCoords(4), viewCoords(1):(viewCoords(1) + tileSize.x - 1)) = ...
+                        tileImg(tileCoords(3):tileCoords(4), tileCoords(1):tileCoords(2));
+                end
+                
                 if tile.hasNeighbor('right') && p.containsTile(tile.getNeighbor('right'))
                     tile = tile.getNeighbor('right');
                 elseif tileAtRowStart.hasNeighbor('down') && p.containsTile(tileAtRowStart.getNeighbor('down'))
