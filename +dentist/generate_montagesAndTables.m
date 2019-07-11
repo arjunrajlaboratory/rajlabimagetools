@@ -65,7 +65,7 @@ for well = wells
   
   
   % loop through each centroid and extract images for top centroids
-  
+  tempTileFiles = cell(n_output, 1);
   for i = 1:n_output
       
       % get the tile overlap previously set for this well, initialize file reader
@@ -152,12 +152,17 @@ for well = wells
       
       export_fig(outputfile_img, '-append')
       
+      tempTileFiles{i, 1} = fileTemp;
+      
       close(gcf)
       
   end % cells
-
-writetable(centSpotsOrdFilt, outputfile_tbl)
-cd(projectDir)
+  
+  centSpotsOrdFilt.tileName = tempTileFiles;
+  writetable(centSpotsOrdFilt, outputfile_tbl)
+  
+  cd(projectDir)
+  
 end % well
 
 
