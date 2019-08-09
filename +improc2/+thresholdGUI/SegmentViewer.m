@@ -38,7 +38,7 @@ classdef SegmentViewer < handle
                                 makeColoredImage(p.mergedImagePerimeters,[0 1 0]);
             
             imshow(mergedObjectImage + im2double(p.mergedImageNoObjects),'Parent',p.axH);
-            set(p.axH,'YDir','Normal')
+            set(p.axH,'YDir','reverse')
             for i = 1:numel(p.objectMasks) % Draw the object numbers on top.
                 text(p.objectCentroids(i,1),p.objectCentroids(i,2),num2str(i),'Color','white','Fontsize',14,'Parent',p.axH)
             end
