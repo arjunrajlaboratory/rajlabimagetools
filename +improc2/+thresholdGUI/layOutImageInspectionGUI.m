@@ -19,6 +19,7 @@ function [Hs] = layOutImageInspectionGUI()
         'XTick',[],'YTick',[]);
     axis(Hs.imgAx, 'equal');
     
+    set(Hs.imgAx, 'YDir', 'reverse');
     
     Hs.checkBoxPanel = uipanel('Parent',Hs.figH,...
         'Units','normalized',...
