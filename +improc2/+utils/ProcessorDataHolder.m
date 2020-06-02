@@ -58,6 +58,11 @@ classdef ProcessorDataHolder < handle
             end
         end
         
+        
+        function processorFetchingParams = getProcessorFetchingParams(p)
+            processorFetchingParams = p.processorFetchingParams{1};
+        end
+        
         function disp(p)
             improc2.utils.displayDescriptionOfHandleObject(p)
         end
